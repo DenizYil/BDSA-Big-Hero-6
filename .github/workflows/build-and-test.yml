@@ -1,0 +1,38 @@
+﻿name: Build & Test CI # TODO: Maybe split into two separate workflows?
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: 6.0.x
+# BACKEND TASKS
+      - name: Install dependencies
+        working-directory: ./BackEnd
+        run: dotnet restore
+      - name: Build
+        working-directory: ./BackEnd
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        working-directory: ./BackEnd
+        run: dotnet test --no-restore --verbosity normal
+# FRONTEND TASKS
+      - name: Install dependencies
+        working-directory: ./FrontEnd
+        run: dotnet restore
+      - name: Build
+        working-directory: ./FrontEnd
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        working-directory: ./FrontEnd
+        run: dotnet test --no-restore --verbosity normal
