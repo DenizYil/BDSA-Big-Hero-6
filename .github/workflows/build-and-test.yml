@@ -15,24 +15,24 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1.7.2
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 5.0.x
 # BACKEND TASKS
       - name: Install dependencies
-        working-directory: ./BackEnd
+        working-directory: ./Back-end
         run: dotnet restore
       - name: Build
-        working-directory: ./BackEnd
+        working-directory: ./Back-end
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        working-directory: ./BackEnd
+        working-directory: ./Back-end
         run: dotnet test --no-restore --verbosity normal
 # FRONTEND TASKS
       - name: Install dependencies
-        working-directory: ./FrontEnd
+        working-directory: ./Front-end
         run: dotnet restore
       - name: Build
-        working-directory: ./FrontEnd
+        working-directory: ./Front-end
         run: dotnet build --configuration Release --no-restore
       - name: Test
-        working-directory: ./FrontEnd
+        working-directory: ./Front-end
         run: dotnet test --no-restore --verbosity normal
