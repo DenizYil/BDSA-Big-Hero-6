@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.WebSockets;
 using CoProject.Infrastructure.DTOs;
 using CoProject.Infrastructure.Entities;
 using CoProject.Infrastructure.Repositories;
@@ -34,9 +35,6 @@ public class ProjectRepositoryTests
     [Fact]
     public async void Read_Given_Non_existing_id_returns_null()
     {
-        //Arrange
-        //Act
-        //Assert
         Assert.Null(await _repo.Read(2));
     }
     
@@ -45,31 +43,34 @@ public class ProjectRepositoryTests
     {
         //Arrange
         var now = DateTime.Now;
-        Project project = new Project{
+        
+        var project = new Project{
             Id = 1, 
             Name = "Karl", 
             Description = "yep hehe smiley", 
             SupervisorId = 1,
             Created = now, 
-            StateId = 1
+            State = State.Open
         };
 
-        ProjectDTO expectedDTO = new ProjectDTO(
-            1,
-            "Karl",
-            "yep hehe smiley",
-            now,
-            1,
-            null,
-            null
-        );
+        var expected = new ProjectDTO
+        {
+            Id = 1,
+            Name = "Karl",
+            Description = "yep hehe smiley",
+            SupervisorId = 1,
+            Created = now,
+            State = State.Open
+        };
         
-        //Act
         _context.Add(project);
         _context.SaveChanges();
         
+        // Act
+        var actual = await _repo.Read(1);
+
         //Assert
-        Assert.Equal(expectedDTO, await _repo.Read(1));
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
@@ -77,52 +78,51 @@ public class ProjectRepositoryTests
     {
         //Arrange
         var now = DateTime.Now;
-        List<ProjectDTO> expected = new List<ProjectDTO>();
-        Project projectOne = new Project{
+        
+        var expected = new List<ProjectDTO>
+        {
+            new()
+            {
+                Id = 1,
+                Name = "Karl",
+                Description = "yep hehe smiley",
+                SupervisorId = 1,
+                Created = now,
+                State = State.Open
+            },
+            new()
+            {
+                Id = 2,
+                Name = "Phillip",
+                Description = "This is another cool description",
+                SupervisorId = 2,
+                Created = now,
+                State = State.Open
+            }
+        };
+        
+        _context.Add(new Project{
             Id = 1, 
             Name = "Karl", 
             Description = "yep hehe smiley", 
             SupervisorId = 1,
             Created = now, 
-            StateId = 1
-        };
-        
-        Project projectTwo = new Project{
+            State = State.Open
+        });
+        _context.Add(new Project{
             Id = 2, 
             Name = "Phillip", 
             Description = "This is another cool description", 
             SupervisorId = 2,
             Created = now, 
-            StateId = 2
-        };
-        ProjectDTO projectDTOOne = new ProjectDTO(
-            1,
-            "Karl",
-            "yep hehe smiley",
-            now,
-            1,
-            null,
-            null
-        );
-        
-        ProjectDTO projectDTOTwo = new ProjectDTO(
-            2,
-            "Phillip",
-            "This is another cool description",
-            now,
-            2,
-            null,
-            null
-        );
-        //Act
-        _context.Add(projectOne);
-        _context.Add(projectTwo);
+            State = State.Open
+        });
         _context.SaveChanges();
         
-        expected.Add(projectDTOOne);
-        expected.Add(projectDTOTwo);
-        
+        // Act
+        var actual = await _repo.ReadAll();
+
         //Assert
-        Assert.Equal(expected, await _repo.ReadAll());
+        Assert.Equal(expected, actual);
     }
 }

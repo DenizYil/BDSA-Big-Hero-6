@@ -4,41 +4,47 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Infrastructure.Repositories;
 
-public class ProjectRepository 
+public class ProjectRepository
 {
-    private CoProjectContext context;
+    private CoProjectContext _context;
 
-    public ProjectRepository(CoProjectContext _context)
+    public ProjectRepository(CoProjectContext context)
     {
-        context = _context;
+        _context = context;
     }
 
     public async Task<ProjectDTO?> Read(int id)
     {
-        return await context.Projects.Where(p => p.Id == id).Select(p => new ProjectDTO
-        (
-            p.Id,
-            p.Name,
-            p.Description,
-            p.Created,
-            p.SupervisorId,
-            p.Min,
-            p.Max
-        )).FirstOrDefaultAsync();
+        return await _context.Projects
+            .Where(p => p.Id == id)
+            .Select(p => new ProjectDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Created = p.Created,
+                SupervisorId = p.SupervisorId,
+                Min = p.Min,
+                Max = p.Max,
+                State = p.State,
+            })
+            .FirstOrDefaultAsync();
     }
-    
+
     public async Task<IEnumerable<ProjectDTO>> ReadAll()
     {
-        return await context.Projects.Select(p => new ProjectDTO(
-            p.Id,
-            p.Name,
-            p.Description,
-            p.Created,
-            p.SupervisorId,
-            p.Min,
-            p.Max
-        )).ToListAsync();
+        return await _context.Projects
+            .Select(p => new ProjectDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Created = p.Created,
+                SupervisorId = p.SupervisorId,
+                Min = p.Min,
+                Max = p.Max,
+                State = p.State,
+            })
+            .ToListAsync();
     }
-
-
 }
