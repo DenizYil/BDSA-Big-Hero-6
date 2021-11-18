@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using CoProject.Infrastructure.DTOs;
 using CoProject.Infrastructure.Entities;
 using CoProject.Infrastructure.Repositories;
@@ -42,9 +43,9 @@ public class ProjectRepositoryTests
     [Fact]
     public async void Read_Given_Existing_Project_Returns_Project()
     {
-        var now = DateTime.Now;
         //Arrange
-        Project hello = new Project{
+        var now = DateTime.Now;
+        Project project = new Project{
             Id = 1, 
             Name = "Karl", 
             Description = "yep hehe smiley", 
@@ -64,11 +65,64 @@ public class ProjectRepositoryTests
         );
         
         //Act
-        _context.Add(hello);
+        _context.Add(project);
         _context.SaveChanges();
         
         //Assert
         Assert.Equal(expectedDTO, await _repo.Read(1));
     }
-    
+
+    [Fact]
+    public async void ReadAll_Given_Multiple_existing_Projects_Returning_All_Projects()
+    {
+        //Arrange
+        var now = DateTime.Now;
+        List<ProjectDTO> expected = new List<ProjectDTO>();
+        Project projectOne = new Project{
+            Id = 1, 
+            Name = "Karl", 
+            Description = "yep hehe smiley", 
+            SupervisorId = 1,
+            Created = now, 
+            StateId = 1
+        };
+        
+        Project projectTwo = new Project{
+            Id = 2, 
+            Name = "Phillip", 
+            Description = "This is another cool description", 
+            SupervisorId = 2,
+            Created = now, 
+            StateId = 2
+        };
+        ProjectDTO projectDTOOne = new ProjectDTO(
+            1,
+            "Karl",
+            "yep hehe smiley",
+            now,
+            1,
+            null,
+            null
+        );
+        
+        ProjectDTO projectDTOTwo = new ProjectDTO(
+            2,
+            "Phillip",
+            "This is another cool description",
+            now,
+            2,
+            null,
+            null
+        );
+        //Act
+        _context.Add(projectOne);
+        _context.Add(projectTwo);
+        _context.SaveChanges();
+        
+        expected.Add(projectDTOOne);
+        expected.Add(projectDTOTwo);
+        
+        //Assert
+        Assert.Equal(expected, await _repo.ReadAll());
+    }
 }
