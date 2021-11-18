@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Infrastructure.Repositories;
 
-public class ProjectRepository
+public class ProjectRepository : IProjectRepository
 {
     private CoProjectContext _context;
 
