@@ -9,5 +9,6 @@ public class Project
     public int SupervisorId { get; set; }
     public int? Min { get; set; }
     public int? Max { get; set; }
-    public int StateId { get; set; }
+    //ublic IReadOnlyCollection<Tag> Tags { get; set; }
+    public State State { get; set; }
 }
