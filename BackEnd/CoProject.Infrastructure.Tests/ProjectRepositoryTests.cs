@@ -10,28 +10,8 @@ using Xunit;
 
 namespace CoProject.Infrastructure.Tests;
 
-public class ProjectRepositoryTests
+public class ProjectRepositoryTests : DefaultTest<ProjectRepository>
 {
-    private readonly CoProjectContext _context;
-    private readonly ProjectRepository _repo;
-
-    public ProjectRepositoryTests()
-    {
-        var connection = new SqliteConnection("Filename=:memory:");
-        connection.Open();
-
-        var builder = new DbContextOptionsBuilder<CoProjectContext>();
-        builder.UseSqlite(connection);
-        builder.EnableSensitiveDataLogging();
-
-        var context = new CoProjectContext(builder.Options);
-        context.Database.EnsureCreated();
-        context.SaveChanges();
-
-        _context = context;
-        _repo = new ProjectRepository(_context);
-    }
-    
     [Fact]
     public async void Read_Given_Non_existing_id_returns_null()
     {
