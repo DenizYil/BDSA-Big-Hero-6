@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CoProject.Infrastructure.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Infrastructure;
 
 public class CoProjectContext : DbContext, ICoProjectContext
 {
+    public DbSet<Project> Projects { get; set; }
     public CoProjectContext(DbContextOptions options) : base(options)
     {
     }
