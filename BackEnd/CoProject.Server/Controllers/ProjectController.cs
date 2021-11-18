@@ -2,37 +2,50 @@
 
 namespace CoProject.Server.Controllers;
 
+// THIS SHOULD BE REPLACED BY REAL PROJECT CLASS
+// FROM INFRASTRUCTURE
+public class Project
+{
+    public string? Name { get; init; }
+    public int? Id { get; init; }
+}
+
 [ApiController]
-[Route("[controller]")]
+[Route("projects")]
 public class ProjectController
 {
-    [HttpGet(Name = "GetProjects")]
+
+    [HttpGet]
     public IEnumerable<Project> GetProjects()
     {
-        return new Project[] {};
+        return new List<Project>();
+
     }
-    
-    [HttpGet(Name = "GetProject")]
-    public IEnumerable<Project> GetProject(int id)
+
+    [HttpGet]
+    [Route("{id}")]
+    public Project GetProject(int id)
     {
-        return new Project[] {};
+        return new Project() { Id = id };
     }
-    
-    [HttpPost(Name = "CreateProject")]
+
+    [HttpPost]
     public Project CreateProject(Project p)
     {
-        return new Project{};
+        return new Project() { Id = p.Id, Name = p.Name};
     }
     
-    [HttpPut(Name = "ChangeProject")]
+    [HttpPut]
+    [Route("{id}")]
     public Project ChangeProject(int id, Project p)
     {
-        return new Project{};
+        return new Project() { Id = id, Name = p.Name };
     }
     
-    [HttpDelete(Name = "DeleteProject")]
-    public void ChangeProject(int id)
+    [HttpDelete]
+    [Route("{id}")]
+    public Project DeleteProject(int id)
     {
-        return;
+        return new Project() { Id = id };
     }
 }
