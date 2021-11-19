@@ -58,10 +58,9 @@ public class ProjectRepository : IProjectRepository
 
             if (tag == null)
             {
-                await _context.Tags.AddAsync(new Tag {Name = tagName});
+                tag = new Tag {Name = tagName};
+                await _context.Tags.AddAsync(tag);
                 await _context.SaveChangesAsync();
-                
-                tag = await _context.Tags.FirstAsync(t => t.Name == tagName);
             }
             
             tags.Add(tag);
