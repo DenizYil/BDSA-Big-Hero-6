@@ -1,3 +1,6 @@
+using System.Linq;
+using NuGet.Frameworks;
+
 namespace CoProject.Infrastructure.Tests;
 
 public class ProjectRepositoryTests
@@ -114,5 +117,94 @@ public class ProjectRepositoryTests
 
         //Assert
         Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async void Update_returns_StatusNotFound_for_non_existing_ID()
+    {
+        var expected = Status.NotFound;
+        var actual = await _repo.Update(new ProjectUpdateDTO
+        {
+            Id = 2
+        });
+        
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async void Update_returns_StatusUpdated_for_existing_id()
+    {
+        // Arrange
+        var expected = Status.Updated;
+
+        _context.Projects.Add(new Project
+        {
+            Id = 1,
+            Name = "Phillip",
+            Description = "This is another cool description",
+            SupervisorId = 2,
+            Created = DateTime.Now,
+            State = State.Open
+        });
+        await _context.SaveChangesAsync();      
+        
+        var actual = await _repo.Update(new ProjectUpdateDTO
+        {
+            Id = 1,
+        });
+        
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async void Update_actually_updates_object_with_specified_changes()
+    {
+        var now = DateTime.Now;
+
+        var project = new Project
+        {
+            Id = 5,
+            Name = "Phillip",
+            Description = "This is another cool description",
+            SupervisorId = 2,
+            Created = now,
+            State = State.Open
+        };
+        _context.Projects.Add(project);
+        await _context.SaveChangesAsync();
+
+        var update = new ProjectUpdateDTO
+        {
+            Id = 5,
+            Name = "Deniz",
+            Description = "New description",
+            State = State.Hidden
+        };
+        await _repo.Update(update);
+
+        var actual = await _context.Projects.FirstOrDefaultAsync(p => p.Id == 5);
+        
+
+        var expected = new Project
+        {
+            Id = 5,
+            Name = "Deniz",
+            Description = "New description",
+            State = State.Hidden,
+            SupervisorId = 2,
+            Created = now
+        };
+        
+        Assert.NotNull(actual);
+        Assert.Equal(expected.Id, actual.Id);
+        Assert.Equal(expected.Name, actual.Name);
+        Assert.Equal(expected.Description, actual.Description);
+        Assert.Equal(expected.Created, actual.Created);
+        Assert.Equal(expected.SupervisorId, actual.SupervisorId);
+        Assert.Equal(expected.Min, actual.Min);
+        Assert.Equal(expected.Max, actual.Max);
+        Assert.Equal(expected.State, actual.State); 
+        
+        // TODO: undersøg hvorfor man ikke bare kan assert objects
     }
 }

@@ -47,22 +47,42 @@ public class ProjectRepository : IProjectRepository
             })
             .ToListAsync();
     }
-    
-    public async Task<(Status, int)> Create(ProjectCreateDTO create)
-    {
-           
-    }
 
-    public async Task<Status> Delete(int id)
+    public async Task<Status> Update(ProjectUpdateDTO update)
     {
-        
-        // TODO: tjek om den findes
-    }
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == update.Id);
 
-    public async Task<(Status, ProjectDTO)> Update(ProjectUpdateDTO update)
-    {
+        if (project == null)
+        {
+            return Status.NotFound;
+        }
+
+        if (update.Name != null && update.Name != project.Name)
+        {
+            project.Name = update.Name;
+        }
         
-        // todo: tjek om den findes
-        
+        if (update.Description != null && update.Description != project.Description)
+        {
+            project.Description = update.Description;
+        }
+
+        if (update.Min != project.Min)
+        {
+            project.Min = update.Min;
+        }
+
+        if (update.Max != project.Max)
+        {
+            project.Max = update.Max;
+        }
+
+        if (update.State != null && update.State != project.State)
+        {
+            project.State = update.State.Value;
+        }
+
+        await _context.SaveChangesAsync();
+        return Status.Updated;
     }
 }
