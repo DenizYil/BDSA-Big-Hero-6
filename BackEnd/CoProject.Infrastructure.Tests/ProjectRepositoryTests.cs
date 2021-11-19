@@ -1,13 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using CoProject.Infrastructure.DTOs;
-using CoProject.Infrastructure.Entities;
-using CoProject.Infrastructure.Repositories;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Xunit;
-
 namespace CoProject.Infrastructure.Tests;
 
 public class ProjectRepositoryTests
