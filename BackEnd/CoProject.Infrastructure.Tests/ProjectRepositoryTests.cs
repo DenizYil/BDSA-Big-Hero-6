@@ -209,7 +209,7 @@ public class ProjectRepositoryTests
     }
     
     [Fact]
-    public async void Create_Project_Given_ProjectCreateDTO_Returning_Status_and_Id()
+    public async void Create_Project_Given_ProjectCreateDTO_Returns_StatusCreated_and_Id()
     { 
         //Arrange
         var expected = (Status.Created, 1);
@@ -220,11 +220,64 @@ public class ProjectRepositoryTests
             Max = 4,
             State = State.Hidden
         };
+        
         //Act
         var actual = await _repo.Create(createProject);
+        
         //Assert
         Assert.Equal(expected, actual);
     }
-    
-    
+
+    [Fact]
+    public async void Create_Project_Adds_It_To_DB()
+    {
+        var createProject = new ProjectCreateDTO
+        {
+            Name = "CoolProject",
+            Description = "Description for the Coolest Project",
+            Max = 4,
+            State = State.Hidden
+        };
+        
+        //Act
+        var (status, id) = await _repo.Create(createProject);
+
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+        Assert.NotNull(project);
+    }
+ 
+    [Fact]
+    public async void Delete_Returns_Not_Found_When_Id_Doesnt_Exist()
+    {
+        //Arrange
+        var expected = Status.NotFound;
+        var actual = await _repo.Delete(3);
+        
+        Assert.Equal(expected,actual);
+    }
+
+    [Fact]
+    public async void Delete_Changes_ProjectState_To_Deleted_When_Id_Is_Found()
+    {
+        var project = new Project()
+        {
+            Id = 1,
+            Name = "Deniz sushi",
+            Description = "Deniz elsker sushi",
+            Created = DateTime.Now,
+            SupervisorId = 2,
+            State = State.Open
+        };
+        await _context.Projects.AddAsync(project);
+        await _context.SaveChangesAsync();
+
+        await _repo.Delete(1);
+
+        project = await _context.Projects.FirstOrDefaultAsync(id => project.Id == 1);
+
+        var actual = project.State;
+        var expected = State.Deleted;
+        
+        Assert.Equal(expected, actual);
+    }
 }

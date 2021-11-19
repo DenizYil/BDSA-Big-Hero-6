@@ -103,4 +103,20 @@ public class ProjectRepository : IProjectRepository
         await _context.SaveChangesAsync();
         return Status.Updated;
     }
+
+    public async Task<Status> Delete(int id)
+    {
+        var project = await _context.Projects.FirstOrDefaultAsync(project => project.Id == id);
+
+        if (project == null)
+        {
+            return Status.NotFound;
+        }
+
+        project.State = State.Deleted;
+
+        await _context.SaveChangesAsync();
+        return Status.Deleted;
+        
+    }
 }
