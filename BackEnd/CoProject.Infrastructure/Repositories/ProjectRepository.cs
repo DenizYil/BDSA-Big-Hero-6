@@ -6,9 +6,9 @@ namespace CoProject.Infrastructure.Repositories;
 
 public class ProjectRepository : IProjectRepository
 {
-    private CoProjectContext _context;
+    private ICoProjectContext _context;
 
-    public ProjectRepository(CoProjectContext context)
+    public ProjectRepository(ICoProjectContext context)
     {
         _context = context;
     }
@@ -133,6 +133,5 @@ public class ProjectRepository : IProjectRepository
 
         await _context.SaveChangesAsync();
         return Status.Deleted;
-        
     }
 }
