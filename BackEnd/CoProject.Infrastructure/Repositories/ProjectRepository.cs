@@ -48,6 +48,24 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync();
     }
 
+    public async Task<(Status, int)> Create(ProjectCreateDTO create)
+    {
+        var project = new Project{
+            Name = create.Name,
+            Description = create.Description,
+            Created = DateTime.Now,
+            SupervisorId = create.SupervisorId, 
+            Min = create.Min, 
+            Max = create.Max, 
+            //Tags = create.Tags, 
+            //Users = new IReadOnlyCollection<User>(), 
+            State = create.State
+        };
+        await _context.Projects.AddAsync(project);
+        await _context.SaveChangesAsync();
+        return (Status.Created, project.Id);
+    }
+    
     public async Task<Status> Update(ProjectUpdateDTO update)
     {
         var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == update.Id);

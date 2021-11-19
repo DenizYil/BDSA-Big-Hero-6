@@ -207,4 +207,24 @@ public class ProjectRepositoryTests
         
         // TODO: undersøg hvorfor man ikke bare kan assert objects
     }
+    
+    [Fact]
+    public async void Create_Project_Given_ProjectCreateDTO_Returning_Status_and_Id()
+    { 
+        //Arrange
+        var expected = (Status.Created, 1);
+        var createProject = new ProjectCreateDTO
+        {
+            Name = "CoolProject",
+            Description = "Description for the Coolest Project",
+            Max = 4,
+            State = State.Hidden
+        };
+        //Act
+        var actual = await _repo.Create(createProject);
+        //Assert
+        Assert.Equal(expected, actual);
+    }
+    
+    
 }
