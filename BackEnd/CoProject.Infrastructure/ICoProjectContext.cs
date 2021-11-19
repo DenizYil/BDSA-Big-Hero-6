@@ -6,7 +6,6 @@ namespace CoProject.Infrastructure;
 public interface ICoProjectContext : IDisposable
 {
     DbSet<Project> Projects { get; set; }
-    DbSet<ProjectTag> ProjectTags { get; set; }
     DbSet<Tag> Tags { get; set; }
     DbSet<UserJoined> UserJoined { get; set; }
     DbSet<User> Users { get; set; }

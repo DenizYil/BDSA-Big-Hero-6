@@ -28,4 +28,5 @@ public record ProjectUpdateDTO
     public int? Min { get; init; }
     public int? Max { get; init; }
     public State? State { get; init; }
+    public IReadOnlyCollection<string>? Tags { get; init; }
 }
