@@ -47,4 +47,22 @@ public class ProjectRepository : IProjectRepository
             })
             .ToListAsync();
     }
+    
+    public async Task<(Status, int)> Create(ProjectCreateDTO create)
+    {
+           
+    }
+
+    public async Task<Status> Delete(int id)
+    {
+        
+        // TODO: tjek om den findes
+    }
+
+    public async Task<(Status, ProjectDTO)> Update(ProjectUpdateDTO update)
+    {
+        
+        // todo: tjek om den findes
+        
+    }
 }
