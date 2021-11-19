@@ -1,15 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace CoProject.Infrastructure.Entities;
 
-public class User
+public class User : IdentityUser<int>
 {
-    public int Id { get; set; }
-    public string Name{ get; set; }
-    
-    [EmailAddress]
-    public string Email{ get; set; }
-    
     public bool Supervisor{ get; set; }
-    public string ProfileImage{ get; set; }
 }
