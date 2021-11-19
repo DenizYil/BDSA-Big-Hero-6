@@ -9,7 +9,7 @@ public record ProjectCreateDTO
     public int SupervisorId { get; init; }
     public int? Min { get; init; }
     public int? Max { get; init; }
-    //public IEnumerable<string> Tags { get; init; }
+    public IReadOnlyCollection<string> Tags { get; init; }
     public State State { get; init; }
 }
 

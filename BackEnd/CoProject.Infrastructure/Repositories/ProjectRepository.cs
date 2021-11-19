@@ -50,6 +50,23 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<(Status, int)> Create(ProjectCreateDTO create)
     {
+        var tags = new List<Tag>();
+
+        foreach (var tagName in create.Tags)
+        {
+            var tag = await _context.Tags.FirstOrDefaultAsync(tag => tag.Name == tagName);
+
+            if (tag == null)
+            {
+                await _context.Tags.AddAsync(new Tag {Name = tagName});
+                await _context.SaveChangesAsync();
+                
+                tag = await _context.Tags.FirstAsync(t => t.Name == tagName);
+            }
+            
+            tags.Add(tag);
+        }
+        
         var project = new Project{
             Name = create.Name,
             Description = create.Description,
@@ -57,7 +74,7 @@ public class ProjectRepository : IProjectRepository
             SupervisorId = create.SupervisorId, 
             Min = create.Min, 
             Max = create.Max, 
-            //Tags = create.Tags, 
+            Tags = tags, 
             //Users = new IReadOnlyCollection<User>(), 
             State = create.State
         };

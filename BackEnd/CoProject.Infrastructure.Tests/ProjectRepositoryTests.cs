@@ -218,7 +218,8 @@ public class ProjectRepositoryTests
             Name = "CoolProject",
             Description = "Description for the Coolest Project",
             Max = 4,
-            State = State.Hidden
+            State = State.Hidden,
+            Tags = new List<string>()
         };
         
         //Act
@@ -236,7 +237,8 @@ public class ProjectRepositoryTests
             Name = "CoolProject",
             Description = "Description for the Coolest Project",
             Max = 4,
-            State = State.Hidden
+            State = State.Hidden,
+            Tags = new List<string>()
         };
         
         //Act
