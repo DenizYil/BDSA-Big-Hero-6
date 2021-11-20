@@ -8,7 +8,6 @@ public class CoProjectContext : DbContext, ICoProjectContext
 {
     public DbSet<Project> Projects { get; set; }
     public DbSet<Tag> Tags { get; set; }
-    public DbSet<UserJoined> UserJoined { get; set; }
     public DbSet<User> Users { get; set; }
 
     public CoProjectContext(DbContextOptions options) : base(options)
@@ -24,5 +23,9 @@ public class CoProjectContext : DbContext, ICoProjectContext
         builder.Entity<Project>()
             .HasMany(project => project.Tags)
             .WithMany(tag => tag.Projects);
+
+        builder.Entity<Project>()
+            .HasMany(project => project.Users)
+            .WithMany(user => user.Projects);
     }
 }
