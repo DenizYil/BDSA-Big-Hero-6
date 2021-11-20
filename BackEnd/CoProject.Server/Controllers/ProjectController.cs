@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace CoProject.Server.Controllers;
+﻿namespace CoProject.Server.Controllers;
 
 // THIS SHOULD BE REPLACED BY REAL PROJECT CLASS
 // FROM INFRASTRUCTURE
@@ -15,15 +13,19 @@ public class Project
 public class ProjectController
 {
 
-    [HttpGet]
-    public IEnumerable<Project> GetProjects()
+    private readonly IProjectRepository _projectRepository;
+
+    public ProjectController(IProjectRepository projectRepository)
     {
-        return new List<Project>();
-
+        _projectRepository = projectRepository;
     }
-
+    
     [HttpGet]
-    [Route("{id}")]
+    public async Task<IEnumerable<ProjectDTO>> GetProjects()
+        => await _projectRepository.ReadAll();
+    
+
+    [HttpGet("{id}")]
     public Project GetProject(int id)
     {
         return new Project() { Id = id };
@@ -38,6 +40,13 @@ public class ProjectController
     [HttpPut]
     [Route("{id}")]
     public Project ChangeProject(int id, Project p)
+    {
+        return new Project() { Id = id, Name = p.Name };
+    }
+
+    [HttpPut]
+    [Route("{id}")]
+    public Project AddUserToProject(int id, Project p)
     {
         return new Project() { Id = id, Name = p.Name };
     }
