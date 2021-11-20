@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoProject.Infrastructure;
 
+#pragma warning disable CS8618
+
 public class CoProjectContext : DbContext, ICoProjectContext
 {
     public DbSet<Project> Projects { get; set; }

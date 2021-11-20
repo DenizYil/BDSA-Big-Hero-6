@@ -2,6 +2,8 @@ using CoProject.Infrastructure.Entities;
 
 namespace CoProject.Infrastructure.DTOs;
 
+#pragma warning disable CS8618
+
 public record ProjectCreateDTO 
 {
     public string Name { get; init; }

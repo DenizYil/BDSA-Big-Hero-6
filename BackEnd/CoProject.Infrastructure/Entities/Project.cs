@@ -1,5 +1,7 @@
 namespace CoProject.Infrastructure.Entities;
 
+#pragma warning disable CS8618
+
 public class Project
 {
     public int Id { get; set; }
