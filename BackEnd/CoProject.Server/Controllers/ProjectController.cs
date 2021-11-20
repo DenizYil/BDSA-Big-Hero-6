@@ -44,13 +44,6 @@ public class ProjectController
         return new Project() { Id = id, Name = p.Name };
     }
 
-    [HttpPut]
-    [Route("{id}")]
-    public Project AddUserToProject(int id, Project p)
-    {
-        return new Project() { Id = id, Name = p.Name };
-    }
-    
     [HttpDelete]
     [Route("{id}")]
     public Project DeleteProject(int id)
