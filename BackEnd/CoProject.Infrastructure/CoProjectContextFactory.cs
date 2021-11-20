@@ -1,5 +1,4 @@
-﻿using CoProject.Server;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace CoProject.Infrastructure;
@@ -10,7 +9,7 @@ public class CoProjectContextFactory : IDesignTimeDbContextFactory<CoProjectCont
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddUserSecrets<Program>()
+            .AddUserSecrets<CoProjectContext>()
             .Build();
 
         var connectionString = configuration.GetConnectionString("CoProject");

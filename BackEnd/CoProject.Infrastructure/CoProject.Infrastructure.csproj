@@ -4,8 +4,8 @@
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-
-        <OutputType>Library</OutputType>
+        <UserSecretsId>9441625f-1508-4458-a122-7af10d0dde6f</UserSecretsId>
+        <OutputType>library</OutputType>
     </PropertyGroup>
 
     <ItemGroup>
@@ -13,12 +13,13 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         <PrivateAssets>all</PrivateAssets>
       </PackageReference>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
       <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CoProject.Server\CoProject.Server.csproj" />
+      <Folder Include="Migrations" />
     </ItemGroup>
 
 </Project>

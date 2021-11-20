@@ -9,7 +9,7 @@ public record ProjectCreateDTO
     public int SupervisorId { get; init; }
     public int? Min { get; init; }
     public int? Max { get; init; }
-    //public IEnumerable<string> Tags { get; init; }
+    public IReadOnlyCollection<string> Tags { get; init; }
     public State State { get; init; }
 }
 
@@ -20,4 +20,13 @@ public record ProjectDTO : ProjectCreateDTO
 }
 
 // TODO: Tjek om det her er en god idé?
-public record ProjectUpdateDTO : ProjectDTO;
+public record ProjectUpdateDTO
+{
+    public int Id { get; init; }
+    public string? Name { get; init; }
+    public string? Description { get; init; }
+    public int? Min { get; init; }
+    public int? Max { get; init; }
+    public State? State { get; init; }
+    public IReadOnlyCollection<string>? Tags { get; init; }
+}
