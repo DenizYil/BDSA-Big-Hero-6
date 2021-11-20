@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoProject.Infrastructure.Migrations
 {
     [DbContext(typeof(CoProjectContext))]
-    [Migration("20211119230522_EntitiesV1")]
+    [Migration("20211120173909_EntitiesV1")]
     partial class EntitiesV1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,25 +136,6 @@ namespace CoProject.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("CoProject.Infrastructure.Entities.UserJoined", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserJoined");
-                });
-
             modelBuilder.Entity("ProjectTag", b =>
                 {
                     b.Property<int>("ProjectsId")
@@ -170,6 +151,21 @@ namespace CoProject.Infrastructure.Migrations
                     b.ToTable("ProjectTag");
                 });
 
+            modelBuilder.Entity("ProjectUser", b =>
+                {
+                    b.Property<int>("ProjectsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ProjectUser");
+                });
+
             modelBuilder.Entity("ProjectTag", b =>
                 {
                     b.HasOne("CoProject.Infrastructure.Entities.Project", null)
@@ -181,6 +177,21 @@ namespace CoProject.Infrastructure.Migrations
                     b.HasOne("CoProject.Infrastructure.Entities.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjectUser", b =>
+                {
+                    b.HasOne("CoProject.Infrastructure.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoProject.Infrastructure.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
