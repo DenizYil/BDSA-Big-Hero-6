@@ -27,6 +27,7 @@ public class ProjectRepository : IProjectRepository
                 Min = p.Min,
                 Max = p.Max,
                 State = p.State,
+                Tags = p.Tags.Select(tag => tag.Name).ToList()
             })
             .FirstOrDefaultAsync();
     }
@@ -44,28 +45,13 @@ public class ProjectRepository : IProjectRepository
                 Min = p.Min,
                 Max = p.Max,
                 State = p.State,
+                Tags = p.Tags.Select(tag => tag.Name).ToList()
             })
             .ToListAsync();
     }
 
     public async Task<(Status, int)> Create(ProjectCreateDTO create)
     {
-        var tags = new List<Tag>();
-
-        foreach (var tagName in create.Tags)
-        {
-            var tag = await _context.Tags.FirstOrDefaultAsync(tag => tag.Name == tagName);
-
-            if (tag == null)
-            {
-                tag = new Tag {Name = tagName};
-                await _context.Tags.AddAsync(tag);
-                await _context.SaveChangesAsync();
-            }
-            
-            tags.Add(tag);
-        }
-        
         var project = new Project{
             Name = create.Name,
             Description = create.Description,
@@ -73,7 +59,7 @@ public class ProjectRepository : IProjectRepository
             SupervisorId = create.SupervisorId, 
             Min = create.Min, 
             Max = create.Max, 
-            Tags = tags, 
+            Tags = await GetTagsFromNames(create.Tags), 
             //Users = new IReadOnlyCollection<User>(), 
             State = create.State
         };
@@ -116,6 +102,11 @@ public class ProjectRepository : IProjectRepository
             project.State = update.State.Value;
         }
 
+        if (update.Tags != null && update.Tags.All(project.Tags.Select(tag => tag.Name).Contains))
+        {
+            project.Tags = await GetTagsFromNames(update.Tags);
+        }
+
         await _context.SaveChangesAsync();
         return Status.Updated;
     }
@@ -133,5 +124,30 @@ public class ProjectRepository : IProjectRepository
 
         await _context.SaveChangesAsync();
         return Status.Deleted;
+    }
+    
+    /*
+     * HELPER METHODS
+     */
+
+    private async Task<IReadOnlyCollection<Tag>> GetTagsFromNames(IEnumerable<string> names)
+    {
+        var tags = new List<Tag>();
+
+        foreach (var tagName in names)
+        {
+            var tag = await _context.Tags.FirstOrDefaultAsync(tag => tag.Name == tagName);
+
+            if (tag == null)
+            {
+                tag = new Tag {Name = tagName};
+                await _context.Tags.AddAsync(tag);
+                await _context.SaveChangesAsync();
+            }
+            
+            tags.Add(tag);
+        }
+
+        return tags;
     }
 }

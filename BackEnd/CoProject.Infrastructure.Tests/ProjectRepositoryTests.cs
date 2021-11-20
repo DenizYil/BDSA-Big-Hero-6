@@ -1,5 +1,4 @@
-using System.Linq;
-using NuGet.Frameworks;
+using FluentAssertions;
 
 namespace CoProject.Infrastructure.Tests;
 
@@ -44,7 +43,8 @@ public class ProjectRepositoryTests
             Description = "yep hehe smiley",
             SupervisorId = 1,
             Created = now,
-            State = State.Open
+            State = State.Open,
+            Tags = new List<Tag>()
         };
 
         var expected = new ProjectDTO
@@ -54,7 +54,8 @@ public class ProjectRepositoryTests
             Description = "yep hehe smiley",
             SupervisorId = 1,
             Created = now,
-            State = State.Open
+            State = State.Open,
+            Tags = new List<string>()
         };
 
         await _context.Projects.AddAsync(project);
@@ -64,7 +65,7 @@ public class ProjectRepositoryTests
         var actual = await _repo.Read(1);
 
         //Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -82,7 +83,8 @@ public class ProjectRepositoryTests
                 Description = "yep hehe smiley",
                 SupervisorId = 1,
                 Created = now,
-                State = State.Open
+                State = State.Open,
+                Tags = new List<string>()
             },
             new()
             {
@@ -91,7 +93,8 @@ public class ProjectRepositoryTests
                 Description = "This is another cool description",
                 SupervisorId = 2,
                 Created = now,
-                State = State.Open
+                State = State.Open,
+                Tags = new List<string>()
             }
         };
 
@@ -103,7 +106,8 @@ public class ProjectRepositoryTests
                 Description = "yep hehe smiley",
                 SupervisorId = 1,
                 Created = now,
-                State = State.Open
+                State = State.Open,
+                Tags = new List<Tag>()
             },
             new Project
             {
@@ -112,7 +116,8 @@ public class ProjectRepositoryTests
                 Description = "This is another cool description",
                 SupervisorId = 2,
                 Created = now,
-                State = State.Open
+                State = State.Open,
+                Tags = new List<Tag>()
             }
         );
         await _context.SaveChangesAsync();
@@ -121,7 +126,7 @@ public class ProjectRepositoryTests
         var actual = await _repo.ReadAll();
 
         //Assert
-        Assert.Equal(expected, actual);
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
@@ -142,7 +147,7 @@ public class ProjectRepositoryTests
         // Arrange
         var expected = Status.Updated;
 
-        _context.Projects.Add(new Project
+        await _context.Projects.AddAsync(new Project
         {
             Id = 1,
             Name = "Phillip",
@@ -188,7 +193,6 @@ public class ProjectRepositoryTests
         await _repo.Update(update);
 
         var actual = await _context.Projects.FirstOrDefaultAsync(p => p.Id == 5);
-
 
         var expected = new Project
         {
