@@ -204,17 +204,7 @@ public class ProjectRepositoryTests
             Created = now
         };
 
-        Assert.NotNull(actual);
-        Assert.Equal(expected.Id, actual.Id);
-        Assert.Equal(expected.Name, actual.Name);
-        Assert.Equal(expected.Description, actual.Description);
-        Assert.Equal(expected.Created, actual.Created);
-        Assert.Equal(expected.SupervisorId, actual.SupervisorId);
-        Assert.Equal(expected.Min, actual.Min);
-        Assert.Equal(expected.Max, actual.Max);
-        Assert.Equal(expected.State, actual.State);
-
-        // TODO: undersøg hvorfor man ikke bare kan assert objects
+        actual.Should().BeEquivalentTo(expected);
     }
 
     [Fact]
