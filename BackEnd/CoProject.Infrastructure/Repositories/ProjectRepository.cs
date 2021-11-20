@@ -13,11 +13,11 @@ public class ProjectRepository : IProjectRepository
         _context = context;
     }
 
-    public async Task<ProjectDTO?> Read(int id)
+    public async Task<ProjectDetailsDTO?> Read(int id)
     {
         return await _context.Projects
             .Where(p => p.Id == id)
-            .Select(p => new ProjectDTO
+            .Select(p => new ProjectDetailsDTO
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -38,10 +38,10 @@ public class ProjectRepository : IProjectRepository
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<ProjectDTO>> ReadAll()
+    public async Task<IEnumerable<ProjectDetailsDTO>> ReadAll()
     {
         return await _context.Projects
-            .Select(p => new ProjectDTO
+            .Select(p => new ProjectDetailsDTO
             {
                 Id = p.Id,
                 Name = p.Name,

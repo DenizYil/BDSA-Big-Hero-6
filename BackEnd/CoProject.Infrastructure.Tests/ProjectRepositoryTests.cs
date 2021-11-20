@@ -48,7 +48,7 @@ public class ProjectRepositoryTests
             Users = new List<User>()
         };
 
-        var expected = new ProjectDTO
+        var expected = new ProjectDetailsDTO
         {
             Id = 1,
             Name = "Karl",
@@ -76,7 +76,7 @@ public class ProjectRepositoryTests
         //Arrange
         var now = DateTime.Now;
 
-        var expected = new List<ProjectDTO>
+        var expected = new List<ProjectDetailsDTO>
         {
             new()
             {

@@ -16,14 +16,13 @@ public record ProjectCreateDTO
     public IReadOnlyCollection<string> Tags { get; init; }
 }
 
-public record ProjectDTO : ProjectCreateDTO
+public record ProjectDetailsDTO : ProjectCreateDTO
 {
     public int Id { get; init; }
     public DateTime Created { get; init; }
     public IReadOnlyCollection<UserDTO> Users { get; init; }
 }
 
-// TODO: Tjek om det her er en god idé?
 public record ProjectUpdateDTO
 {
     public int Id { get; init; }
