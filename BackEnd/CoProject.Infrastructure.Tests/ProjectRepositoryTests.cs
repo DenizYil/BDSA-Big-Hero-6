@@ -44,7 +44,8 @@ public class ProjectRepositoryTests
             SupervisorId = 1,
             Created = now,
             State = State.Open,
-            Tags = new List<Tag>()
+            Tags = new List<Tag>(),
+            Users = new List<User>()
         };
 
         var expected = new ProjectDTO
@@ -55,7 +56,8 @@ public class ProjectRepositoryTests
             SupervisorId = 1,
             Created = now,
             State = State.Open,
-            Tags = new List<string>()
+            Tags = new List<string>(),
+            Users = new List<UserDTO>()
         };
 
         await _context.Projects.AddAsync(project);
@@ -84,7 +86,8 @@ public class ProjectRepositoryTests
                 SupervisorId = 1,
                 Created = now,
                 State = State.Open,
-                Tags = new List<string>()
+                Tags = new List<string>(),
+                Users = new List<UserDTO>()
             },
             new()
             {
@@ -94,7 +97,8 @@ public class ProjectRepositoryTests
                 SupervisorId = 2,
                 Created = now,
                 State = State.Open,
-                Tags = new List<string>()
+                Tags = new List<string>(),
+                Users = new List<UserDTO>()
             }
         };
 
@@ -107,7 +111,8 @@ public class ProjectRepositoryTests
                 SupervisorId = 1,
                 Created = now,
                 State = State.Open,
-                Tags = new List<Tag>()
+                Tags = new List<Tag>(),
+                Users = new List<User>()
             },
             new Project
             {
@@ -117,7 +122,8 @@ public class ProjectRepositoryTests
                 SupervisorId = 2,
                 Created = now,
                 State = State.Open,
-                Tags = new List<Tag>()
+                Tags = new List<Tag>(),
+                Users = new List<User>()
             }
         );
         await _context.SaveChangesAsync();

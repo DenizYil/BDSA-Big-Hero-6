@@ -27,7 +27,13 @@ public class ProjectRepository : IProjectRepository
                 Min = p.Min,
                 Max = p.Max,
                 State = p.State,
-                Tags = p.Tags.Select(tag => tag.Name).ToList()
+                Tags = p.Tags.Select(tag => tag.Name).ToList(),
+                Users = p.Users.Select(user => new UserDTO
+                {
+                    Name = user.NormalizedUserName,
+                    UserName = user.UserName,
+                    Email = user.Email
+                }).ToList()
             })
             .FirstOrDefaultAsync();
     }
@@ -45,7 +51,13 @@ public class ProjectRepository : IProjectRepository
                 Min = p.Min,
                 Max = p.Max,
                 State = p.State,
-                Tags = p.Tags.Select(tag => tag.Name).ToList()
+                Tags = p.Tags.Select(tag => tag.Name).ToList(),
+                Users = p.Users.Select(user => new UserDTO
+                {
+                    Name = user.NormalizedUserName,
+                    UserName = user.UserName,
+                    Email = user.Email
+                }).ToList()
             })
             .ToListAsync();
     }
@@ -60,7 +72,7 @@ public class ProjectRepository : IProjectRepository
             Min = create.Min, 
             Max = create.Max, 
             Tags = await GetTagsFromNames(create.Tags), 
-            //Users = new IReadOnlyCollection<User>(), 
+            Users = new List<User>(), 
             State = create.State
         };
         await _context.Projects.AddAsync(project);
