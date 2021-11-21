@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CoProject.Server.Tests.Controllers;
 
@@ -8,7 +9,7 @@ public class ProjectControllerTests
     public async void GetProjects_returns_all_projects()
     {
         //Arrange
-        var expected = Array.Empty<ProjectDTO>();
+        var expected = Array.Empty<ProjectDetailsDTO>();
         var repository = new Mock<IProjectRepository>();
         repository.Setup(m => m.ReadAll()).ReturnsAsync(expected);
         var controller = new ProjectController(repository.Object);
@@ -16,21 +17,42 @@ public class ProjectControllerTests
         
         //Act
         var actual = await controller.GetProjects();
-        //Assert
         
+        //Assert
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
-    public void GetProject_returns_an_existing_project_given_id()
+    public async Task GetProject_returns_project_given_id()
     {
-        throw new NotImplementedException();
+        //Arrange
+        var repository = new Mock<IProjectRepository>();
+        var project = new ProjectDetailsDTO(){Id = 1, Description = "this is a test project"};
+        repository.Setup(m => m.Read(1)).ReturnsAsync(project);
+        var controller = new ProjectController(repository.Object);
+
+        //Act
+        var actual = await controller.GetProject(1);
+        
+        //Assert
+        Assert.Equal(project, actual.Value);
     }
     
     [Fact]
-    public void GetProject_returns_a_nonexisting_project_given_id()
+    public async Task GetProject_returns_notfound_given_nonexistent_id()
     {
-        throw new NotImplementedException();
+        //Arrange
+        var expected = Array.Empty<ProjectDetailsDTO>();
+        var repository = new Mock<IProjectRepository>();
+        repository.Setup(m => m.Read(100)).ReturnsAsync(default(ProjectDetailsDTO));
+        var controller = new ProjectController(repository.Object);
+        
+        
+        //Act
+        var actual = await controller.GetProjects();
+        
+        //Assert
+        Assert.Equal(expected, actual);
     }
     
     [Fact]
@@ -72,8 +94,17 @@ public class ProjectControllerTests
     }
     
     [Fact]
-    public void DeleteProject_deletes_a_projects_given_id_and_returns_status_code_204()
+    public async void DeleteProject_deletes_a_projects_given_id_and_returns_status_code_204()
     {
-        throw new NotImplementedException();
+        // Arrange
+        var repository = new Mock<IProjectRepository>();
+        repository.Setup(m => m.Delete(1)).ReturnsAsync(Status.Deleted);
+        var controller = new ProjectController(repository.Object);
+
+        // Act
+        var response = await controller.DeleteProject(1);
+
+        // Assert
+        Assert.IsType<NoContentResult>(response);
     }
 }

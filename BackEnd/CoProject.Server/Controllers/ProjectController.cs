@@ -7,29 +7,29 @@
 [Route("projects")]
 public class ProjectController : ControllerBase
 {
-
     private readonly IProjectRepository _projectRepository;
 
     public ProjectController(IProjectRepository projectRepository)
     {
         _projectRepository = projectRepository;
     }
-    
-    [HttpGet]
-    public async Task<IEnumerable<ProjectDTO>> GetProjects()
-        => await _projectRepository.ReadAll();
 
+    [HttpGet("projects")]
+    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjects()
+        => await _projectRepository.ReadAll();
+    
     [ProducesResponseType(404)]
+    [ProducesResponseType(typeof(ProjectDetailsDTO), 200)]
     [HttpGet("{id}")]
-    public async Task<ProjectDTO?> GetProject(int id)
+    public async Task<ActionResult<ProjectDetailsDTO?>> GetProject(int id)
         => await _projectRepository.Read(id);
 
     [HttpPost]
     public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
-        var (_, id) = await _projectRepository.Create(project);
+        var projectDetailsDto = await _projectRepository.Create(project);
 
-        return CreatedAtRoute(nameof(GetProject), new {Id = id}, null);
+        return CreatedAtRoute(nameof(GetProject), new {Id = projectDetailsDto.Id}, projectDetailsDto);
     }
 
 
@@ -47,11 +47,25 @@ public class ProjectController : ControllerBase
         return NotFound();
     }
 
-    
-    [HttpDelete]
-    [Route("{id}")]
-    public Project DeleteProject(int id)
+    [HttpPut("{ProjectId}/{UserId}")]
+    public Task<IActionResult> AddUserToProject()
     {
-        return new Project() { Id = id };
+        throw new NotImplementedException();
+    }
+
+
+    [HttpDelete("{id}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> DeleteProject(int id)
+    {
+        var response = await _projectRepository.Delete(id);
+
+        if (response == Status.Deleted)
+        {
+            return NoContent();
+        }
+
+        return NotFound();
     }
 }
