@@ -87,11 +87,7 @@ public class ProjectRepository : IProjectRepository
             Min = project.Min, 
             Max = project.Max, 
             Tags = project.Tags.Select(tag => tag.Name).ToList(), 
-            Users = project.Users.Select(u => new UserDTO{
-                Name = u.NormalizedUserName, 
-                UserName = u.UserName, 
-                Email = u.Email
-            }).ToList(), 
+            Users = new List<UserDTO>(), 
             State = project.State
         };
     }
