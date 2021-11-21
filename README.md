@@ -1,4 +1,4 @@
-# BDSA Big Hero 6 ![codecov](https://codecov.io/gh/DenizYil/BDSA-Big-Hero-6/branch/main/graph/badge.svg) ![workflow](https://github.com/DenizYil/BDSA-Big-Hero-6/actions/workflows/build-and-test.yml/badge.svg) ![license](https://img.shields.io/github/license/DenizYil/BDSA-Big-Hero-6.svg)
+# BDSA Big Hero 6 [![codecov](https://codecov.io/gh/DenizYil/BDSA-Big-Hero-6/branch/main/graph/badge.svg)](https://app.codecov.io/gh/DenizYil/BDSA-Big-Hero-6/) ![workflow](https://github.com/DenizYil/BDSA-Big-Hero-6/actions/workflows/build-and-test.yml/badge.svg) ![license](https://img.shields.io/github/license/DenizYil/BDSA-Big-Hero-6.svg)
 
 
 ### Overleaf: 
