@@ -31,7 +31,7 @@ jobs:
         with:
           file: ./CoverageResults/coverage.opencover.xml
           flags: unittests
-        fail_ci_if_error: true
+          fail_ci_if_error: true
 # FRONTEND TASKS
       - name: Install dependencies
         working-directory: ./FrontEnd
