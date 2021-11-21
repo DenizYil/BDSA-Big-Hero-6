@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace CoProject.Infrastructure;
-
+[ExcludeFromCodeCoverage]
 public class CoProjectContextFactory : IDesignTimeDbContextFactory<CoProjectContext>
 {
     public CoProjectContext CreateDbContext(string[] args)

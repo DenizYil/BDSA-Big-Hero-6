@@ -220,7 +220,6 @@ public class ProjectRepositoryTests
             Min = 3,
             Max = 7,
             Tags = new List<Tag>{project.Tags.ElementAt(0)},
-            //ags = new List<Tag>{new Tag {Id = 2, Name = "C#", Projects = new List<Project>()}},
             State = State.Hidden,
             SupervisorId = 2,
             Created = now
@@ -233,7 +232,6 @@ public class ProjectRepositoryTests
     public async void Create_Project_Given_ProjectCreateDTO_Returns_ProjectDetailsDTO()
     {
         //Arrange
-        
         var createProject = new ProjectCreateDTO
         {
             Name = "CoolProject",
