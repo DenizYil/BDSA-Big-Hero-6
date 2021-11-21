@@ -2,15 +2,10 @@
 
 // THIS SHOULD BE REPLACED BY REAL PROJECT CLASS
 // FROM INFRASTRUCTURE
-public class Project
-{
-    public string? Name { get; init; }
-    public int? Id { get; init; }
-}
 
 [ApiController]
 [Route("projects")]
-public class ProjectController
+public class ProjectController : ControllerBase
 {
 
     private readonly IProjectRepository _projectRepository;
@@ -23,27 +18,36 @@ public class ProjectController
     [HttpGet]
     public async Task<IEnumerable<ProjectDTO>> GetProjects()
         => await _projectRepository.ReadAll();
-    
 
+    [ProducesResponseType(404)]
     [HttpGet("{id}")]
-    public Project GetProject(int id)
-    {
-        return new Project() { Id = id };
-    }
+    public async Task<ProjectDTO?> GetProject(int id)
+        => await _projectRepository.Read(id);
 
     [HttpPost]
-    public Project CreateProject(Project p)
+    public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
-        return new Project() { Id = p.Id, Name = p.Name};
-    }
-    
-    [HttpPut]
-    [Route("{id}")]
-    public Project ChangeProject(int id, Project p)
-    {
-        return new Project() { Id = id, Name = p.Name };
+        var (_, id) = await _projectRepository.Create(project);
+
+        return CreatedAtRoute(nameof(GetProject), new {Id = id}, null);
     }
 
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO project)
+    {
+        var response = await _projectRepository.Update(project);
+        
+
+        if (response == Status.Updated)
+        {
+            return NoContent();
+        }
+
+        return NotFound();
+    }
+
+    
     [HttpDelete]
     [Route("{id}")]
     public Project DeleteProject(int id)
