@@ -1,4 +1,4 @@
-# BDSA-Big-Hero-6
+# BDSA-Big-Hero-6 [![codecov](https://codecov.io/gh/DenizYil/BDSA-Big-Hero-6/branch/main/graph/badge.svg)]
 
 ### Overleaf: https://www.overleaf.com/project/617ba189bf8b0297698f95b4
 
