@@ -28,9 +28,8 @@ jobs:
         run: dotnet test /p:CollectCoverage=true /p:CoverletOutput='../result.json' --no-restore --verbosity normal
       - name: Upload coverage to Codecov  
         uses: codecov/codecov-action@v1
-        working-directory: ./BackEnd
         with:
-          file: result.json
+          file: ./BackEnd/result.json
           flags: unittests
           fail_ci_if_error: true
 # FRONTEND TASKS
