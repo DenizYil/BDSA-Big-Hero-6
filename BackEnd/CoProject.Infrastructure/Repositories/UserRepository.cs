@@ -14,12 +14,27 @@ public class UserRepository : IUserRepository
     
     public async Task<UserDetailsDTO?> Read(int id)
     {
-        throw new NotImplementedException();
+        return await _context.Users
+            .Where(u => u.Id == id)
+            .Select(u => new UserDetailsDTO
+            {
+                UserName = u.NormalizedUserName,
+                Email = u.Email,
+                Name = u.UserName
+            })
+            .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<UserDetailsDTO>> ReadAll()
     {
-        throw new NotImplementedException();
+        return await _context.Users
+            .Select(u => new UserDetailsDTO
+            {
+                UserName = u.NormalizedUserName,
+                Email = u.Email,
+                Name = u.UserName
+            })
+            .ToListAsync();
     }
 
     public async Task<UserDetailsDTO> Create(UserCreateDTO create)

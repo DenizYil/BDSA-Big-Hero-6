@@ -28,7 +28,7 @@ public class ProjectRepository : IProjectRepository
                 Max = p.Max,
                 State = p.State,
                 Tags = p.Tags.Select(tag => tag.Name).ToList(),
-                Users = p.Users.Select(user => new UserDTO
+                Users = p.Users.Select(user => new UserDetailsDTO()
                 {
                     Name = user.NormalizedUserName,
                     UserName = user.UserName,
@@ -52,7 +52,7 @@ public class ProjectRepository : IProjectRepository
                 Max = p.Max,
                 State = p.State,
                 Tags = p.Tags.Select(tag => tag.Name).ToList(),
-                Users = p.Users.Select(user => new UserDTO
+                Users = p.Users.Select(user => new UserDetailsDTO()
                 {
                     Name = user.NormalizedUserName,
                     UserName = user.UserName,
@@ -87,7 +87,7 @@ public class ProjectRepository : IProjectRepository
             Min = project.Min, 
             Max = project.Max, 
             Tags = project.Tags.Select(tag => tag.Name).ToList(), 
-            Users = project.Users.Select(u => new UserDTO{
+            Users = project.Users.Select(u => new UserDetailsDTO(){
                 Name = u.NormalizedUserName, 
                 UserName = u.UserName, 
                 Email = u.Email

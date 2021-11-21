@@ -59,7 +59,7 @@ public class ProjectRepositoryTests
             Created = now,
             State = State.Open,
             Tags = new List<string>(),
-            Users = new List<UserDTO>()
+            Users = new List<UserDetailsDTO>()
         };
 
         await _context.Projects.AddAsync(project);
@@ -89,7 +89,7 @@ public class ProjectRepositoryTests
                 Created = now,
                 State = State.Open,
                 Tags = new List<string>(),
-                Users = new List<UserDTO>()
+                Users = new List<UserDetailsDTO>()
             },
             new()
             {
@@ -100,7 +100,7 @@ public class ProjectRepositoryTests
                 Created = now,
                 State = State.Open,
                 Tags = new List<string>(),
-                Users = new List<UserDTO>()
+                Users = new List<UserDetailsDTO>()
             }
         };
 
@@ -238,7 +238,7 @@ public class ProjectRepositoryTests
         {
             Id = 1,
             Created = actual.Created, //right?
-            Users = new List<UserDTO>(),
+            Users = new List<UserDetailsDTO>(),
             Name = "CoolProject",
             Description = "Description for the Coolest Project",
             SupervisorId = 5,
