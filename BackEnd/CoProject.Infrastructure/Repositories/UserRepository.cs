@@ -1,4 +1,5 @@
 ﻿using CoProject.Infrastructure.DTOs;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Infrastructure.Repositories;
 
@@ -33,6 +34,16 @@ public class UserRepository : IUserRepository
 
     public async Task<Status> Delete(int id)
     {
-        throw new NotImplementedException();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+
+        if (user == null)
+        {
+            return Status.NotFound;
+        }
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return Status.Deleted;
     }
 }
