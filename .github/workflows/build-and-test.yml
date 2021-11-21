@@ -25,7 +25,13 @@ jobs:
         run: dotnet build --configuration Release --no-restore
       - name: Test
         working-directory: ./BackEnd
-        run: dotnet test --no-restore --verbosity normal
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='../result.xml' --no-restore --verbosity normal
+      - name: Upload coverage to Codecov  
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./BackEnd/result.xml
+          flags: unittests
+          fail_ci_if_error: true
 # FRONTEND TASKS
       - name: Install dependencies
         working-directory: ./FrontEnd

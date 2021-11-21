@@ -13,11 +13,11 @@ public class ProjectRepository : IProjectRepository
         _context = context;
     }
 
-    public async Task<ProjectDTO?> Read(int id)
+    public async Task<ProjectDetailsDTO?> Read(int id)
     {
         return await _context.Projects
             .Where(p => p.Id == id)
-            .Select(p => new ProjectDTO
+            .Select(p => new ProjectDetailsDTO
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -27,15 +27,21 @@ public class ProjectRepository : IProjectRepository
                 Min = p.Min,
                 Max = p.Max,
                 State = p.State,
-                Tags = p.Tags.Select(tag => tag.Name).ToList()
+                Tags = p.Tags.Select(tag => tag.Name).ToList(),
+                Users = p.Users.Select(user => new UserDTO
+                {
+                    Name = user.NormalizedUserName,
+                    UserName = user.UserName,
+                    Email = user.Email
+                }).ToList()
             })
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<ProjectDTO>> ReadAll()
+    public async Task<IEnumerable<ProjectDetailsDTO>> ReadAll()
     {
         return await _context.Projects
-            .Select(p => new ProjectDTO
+            .Select(p => new ProjectDetailsDTO
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -45,27 +51,45 @@ public class ProjectRepository : IProjectRepository
                 Min = p.Min,
                 Max = p.Max,
                 State = p.State,
-                Tags = p.Tags.Select(tag => tag.Name).ToList()
+                Tags = p.Tags.Select(tag => tag.Name).ToList(),
+                Users = p.Users.Select(user => new UserDTO
+                {
+                    Name = user.NormalizedUserName,
+                    UserName = user.UserName,
+                    Email = user.Email
+                }).ToList()
             })
             .ToListAsync();
     }
 
-    public async Task<(Status, int)> Create(ProjectCreateDTO create)
+    public async Task<ProjectDetailsDTO> Create(ProjectCreateDTO create)
     {
+        var now = DateTime.Now;
         var project = new Project{
             Name = create.Name,
             Description = create.Description,
-            Created = DateTime.Now,
+            Created = now,
             SupervisorId = create.SupervisorId, 
             Min = create.Min, 
             Max = create.Max, 
             Tags = await GetTagsFromNames(create.Tags), 
-            //Users = new IReadOnlyCollection<User>(), 
+            Users = new List<User>(), 
             State = create.State
         };
         await _context.Projects.AddAsync(project);
         await _context.SaveChangesAsync();
-        return (Status.Created, project.Id);
+        return new ProjectDetailsDTO {
+            Id = project.Id,
+            Name = project.Name,
+            Description = project.Description,
+            Created = now,
+            SupervisorId = project.SupervisorId, 
+            Min = project.Min, 
+            Max = project.Max, 
+            Tags = project.Tags.Select(tag => tag.Name).ToList(), 
+            Users = new List<UserDTO>(), 
+            State = project.State
+        };
     }
     
     public async Task<Status> Update(ProjectUpdateDTO update)
