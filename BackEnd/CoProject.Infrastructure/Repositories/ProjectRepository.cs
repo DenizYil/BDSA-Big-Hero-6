@@ -62,12 +62,13 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync();
     }
 
-    public async Task<(Status, int)> Create(ProjectCreateDTO create)
+    public async Task<ProjectDetailsDTO> Create(ProjectCreateDTO create)
     {
+        var now = DateTime.Now;
         var project = new Project{
             Name = create.Name,
             Description = create.Description,
-            Created = DateTime.Now,
+            Created = now,
             SupervisorId = create.SupervisorId, 
             Min = create.Min, 
             Max = create.Max, 
@@ -77,7 +78,22 @@ public class ProjectRepository : IProjectRepository
         };
         await _context.Projects.AddAsync(project);
         await _context.SaveChangesAsync();
-        return (Status.Created, project.Id);
+        return new ProjectDetailsDTO {
+            Id = project.Id,
+            Name = project.Name,
+            Description = project.Description,
+            Created = now,
+            SupervisorId = project.SupervisorId, 
+            Min = project.Min, 
+            Max = project.Max, 
+            Tags = project.Tags.Select(tag => tag.Name).ToList(), 
+            Users = project.Users.Select(u => new UserDTO{
+                Name = u.NormalizedUserName, 
+                UserName = u.UserName, 
+                Email = u.Email
+            }).ToList(), 
+            State = project.State
+        };
     }
     
     public async Task<Status> Update(ProjectUpdateDTO update)

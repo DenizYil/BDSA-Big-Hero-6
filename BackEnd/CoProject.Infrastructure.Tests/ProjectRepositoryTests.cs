@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Runtime.Serialization;
 using FluentAssertions;
 
 namespace CoProject.Infrastructure.Tests;
@@ -214,14 +216,16 @@ public class ProjectRepositoryTests
     }
 
     [Fact]
-    public async void Create_Project_Given_ProjectCreateDTO_Returns_StatusCreated_and_Id()
+    public async void Create_Project_Given_ProjectCreateDTO_Returns_ProjectDetailsDTO()
     {
         //Arrange
-        var expected = (Status.Created, 1);
+        
         var createProject = new ProjectCreateDTO
         {
             Name = "CoolProject",
             Description = "Description for the Coolest Project",
+            SupervisorId = 5,
+            Min = 1,
             Max = 4,
             State = State.Hidden,
             Tags = new List<string>()
@@ -230,8 +234,21 @@ public class ProjectRepositoryTests
         //Act
         var actual = await _repo.Create(createProject);
 
+        var expected = new ProjectDetailsDTO
+        {
+            Id = 1,
+            Created = actual.Created, //right?
+            Users = new List<UserDTO>(),
+            Name = "CoolProject",
+            Description = "Description for the Coolest Project",
+            SupervisorId = 5,
+            Min = 1,
+            Max = 4,
+            State = State.Hidden,
+            Tags = new List<string>()
+        };
         //Assert
-        Assert.Equal(expected, actual);
+        expected.Should().BeEquivalentTo(actual);
     }
 
     [Fact]
@@ -242,17 +259,39 @@ public class ProjectRepositoryTests
             Name = "CoolProject",
             Description = "Description for the Coolest Project",
             Max = 4,
+            SupervisorId = 5,
             State = State.Hidden,
             Tags = new List<string>()
         };
 
         //Act
-        var (status, id) = await _repo.Create(createProject);
-
-        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+        var heh = await _repo.Create(createProject);
+        var project = await _context.Projects.FirstOrDefaultAsync(
+            p => p.Id == heh.Id);
         Assert.NotNull(project);
     }
 
+    [Fact]
+    public async void Create_Adds_Tag_To_DB()
+    {
+    
+        var expected = new List<string> {"AI", "Python"};
+        
+        var createP = new ProjectCreateDTO
+        {
+            Name = "CoolProject",
+            Description = "Description for the Coolest Project",
+            Max = 4,
+            SupervisorId = 5,
+            State = State.Hidden,
+            Tags = new List<string>(){"AI", "Python"}
+        };
+        var xd = await _repo.Create(createP);
+        var actual = _context.Tags.Select(t => t.Name).ToList();
+        
+        Assert.Equal(expected, actual);
+    }
+    
     [Fact]
     public async void Delete_Returns_Not_Found_When_Id_Doesnt_Exist()
     {
