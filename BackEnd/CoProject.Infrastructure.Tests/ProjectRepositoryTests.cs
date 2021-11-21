@@ -187,11 +187,15 @@ public class ProjectRepositoryTests
             SupervisorId = 2,
             Min = 1,
             Max = 5,
-            Tags = new List<Tag>{new Tag {Id = 2, Name = "C#", Projects = new List<Project>()}, new Tag{Id = 3, Name = "F#", Projects = new List<Project>()}},
+            Tags = new List<Tag>
+            {
+                new() {Id = 2, Name = "C#", Projects = new List<Project>()}, 
+                new() {Id = 3, Name = "F#", Projects = new List<Project>()}
+            },
             Created = now,
             State = State.Open
         };
-        _context.Projects.Add(project);
+        await _context.Projects.AddAsync(project);
         await _context.SaveChangesAsync();
 
         var update = new ProjectUpdateDTO
@@ -206,7 +210,7 @@ public class ProjectRepositoryTests
         };
         await _repo.Update(update);
 
-        var actual = await _context.Projects.FirstOrDefaultAsync(p => p.Id == 5);
+        var actual = await _context.Projects.FirstAsync(p => p.Id == 5);
 
         var expected = new Project
         {
@@ -247,7 +251,7 @@ public class ProjectRepositoryTests
         var expected = new ProjectDetailsDTO
         {
             Id = 1,
-            Created = actual.Created, //right?
+            Created = actual.Created,
             Users = new List<UserDTO>(),
             Name = "CoolProject",
             Description = "Description for the Coolest Project",
@@ -262,7 +266,7 @@ public class ProjectRepositoryTests
     }
 
     [Fact]
-    public async void Create_Project_Adds_It_To_DB()
+    public async void Create_Project_Saves_Project_To_Database()
     {
         var createProject = new ProjectCreateDTO
         {
@@ -276,15 +280,13 @@ public class ProjectRepositoryTests
 
         //Act
         var heh = await _repo.Create(createProject);
-        var project = await _context.Projects.FirstOrDefaultAsync(
-            p => p.Id == heh.Id);
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == heh.Id);
         Assert.NotNull(project);
     }
 
     [Fact]
-    public async void Create_Adds_Tag_To_DB()
+    public async void Create_Project_With_Tags_Saves_Tags_To_Database()
     {
-    
         var expected = new List<string> {"AI", "Python"};
         
         var createP = new ProjectCreateDTO
@@ -315,7 +317,7 @@ public class ProjectRepositoryTests
     [Fact]
     public async void Delete_Changes_ProjectState_To_Deleted_When_Id_Is_Found()
     {
-        var project = new Project()
+        var project = new Project
         {
             Id = 1,
             Name = "Deniz sushi",
@@ -329,7 +331,7 @@ public class ProjectRepositoryTests
 
         await _repo.Delete(1);
 
-        project = await _context.Projects.FirstOrDefaultAsync(id => project.Id == 1);
+        project = await _context.Projects.FirstAsync(id => project.Id == 1);
 
         var actual = project.State;
         var expected = State.Deleted;
