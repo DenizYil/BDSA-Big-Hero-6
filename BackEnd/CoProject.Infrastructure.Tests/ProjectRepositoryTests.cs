@@ -185,6 +185,9 @@ public class ProjectRepositoryTests
             Name = "Phillip",
             Description = "This is another cool description",
             SupervisorId = 2,
+            Min = 1,
+            Max = 5,
+            Tags = new List<Tag>{new Tag {Id = 2, Name = "C#", Projects = new List<Project>()}, new Tag{Id = 3, Name = "F#", Projects = new List<Project>()}},
             Created = now,
             State = State.Open
         };
@@ -195,6 +198,9 @@ public class ProjectRepositoryTests
         {
             Id = 5,
             Name = "Deniz",
+            Min = 3,
+            Max = 7,
+            Tags = new List<string>{"C#"},
             Description = "New description",
             State = State.Hidden
         };
@@ -207,12 +213,16 @@ public class ProjectRepositoryTests
             Id = 5,
             Name = "Deniz",
             Description = "New description",
+            Min = 3,
+            Max = 7,
+            Tags = new List<Tag>{project.Tags.ElementAt(0)},
+            //ags = new List<Tag>{new Tag {Id = 2, Name = "C#", Projects = new List<Project>()}},
             State = State.Hidden,
             SupervisorId = 2,
             Created = now
         };
 
-        actual.Should().BeEquivalentTo(expected);
+        expected.Should().BeEquivalentTo(actual);
     }
 
     [Fact]
