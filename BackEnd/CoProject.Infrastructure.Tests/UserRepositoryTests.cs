@@ -133,7 +133,113 @@ public class UserRepositoryTests
         Assert.Equal(expected, await _repo.ReadAll());
         
     }
+
+    [Fact]
+    public async void Update_Given_Non_Existing_UserUpdateDTO_Returning_Status_NotFound()
+    {
+        var expected = Status.NotFound;
+        var actual = await _repo.Update(new UserUpdateDTO()
+        {
+            Id = 1
+        });
+        Assert.Equal(expected, actual);
+    }
     
+    [Fact]
+    public async void Update_Given_Existing_UserUpdateDTO_Returning_Status_Updated()
+    {
+        var expected = Status.Updated;
+        var user = new User()
+        {
+            Id = 1,
+            Email = "me@me.dk",
+            NormalizedEmail = "me@me.dk",
+            Projects = new List<Project>(),
+            Supervisor = true,
+            EmailConfirmed = true,
+            PhoneNumber = "12345678",
+            LockoutEnabled = false,
+            LockoutEnd = null,
+            UserName = "Myself",
+            ConcurrencyStamp = "N/A",
+            PasswordHash = "N/A",
+            SecurityStamp = "N/A",
+            AccessFailedCount = 0,
+            NormalizedUserName = "MyselfButNormalized",
+            PhoneNumberConfirmed = true,
+            TwoFactorEnabled = false
+        };
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+        var actual = await _repo.Update(new UserUpdateDTO()
+        {
+            Id = 1,
+            Name = "YeehaaSelf",
+            Email = "you@you.dk"
+        });
+
+        Assert.Equal(expected, actual);
+
+    }
+    
+    [Fact]
+    public async void Update_actually_updates_User_with_specified_changes()
+    {
+        var user = new User()
+        {
+            Id = 1,
+            Email = "me@me.dk",
+            NormalizedEmail = "me@me.dk",
+            Projects = new List<Project>(),
+            Supervisor = true,
+            EmailConfirmed = true,
+            PhoneNumber = "12345678",
+            LockoutEnabled = false,
+            LockoutEnd = null,
+            UserName = "Myself",
+            ConcurrencyStamp = "N/A",
+            PasswordHash = "N/A",
+            SecurityStamp = "N/A",
+            AccessFailedCount = 0,
+            NormalizedUserName = "MyselfButNormalized",
+            PhoneNumberConfirmed = true,
+            TwoFactorEnabled = false
+        };
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+        await _repo.Update(new UserUpdateDTO()
+        {
+            Id = 1,
+            Name = "YeehaaSelf",
+            Email = "you@you.dk"
+        });
+        
+        var expected = new User()
+        {
+            Id = 1,
+            Email = "you@you.dk",
+            NormalizedEmail = "me@me.dk",
+            Projects = new List<Project>(),
+            Supervisor = true,
+            EmailConfirmed = true,
+            PhoneNumber = "12345678",
+            LockoutEnabled = false,
+            LockoutEnd = null,
+            UserName = "YeehaaSelf",
+            ConcurrencyStamp = "N/A",
+            PasswordHash = "N/A",
+            SecurityStamp = "N/A",
+            AccessFailedCount = 0,
+            NormalizedUserName = "MyselfButNormalized",
+            PhoneNumberConfirmed = true,
+            TwoFactorEnabled = false
+        };
+
+        var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id == 1);
+
+        expected.Should().BeEquivalentTo(actual);
+
+    }
     
     [Fact]
     public async void Delete_returns_NotFound_for_non_existing_id()

@@ -44,7 +44,25 @@ public class UserRepository : IUserRepository
 
     public async Task<Status> Update(UserUpdateDTO update)
     {
-        throw new NotImplementedException();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == update.Id);
+
+        if (user == null)
+        {
+            return Status.NotFound;
+        }
+
+        if (update.Name != user.UserName)
+        {
+            user.UserName = update.Name;
+        }
+
+        if (update.Email != user.Email)
+        {
+            user.Email = update.Email;
+        }
+
+        return Status.Updated;
+
     }
 
     public async Task<Status> Delete(int id)
