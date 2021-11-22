@@ -13,6 +13,36 @@ public class ProjectRepository : IProjectRepository
         _context = context;
     }
 
+    public async Task<ProjectDetailsDTO> Create(ProjectCreateDTO create)
+    {
+        var now = DateTime.Now;
+        var project = new Project{
+            Name = create.Name,
+            Description = create.Description,
+            Created = now,
+            SupervisorId = create.SupervisorId, 
+            Min = create.Min, 
+            Max = create.Max, 
+            Tags = await GetTagsFromNames(create.Tags), 
+            Users = new List<User>(), 
+            State = create.State
+        };
+        await _context.Projects.AddAsync(project);
+        await _context.SaveChangesAsync();
+        return new ProjectDetailsDTO {
+            Id = project.Id,
+            Name = project.Name,
+            Description = project.Description,
+            Created = now,
+            SupervisorId = project.SupervisorId, 
+            Min = project.Min, 
+            Max = project.Max, 
+            Tags = project.Tags.Select(tag => tag.Name).ToList(), 
+            Users = new List<UserDetailsDTO>(), 
+            State = project.State
+        };
+    }
+    
     public async Task<ProjectDetailsDTO?> Read(int id)
     {
         return await _context.Projects
@@ -62,36 +92,6 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync();
     }
 
-    public async Task<ProjectDetailsDTO> Create(ProjectCreateDTO create)
-    {
-        var now = DateTime.Now;
-        var project = new Project{
-            Name = create.Name,
-            Description = create.Description,
-            Created = now,
-            SupervisorId = create.SupervisorId, 
-            Min = create.Min, 
-            Max = create.Max, 
-            Tags = await GetTagsFromNames(create.Tags), 
-            Users = new List<User>(), 
-            State = create.State
-        };
-        await _context.Projects.AddAsync(project);
-        await _context.SaveChangesAsync();
-        return new ProjectDetailsDTO {
-            Id = project.Id,
-            Name = project.Name,
-            Description = project.Description,
-            Created = now,
-            SupervisorId = project.SupervisorId, 
-            Min = project.Min, 
-            Max = project.Max, 
-            Tags = project.Tags.Select(tag => tag.Name).ToList(), 
-            Users = new List<UserDetailsDTO>(), 
-            State = project.State
-        };
-    }
-    
     public async Task<Status> Update(ProjectUpdateDTO update)
     {
         var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == update.Id);

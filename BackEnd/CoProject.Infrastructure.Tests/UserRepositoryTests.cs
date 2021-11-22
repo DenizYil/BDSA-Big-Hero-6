@@ -27,6 +27,75 @@ public class UserRepositoryTests
     }
 
     [Fact]
+    public async void Create_Given_UserCreateDTO_Returns_UserDetailsDTO()
+    {
+        var expected = new UserDetailsDTO()
+        {
+            Id = 1,
+            Name = "Myself",
+            UserName = "MyselfButNormalized",
+            Email = "me@me.dk"
+        };
+        
+        var user = new UserCreateDTO()
+        {
+            Id = 1,
+            Email = "me@me.dk",
+            NormalizedEmail = "me@me.dk",
+            Projects = new List<Project>(),
+            Supervisor = true,
+            EmailConfirmed = true,
+            PhoneNumber = "12345678",
+            LockoutEnabled = false,
+            LockoutEnd = null,
+            UserName = "Myself",
+            ConcurrencyStamp = "N/A",
+            PasswordHash = "N/A",
+            SecurityStamp = "N/A",
+            AccessFailedCount = 0,
+            NormalizedUserName = "MyselfButNormalized",
+            PhoneNumberConfirmed = true,
+            TwoFactorEnabled = false
+        };
+
+        var actual = await _repo.Create(user);
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async void Create_User_Saves_User_To_The_DB()
+    {
+        var userCreateDTO = new UserCreateDTO()
+        {
+            Id = 1,
+            Email = "me@me.dk",
+            NormalizedEmail = "me@me.dk",
+            Projects = new List<Project>(),
+            Supervisor = true,
+            EmailConfirmed = true,
+            PhoneNumber = "12345678",
+            LockoutEnabled = false,
+            LockoutEnd = null,
+            UserName = "Myself",
+            ConcurrencyStamp = "N/A",
+            PasswordHash = "N/A",
+            SecurityStamp = "N/A",
+            AccessFailedCount = 0,
+            NormalizedUserName = "MyselfButNormalized",
+            PhoneNumberConfirmed = true,
+            TwoFactorEnabled = false
+        };
+    
+        var userDetails = await _repo.Create(userCreateDTO);
+
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userDetails.Id);
+        
+        Assert.NotNull(user);
+
+    }
+    
+    [Fact]
     public async void Read_Given_Non_Existing_User()
     {
         Assert.Null(await _repo.Read(1));

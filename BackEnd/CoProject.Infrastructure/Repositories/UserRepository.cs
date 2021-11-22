@@ -1,4 +1,5 @@
 ﻿using CoProject.Infrastructure.DTOs;
+using CoProject.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Infrastructure.Repositories;
@@ -39,7 +40,38 @@ public class UserRepository : IUserRepository
 
     public async Task<UserDetailsDTO> Create(UserCreateDTO create)
     {
-        throw new NotImplementedException();
+        var newUser = new User()
+        {
+            Id = create.Id,
+            Email = create.Email,
+            NormalizedEmail = create.NormalizedEmail,
+            Projects = create.Projects,
+            Supervisor = create.Supervisor,
+            EmailConfirmed = create.EmailConfirmed,
+            PhoneNumber = create.PhoneNumber,
+            LockoutEnabled = create.LockoutEnabled,
+            LockoutEnd = create.LockoutEnd,
+            UserName = create.UserName,
+            ConcurrencyStamp = create.ConcurrencyStamp,
+            PasswordHash = create.PasswordHash,
+            SecurityStamp = create.SecurityStamp,
+            AccessFailedCount = create.AccessFailedCount,
+            NormalizedUserName = create.NormalizedUserName,
+            PhoneNumberConfirmed = create.PhoneNumberConfirmed,
+            TwoFactorEnabled = create.TwoFactorEnabled
+        };
+
+        await _context.Users.AddAsync(newUser);
+        await _context.SaveChangesAsync();
+
+        return new UserDetailsDTO()
+        {
+            Name = create.UserName,
+            Email = create.Email,
+            Id = create.Id,
+            UserName = create.NormalizedUserName
+        };
+
     }
 
     public async Task<Status> Update(UserUpdateDTO update)
