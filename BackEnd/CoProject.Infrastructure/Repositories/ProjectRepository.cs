@@ -13,55 +13,6 @@ public class ProjectRepository : IProjectRepository
         _context = context;
     }
 
-    public async Task<ProjectDetailsDTO?> Read(int id)
-    {
-        return await _context.Projects
-            .Where(p => p.Id == id)
-            .Select(p => new ProjectDetailsDTO
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Created = p.Created,
-                SupervisorId = p.SupervisorId,
-                Min = p.Min,
-                Max = p.Max,
-                State = p.State,
-                Tags = p.Tags.Select(tag => tag.Name).ToList(),
-                Users = p.Users.Select(user => new UserDTO
-                {
-                    Name = user.NormalizedUserName,
-                    UserName = user.UserName,
-                    Email = user.Email
-                }).ToList()
-            })
-            .FirstOrDefaultAsync();
-    }
-
-    public async Task<IEnumerable<ProjectDetailsDTO>> ReadAll()
-    {
-        return await _context.Projects
-            .Select(p => new ProjectDetailsDTO
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Created = p.Created,
-                SupervisorId = p.SupervisorId,
-                Min = p.Min,
-                Max = p.Max,
-                State = p.State,
-                Tags = p.Tags.Select(tag => tag.Name).ToList(),
-                Users = p.Users.Select(user => new UserDTO
-                {
-                    Name = user.NormalizedUserName,
-                    UserName = user.UserName,
-                    Email = user.Email
-                }).ToList()
-            })
-            .ToListAsync();
-    }
-
     public async Task<ProjectDetailsDTO> Create(ProjectCreateDTO create)
     {
         var now = DateTime.Now;
@@ -87,11 +38,60 @@ public class ProjectRepository : IProjectRepository
             Min = project.Min, 
             Max = project.Max, 
             Tags = project.Tags.Select(tag => tag.Name).ToList(), 
-            Users = new List<UserDTO>(), 
+            Users = new List<UserDetailsDTO>(), 
             State = project.State
         };
     }
     
+    public async Task<ProjectDetailsDTO?> Read(int id)
+    {
+        return await _context.Projects
+            .Where(p => p.Id == id)
+            .Select(p => new ProjectDetailsDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Created = p.Created,
+                SupervisorId = p.SupervisorId,
+                Min = p.Min,
+                Max = p.Max,
+                State = p.State,
+                Tags = p.Tags.Select(tag => tag.Name).ToList(),
+                Users = p.Users.Select(user => new UserDetailsDTO()
+                {
+                    Name = user.NormalizedUserName,
+                    UserName = user.UserName,
+                    Email = user.Email
+                }).ToList()
+            })
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<IEnumerable<ProjectDetailsDTO>> ReadAll()
+    {
+        return await _context.Projects
+            .Select(p => new ProjectDetailsDTO
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Created = p.Created,
+                SupervisorId = p.SupervisorId,
+                Min = p.Min,
+                Max = p.Max,
+                State = p.State,
+                Tags = p.Tags.Select(tag => tag.Name).ToList(),
+                Users = p.Users.Select(user => new UserDetailsDTO()
+                {
+                    Name = user.NormalizedUserName,
+                    UserName = user.UserName,
+                    Email = user.Email
+                }).ToList()
+            })
+            .ToListAsync();
+    }
+
     public async Task<Status> Update(ProjectUpdateDTO update)
     {
         var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == update.Id);
