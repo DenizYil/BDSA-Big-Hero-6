@@ -266,10 +266,31 @@ public class ProjectRepositoryTests
                 new() {Id = 2, Name = "C#", Projects = new List<Project>()}, 
                 new() {Id = 3, Name = "F#", Projects = new List<Project>()}
             },
+            Users = new List<User>(),
             Created = now,
             State = State.Open
         };
         await _context.Projects.AddAsync(project);
+        await _context.Users.AddAsync(new User
+        {
+            Id = 1,
+            Email = "me@me.dk",
+            NormalizedEmail = "me@me.dk",
+            Projects = new List<Project>(),
+            Supervisor = true,
+            EmailConfirmed = true,
+            PhoneNumber = "12345678",
+            LockoutEnabled = false,
+            LockoutEnd = null,
+            UserName = "Myself",
+            ConcurrencyStamp = "N/A",
+            PasswordHash = "N/A",
+            SecurityStamp = "N/A",
+            AccessFailedCount = 0,
+            NormalizedUserName = "MyselfButNormalized",
+            PhoneNumberConfirmed = true,
+            TwoFactorEnabled = false
+        });
         await _context.SaveChangesAsync();
 
         var update = new ProjectUpdateDTO
@@ -279,6 +300,7 @@ public class ProjectRepositoryTests
             Min = 3,
             Max = 7,
             Tags = new List<string>{"C#"},
+            Users = new List<int> {1},
             Description = "New description",
             State = State.Hidden
         };
@@ -294,6 +316,9 @@ public class ProjectRepositoryTests
             Min = 3,
             Max = 7,
             Tags = new List<Tag>{project.Tags.ElementAt(0)},
+            Users = new List<User> {
+                _context.Users.First(user => user.Id == 1)
+            },
             State = State.Hidden,
             SupervisorId = 2,
             Created = now
