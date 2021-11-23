@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoProject.Infrastructure\CoProject.Infrastructure.csproj" />
-    <ProjectReference Include="..\CoProject.server\CoProject.server.csproj" />
+    <ProjectReference Include="..\CoProject.Server\CoProject.Server.csproj" />
   </ItemGroup>
 
   <ItemGroup>
