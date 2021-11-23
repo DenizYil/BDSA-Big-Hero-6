@@ -6,8 +6,8 @@ namespace CoProject.Server.Tests.Controllers;
 
 public class UserControllerTest
 {
-    private static readonly Mock<IUserRepository> repository = new Mock<IUserRepository>();
-    private static readonly UserController controller = new UserController(repository.Object);
+    private static readonly Mock<IUserRepository> repository = new ();
+    private static readonly UserController controller = new (repository.Object);
 
     [Fact]
     public async void GetUsers_returns_all_users()
