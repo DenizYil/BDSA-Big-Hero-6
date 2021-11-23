@@ -38,22 +38,21 @@ public class ProjectControllerTests
     }
     
     [Fact]
-    public async Task GetProject_returns_notfound_given_nonexistent_id()
+    public async Task GetProject_returns_NotFound_given_nonexistent_id()
     {
         //Arrange
-        var expected = Array.Empty<ProjectDetailsDTO>();
         repository.Setup(m => m.Read(100)).ReturnsAsync(default(ProjectDetailsDTO));
         
         
         //Act
-        var actual = await controller.GetProjects();
+        var response = await controller.GetProject(100);
         
         //Assert
-        Assert.Equal(expected, actual);
+        Assert.IsType<NotFoundResult>(response.Result);
     }
     
     [Fact]
-    public async Task UpdateProject_given_existing_id_updates_project()
+    public async Task UpdateProject_given_existing_id_updates_project_and_returns_NoContent()
     {
         //Arrange
         var project = new ProjectUpdateDTO();
@@ -98,7 +97,7 @@ public class ProjectControllerTests
     }
 
     [Fact]
-    public async void DeleteProject_deletes_a_projects_given_id_and_returns_status_code_204()
+    public async void DeleteProject_deletes_a_projects_given_id_and_returns_NoContent()
     {
         // Arrange
         repository.Setup(m => m.Delete(1)).ReturnsAsync(Status.Deleted);
@@ -111,7 +110,7 @@ public class ProjectControllerTests
     }
     
     [Fact]
-    public async void DeleteProject_returns_status_code_404_given_nonexistent_id()
+    public async void DeleteProject_returns_NotFound_given_nonexistent_id()
     {
         // Arrange
         repository.Setup(m => m.Delete(100)).ReturnsAsync(Status.NotFound);
@@ -124,7 +123,7 @@ public class ProjectControllerTests
     }
 
     [Fact]
-    public async void AddUserToProject_adds_user_to_project_and_returns_status_code_204()
+    public async void AddUserToProject_adds_user_to_project_and_returns_NoContent()
     {
         // Arrange
         repository.Setup(m => m.Read(1)).ReturnsAsync(new ProjectDetailsDTO
@@ -142,7 +141,7 @@ public class ProjectControllerTests
     }
 
     [Fact]
-    public async void RemoveUserFromProject_removes_user_from_project_and_returns_status_code_204()
+    public async void RemoveUserFromProject_removes_user_from_project_and_returns_NoContent()
     {
         //Arrange
         var project = new ProjectUpdateDTO(){Id = 1};
