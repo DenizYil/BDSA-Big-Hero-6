@@ -1,24 +1,72 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace CoProject.Server.Controllers;
-
-// THIS SHOULD BE REPLACED BY REAL PROJECT CLASS
-// FROM INFRASTRUCTURE
-public class User
-{
-    public string? Name { get; init; }
-    public int? Id { get; init; }
-}
+﻿namespace CoProject.Server.Controllers;
 
 [ApiController]
 [Route("users")]
-public class UserController
+public class UserController : ControllerBase
 {
-
-    [HttpGet]
-    [Route("{id}")]
-    public Project GetUser(int id)
+    private readonly IUserRepository _userRepository;
+    
+    public UserController(IUserRepository userRepository)
     {
-        return new Project() { Id = id };
+        _userRepository = userRepository;
     }
+    
+    [HttpGet]
+    public async Task<IEnumerable<UserDetailsDTO>> GetUsers()
+        => await _userRepository.ReadAll();
+    
+    [ProducesResponseType(404)]
+    [ProducesResponseType(typeof(UserDetailsDTO), 200)]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<UserDetailsDTO>> GetUser(int id)
+    {
+        var user = await _userRepository.Read(id);
+
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        return user;
+    }
+
+    [ProducesResponseType(201)]
+    [HttpPost]
+    public async Task<IActionResult> CreateUser(UserCreateDTO newUser)
+    {
+        var user = await _userRepository.Create(newUser);
+        
+        return CreatedAtRoute(nameof(GetUser), new {Id = user.Id}, user);
+    }
+
+    [ProducesResponseType(404)]
+    [ProducesResponseType(204)]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+       var response = await _userRepository.Delete(id);
+
+       if (response == Status.Deleted)
+       {
+           return NoContent();
+       }
+       return NotFound();
+    }
+    
+    [ProducesResponseType(404)]
+    [ProducesResponseType(204)]
+    [HttpPut]
+    public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO updatedUser)
+    {
+        var response = await _userRepository.Update(updatedUser);
+
+        if (response == Status.Updated)
+        {
+            return NoContent();
+        }
+
+        return NotFound();
+    }
+
+
 }

@@ -60,7 +60,7 @@ public class ProjectControllerTests
         repository.Setup(m => m.Update(project)).ReturnsAsync(Status.Updated);
         
         //Act
-        var response = await controller.UpdateProject(1, project);
+        var response = await controller.UpdateProject(project);
 
         //Assert
         Assert.IsType<NoContentResult>(response);
@@ -74,7 +74,7 @@ public class ProjectControllerTests
         repository.Setup(m => m.Update(project)).ReturnsAsync(Status.NotFound);
         
         //Act
-        var response = await controller.UpdateProject(1, project);
+        var response = await controller.UpdateProject(project);
 
         //Assert
         Assert.IsType<NotFoundResult>(response);
