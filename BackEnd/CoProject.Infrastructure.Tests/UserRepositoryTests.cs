@@ -7,35 +7,9 @@ namespace CoProject.Infrastructure.Tests;
 public class UserRepositoryTests : DefaultTests
 {
     private readonly UserRepository _repo;
-
-    private User user;
     public UserRepositoryTests()
     {
         _repo = new UserRepository(_context);
-
-        user = new User
-        {
-            Id = 1,
-            Email = "me@me.dk",
-            NormalizedEmail = "me@me.dk",
-            Projects = new List<Project>(),
-            Supervisor = true,
-            EmailConfirmed = true,
-            PhoneNumber = "12345678",
-            LockoutEnabled = false,
-            LockoutEnd = null,
-            UserName = "Myself",
-            ConcurrencyStamp = "N/A",
-            PasswordHash = "N/A",
-            SecurityStamp = "N/A",
-            AccessFailedCount = 0,
-            NormalizedUserName = "MyselfButNormalized",
-            PhoneNumberConfirmed = true,
-            TwoFactorEnabled = false
-        };
-        _context.Users.Add(user);
-        _context.SaveChanges();
-
     }
 
     [Fact]
