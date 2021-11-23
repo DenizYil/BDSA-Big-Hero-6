@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Identity.Web;
+using CoProject.Infrastructure;
+using CoProject.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Server;
 
@@ -23,6 +26,11 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllers();
         
+        // Database handlnig
+        builder.Services.AddDbContext<CoProjectContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CoProject")));
+        builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+        builder.Services.AddScoped<ICoProjectContext, CoProjectContext>();
+
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
