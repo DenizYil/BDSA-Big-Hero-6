@@ -20,7 +20,7 @@ public record ProjectDetailsDTO : ProjectCreateDTO
 {
     public int Id { get; init; }
     public DateTime Created { get; init; }
-    public IReadOnlyCollection<UserDTO> Users { get; init; }
+    public IReadOnlyCollection<UserDetailsDTO> Users { get; init; }
 }
 
 public record ProjectUpdateDTO
@@ -32,4 +32,5 @@ public record ProjectUpdateDTO
     public int? Max { get; init; }
     public State? State { get; init; }
     public IReadOnlyCollection<string>? Tags { get; init; }
+    public IReadOnlyCollection<int>? Users { get; init; }
 }
