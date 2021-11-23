@@ -1,22 +1,24 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using yeet.Client;
+using FrontEnd;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("yeet.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+builder.Services.AddHttpClient("FrontEnd.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
     .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
-// Supply HttpClient instances that include access tokens when making requests to the server project
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("yeet.ServerAPI"));
+// https://stackoverflow.com/questions/36656777/azureb2c-identity-provider-login-failed-aadb2c99002-user-does-not-exist
+// DEN HER ER LIDT VIGTIG LIGE AT KIGGE PÅ !
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("FrontEnd.ServerAPI"));
 
 builder.Services.AddMsalAuthentication(options =>
 {
     builder.Configuration.Bind("AzureAdB2C", options.ProviderOptions.Authentication);
-    options.ProviderOptions.DefaultAccessTokenScopes.Add("https://coprojectitu.onmicrosoft.com/19f527ec-8d4d-423e-b16d-75e9d52d85c7/APIAccess");
+    options.ProviderOptions.DefaultAccessTokenScopes.Add("https://coprojectitu.onmicrosoft.com/029a8171-e8c6-49cd-bcce-ad5952ba5ecb/APIAccess");
+    options.ProviderOptions.LoginMode = "redirect";
 });
 
 await builder.Build().RunAsync();
