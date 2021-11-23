@@ -39,11 +39,10 @@ public class UserController : ControllerBase
     public async Task<IActionResult> CreateUser(UserCreateDTO newUser)
     {
         var user = await _userRepository.Create(newUser);
-        
+
         return CreatedAtRoute(nameof(GetUser), new {Id = user.Id}, user);
-
-    public System.Security.Principal.IPrincipal User { get; }
-
+    }
+    
     /*[HttpGet]
     [Route("{id}")]
     public String? GetUser(int id)
@@ -86,6 +85,4 @@ public class UserController : ControllerBase
 
         return NotFound();
     }
-
-
 }
