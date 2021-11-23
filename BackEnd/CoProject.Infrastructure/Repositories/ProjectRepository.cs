@@ -131,6 +131,13 @@ public class ProjectRepository : IProjectRepository
             project.Tags = await GetTagsFromNames(update.Tags);
         }
 
+        if (update.Users != null)
+        {
+            project.Users = await _context.Users
+                .Where(user => update.Users.Contains(user.Id))
+                .ToListAsync();
+        }
+
         await _context.SaveChangesAsync();
         return Status.Updated;
     }
