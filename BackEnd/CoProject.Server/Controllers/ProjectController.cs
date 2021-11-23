@@ -1,51 +1,117 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace CoProject.Server.Controllers;
-
-// THIS SHOULD BE REPLACED BY REAL PROJECT CLASS
-// FROM INFRASTRUCTURE
-public class Project
-{
-    public string? Name { get; init; }
-    public int? Id { get; init; }
-}
+﻿namespace CoProject.Server.Controllers;
 
 [ApiController]
 [Route("projects")]
-public class ProjectController
+public class ProjectController : ControllerBase
 {
+    private readonly IProjectRepository _projectRepository;
 
-    [HttpGet]
-    public IEnumerable<Project> GetProjects()
+    public ProjectController(IProjectRepository projectRepository)
     {
-        return new List<Project>();
-
+        _projectRepository = projectRepository;
     }
 
-    [HttpGet]
-    [Route("{id}")]
-    public Project GetProject(int id)
+    [HttpGet("projects")]
+    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjects()
+        => await _projectRepository.ReadAll();
+
+    [ProducesResponseType(404)]
+    [ProducesResponseType(typeof(ProjectDetailsDTO), 200)]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ProjectDetailsDTO?>> GetProject(int id)
     {
-        return new Project() { Id = id };
+        var project = await _projectRepository.Read(id);
+        
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        return project;
     }
 
     [HttpPost]
-    public Project CreateProject(Project p)
+    [ProducesResponseType(typeof(ProjectDetailsDTO), 201)]
+    public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
-        return new Project() { Id = p.Id, Name = p.Name};
+        var projectDetailsDto = await _projectRepository.Create(project);
+
+        return CreatedAtRoute(nameof(GetProject), new {Id = projectDetailsDto.Id}, projectDetailsDto);
+    }
+
+
+    [HttpPut("{id}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO project)
+    {
+        var response = await _projectRepository.Update(id, project);
+        
+
+        if (response == Status.Updated)
+        {
+            return NoContent();
+        }
+
+        return NotFound();
+    }
+
+    [HttpPut("{ProjectId}/{UserId}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult> AddUserToProject(int ProjectId, int UserId)
+    {
+        var project = await _projectRepository.Read(ProjectId);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+        
+        var users = project.Users.Select(u => u.Id).ToList();
+        
+        users.Add(UserId);
+        
+
+        await _projectRepository.Update(ProjectId, new ProjectUpdateDTO(){Users = users});
+
+        return NoContent();
     }
     
-    [HttpPut]
-    [Route("{id}")]
-    public Project ChangeProject(int id, Project p)
+    [HttpDelete("{ProjectId}/{UserId}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> RemoveUserFromProject(int ProjectId, int UserId)
     {
-        return new Project() { Id = id, Name = p.Name };
+        var project = await _projectRepository.Read(ProjectId);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        var users = project.Users.Select(u => u.Id).ToList();
+
+        users.Remove(UserId);
+
+        await _projectRepository.Update(ProjectId, new ProjectUpdateDTO(){Users = users});
+
+        return NoContent();
     }
-    
-    [HttpDelete]
-    [Route("{id}")]
-    public Project DeleteProject(int id)
+
+
+    [HttpDelete("{id}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> DeleteProject(int id)
     {
-        return new Project() { Id = id };
+        var response = await _projectRepository.Delete(id);
+
+        if (response == Status.Deleted)
+        {
+            return NoContent();
+        }
+
+        return NotFound();
     }
 }

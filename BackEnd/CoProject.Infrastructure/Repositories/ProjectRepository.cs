@@ -92,9 +92,9 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync();
     }
 
-    public async Task<Status> Update(ProjectUpdateDTO update)
+    public async Task<Status> Update(int id, ProjectUpdateDTO update)
     {
-        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == update.Id);
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
         {

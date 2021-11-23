@@ -26,7 +26,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddControllers();
         
-        // Database handlnig
+        // Database handling
         builder.Services.AddDbContext<CoProjectContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CoProject")));
         builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
         builder.Services.AddScoped<ICoProjectContext, CoProjectContext>();
