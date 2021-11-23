@@ -207,10 +207,7 @@ public class UserRepositoryTests
     public async void Update_Given_Non_Existing_UserUpdateDTO_Returning_Status_NotFound()
     {
         var expected = Status.NotFound;
-        var actual = await _repo.Update(new UserUpdateDTO()
-        {
-            Id = 1
-        });
+        var actual = await _repo.Update(1, new UserUpdateDTO() { });
         Assert.Equal(expected, actual);
     }
     
@@ -240,9 +237,8 @@ public class UserRepositoryTests
         };
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        var actual = await _repo.Update(new UserUpdateDTO()
+        var actual = await _repo.Update(1, new UserUpdateDTO()
         {
-            Id = 1,
             Name = "YeehaaSelf",
             Email = "you@you.dk"
         });
@@ -276,9 +272,8 @@ public class UserRepositoryTests
         };
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        await _repo.Update(new UserUpdateDTO()
+        await _repo.Update(1, new UserUpdateDTO()
         {
-            Id = 1,
             Name = "YeehaaSelf",
             Email = "you@you.dk"
         });

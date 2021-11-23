@@ -55,10 +55,10 @@ public class UserController : ControllerBase
     
     [ProducesResponseType(404)]
     [ProducesResponseType(204)]
-    [HttpPut]
-    public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO updatedUser)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDTO updatedUser)
     {
-        var response = await _userRepository.Update(updatedUser);
+        var response = await _userRepository.Update(id, updatedUser);
 
         if (response == Status.Updated)
         {

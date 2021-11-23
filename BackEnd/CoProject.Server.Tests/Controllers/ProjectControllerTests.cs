@@ -56,10 +56,10 @@ public class ProjectControllerTests
     {
         //Arrange
         var project = new ProjectUpdateDTO();
-        repository.Setup(m => m.Update(project)).ReturnsAsync(Status.Updated);
+        repository.Setup(m => m.Update(1, project)).ReturnsAsync(Status.Updated);
         
         //Act
-        var response = await controller.UpdateProject(project);
+        var response = await controller.UpdateProject(1, project);
 
         //Assert
         Assert.IsType<NoContentResult>(response);
@@ -70,10 +70,10 @@ public class ProjectControllerTests
     {
         //Arrange
         var project = new ProjectUpdateDTO();
-        repository.Setup(m => m.Update(project)).ReturnsAsync(Status.NotFound);
+        repository.Setup(m => m.Update(1, project)).ReturnsAsync(Status.NotFound);
         
         //Act
-        var response = await controller.UpdateProject(project);
+        var response = await controller.UpdateProject(1, project);
 
         //Assert
         Assert.IsType<NotFoundResult>(response);
@@ -113,10 +113,10 @@ public class ProjectControllerTests
     public async void DeleteProject_returns_NotFound_given_nonexistent_id()
     {
         // Arrange
-        repository.Setup(m => m.Delete(100)).ReturnsAsync(Status.NotFound);
+        repository.Setup(m => m.Delete(10)).ReturnsAsync(Status.NotFound);
         
         // Act
-        var response = await controller.DeleteProject(100);
+        var response = await controller.DeleteProject(10);
 
         // Assert
         Assert.IsType<NotFoundResult>(response);
@@ -131,7 +131,7 @@ public class ProjectControllerTests
             Id = 1,
             Users = new List<UserDetailsDTO>()
         });
-        repository.Setup(m => m.Update(new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        repository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
         
         // Act
         var response = await controller.AddUserToProject(1,1);
@@ -144,13 +144,12 @@ public class ProjectControllerTests
     public async void RemoveUserFromProject_removes_user_from_project_and_returns_NoContent()
     {
         //Arrange
-        var project = new ProjectUpdateDTO(){Id = 1};
+        var project = new ProjectUpdateDTO();
         repository.Setup(m => m.Read(1)).ReturnsAsync(new ProjectDetailsDTO
         {
-            Id = 1,
             Users = new List<UserDetailsDTO>()
         });
-        repository.Setup(m => m.Update(project)).ReturnsAsync(Status.Updated);
+        repository.Setup(m => m.Update(1, project)).ReturnsAsync(Status.Updated);
         
         //Act
         var response = await controller.RemoveUserFromProject(1, 1);
