@@ -40,12 +40,12 @@ public class ProjectController : ControllerBase
     }
 
 
-    [HttpPut]
+    [HttpPut("{id}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> UpdateProject([FromBody] ProjectUpdateDTO project)
+    public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO project)
     {
-        var response = await _projectRepository.Update(project);
+        var response = await _projectRepository.Update(id, project);
         
 
         if (response == Status.Updated)
@@ -73,7 +73,7 @@ public class ProjectController : ControllerBase
         users.Add(UserId);
         
 
-        await _projectRepository.Update(new ProjectUpdateDTO(){Id = ProjectId, Users = users});
+        await _projectRepository.Update(ProjectId, new ProjectUpdateDTO(){Users = users});
 
         return NoContent();
     }
@@ -94,7 +94,7 @@ public class ProjectController : ControllerBase
 
         users.Remove(UserId);
 
-        await _projectRepository.Update(new ProjectUpdateDTO(){Id = ProjectId, Users = users});
+        await _projectRepository.Update(ProjectId, new ProjectUpdateDTO(){Users = users});
 
         return NoContent();
     }

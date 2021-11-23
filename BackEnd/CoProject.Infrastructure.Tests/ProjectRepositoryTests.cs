@@ -215,10 +215,7 @@ public class ProjectRepositoryTests
     public async void Update_returns_StatusNotFound_for_non_existing_ID()
     {
         var expected = Status.NotFound;
-        var actual = await _repo.Update(new ProjectUpdateDTO
-        {
-            Id = 2
-        });
+        var actual = await _repo.Update(2, new ProjectUpdateDTO());
 
         Assert.Equal(expected, actual);
     }
@@ -240,10 +237,7 @@ public class ProjectRepositoryTests
         });
         await _context.SaveChangesAsync();
 
-        var actual = await _repo.Update(new ProjectUpdateDTO
-        {
-            Id = 1,
-        });
+        var actual = await _repo.Update(1, new ProjectUpdateDTO());
 
         Assert.Equal(expected, actual);
     }
@@ -295,7 +289,6 @@ public class ProjectRepositoryTests
 
         var update = new ProjectUpdateDTO
         {
-            Id = 5,
             Name = "Deniz",
             Min = 3,
             Max = 7,
@@ -304,7 +297,7 @@ public class ProjectRepositoryTests
             Description = "New description",
             State = State.Hidden
         };
-        await _repo.Update(update);
+        await _repo.Update(5, update);
 
         var actual = await _context.Projects.FirstAsync(p => p.Id == 5);
 
