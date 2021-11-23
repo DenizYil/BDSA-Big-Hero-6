@@ -1,5 +1,9 @@
-﻿namespace CoProject.Server.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
+namespace CoProject.Server.Controllers;
+
+[Authorize]
 [ApiController]
 [Route("users")]
 public class UserController : ControllerBase
@@ -37,7 +41,22 @@ public class UserController : ControllerBase
         var user = await _userRepository.Create(newUser);
         
         return CreatedAtRoute(nameof(GetUser), new {Id = user.Id}, user);
-    }
+
+    public System.Security.Principal.IPrincipal User { get; }
+
+    /*[HttpGet]
+    [Route("{id}")]
+    public String? GetUser(int id)
+    {
+        Console.WriteLine("ehh what?");
+        if (User.Identity != null)
+        {
+            return User.Identity.Name?.ToString();
+        }else
+        {
+            return "no user";
+        }
+    }*/
 
     [ProducesResponseType(404)]
     [ProducesResponseType(204)]

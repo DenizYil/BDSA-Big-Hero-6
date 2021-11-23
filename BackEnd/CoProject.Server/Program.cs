@@ -1,3 +1,11 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Identity.Web;
+using CoProject.Infrastructure;
+using CoProject.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 namespace CoProject.Server;
 
 public class Program
@@ -5,7 +13,16 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        
+
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
+
+        builder.Services.Configure<JwtBearerOptions>(
+    JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.TokenValidationParameters.NameClaimType = "name";
+    });
+
         // Add services to the container.
         builder.Services.AddControllers();
         
@@ -35,7 +52,9 @@ public class Program
             app.UseSwaggerUI();
         }
 
+
         app.UseHttpsRedirection();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
 
