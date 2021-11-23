@@ -127,6 +127,11 @@ public class ProjectControllerTests
     public async void AddUserToProject_adds_user_to_project_and_returns_status_code_204()
     {
         // Arrange
+        repository.Setup(m => m.Read(1)).ReturnsAsync(new ProjectDetailsDTO
+        {
+            Id = 1,
+            Users = new List<UserDetailsDTO>()
+        });
         repository.Setup(m => m.Update(new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
         
         // Act
@@ -141,6 +146,11 @@ public class ProjectControllerTests
     {
         //Arrange
         var project = new ProjectUpdateDTO(){Id = 1};
+        repository.Setup(m => m.Read(1)).ReturnsAsync(new ProjectDetailsDTO
+        {
+            Id = 1,
+            Users = new List<UserDetailsDTO>()
+        });
         repository.Setup(m => m.Update(project)).ReturnsAsync(Status.Updated);
         
         //Act

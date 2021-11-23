@@ -62,8 +62,7 @@ public class ProjectController : ControllerBase
             return NotFound();
         }
         
-        //TODO: Why is project.Users null?
-        var users = project.Users == null ? new List<int>() : project.Users.Select(u => u.Id).ToList();
+        var users = project.Users.Select(u => u.Id).ToList();
         
         users.Add(UserId);
         
