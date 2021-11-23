@@ -73,10 +73,10 @@ public class UserControllerTest
     {
         //Arrange
         var user = new UserUpdateDTO();
-        repository.Setup(m => m.Update(user)).ReturnsAsync(Status.Updated);
+        repository.Setup(m => m.Update(1, user)).ReturnsAsync(Status.Updated);
         
         //Act
-        var response = await controller.UpdateUser(user);
+        var response = await controller.UpdateUser(1, user);
 
         //Assert
         Assert.IsType<NoContentResult>(response);
@@ -87,10 +87,10 @@ public class UserControllerTest
     {
         //Arrange
         var user = new UserUpdateDTO();
-        repository.Setup(m => m.Update(user)).ReturnsAsync(Status.NotFound);
+        repository.Setup(m => m.Update(1, user)).ReturnsAsync(Status.NotFound);
         
         //Act
-        var response = await controller.UpdateUser(user);
+        var response = await controller.UpdateUser(1, user);
 
         //Assert
         Assert.IsType<NotFoundResult>(response);
