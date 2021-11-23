@@ -6,8 +6,8 @@ namespace CoProject.Server.Tests.Controllers;
 
 public class ProjectControllerTests
 {
-    private static readonly Mock<IProjectRepository> repository = new Mock<IProjectRepository>();
-    private static readonly ProjectController controller = new ProjectController(repository.Object);
+    private static readonly Mock<IProjectRepository> repository = new();
+    private static readonly ProjectController controller = new(repository.Object);
 
     [Fact]
     public async void GetProjects_returns_all_projects()
@@ -27,7 +27,7 @@ public class ProjectControllerTests
     public async Task GetProject_returns_project_given_id()
     {
         //Arrange
-        var project = new ProjectDetailsDTO(){Id = 1, Description = "this is a test project"};
+        var project = new ProjectDetailsDTO{Id = 1, Description = "this is a test project"};
         repository.Setup(m => m.Read(1)).ReturnsAsync(project);
 
         //Act
@@ -123,7 +123,7 @@ public class ProjectControllerTests
     }
 
     [Fact]
-    public async void AddUserToProject_adds_user_to_project_and_returns_NoContent()
+    public async void AddUserToProject_given_existing_id_adds_user_to_project_and_returns_NoContent()
     {
         // Arrange
         repository.Setup(m => m.Read(1)).ReturnsAsync(new ProjectDetailsDTO
@@ -139,9 +139,23 @@ public class ProjectControllerTests
         // Assert
         Assert.IsType<NoContentResult>(response);
     }
+    
+    [Fact]
+    public async void AddUserToProject_given_non_existing_id_returns_not_found()
+    {
+        // Arrange
+        repository.Setup(m => m.Read(1)).Returns(Task.FromResult<ProjectDetailsDTO>(null));
+        repository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.NotFound);
+        
+        // Act
+        var response = await controller.AddUserToProject(1, 1);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(response);
+    }
 
     [Fact]
-    public async void RemoveUserFromProject_removes_user_from_project_and_returns_NoContent()
+    public async void RemoveUserFromProject_given_existing_id_removes_user_from_project_and_returns_NoContent()
     {
         //Arrange
         var project = new ProjectUpdateDTO();
@@ -156,5 +170,19 @@ public class ProjectControllerTests
         
         //Assert
         Assert.IsType<NoContentResult>(response);
+    }
+    
+    [Fact]
+    public async void RemoveUserFromProject_given_non_existing_id_returns_not_found()
+    {
+        // Arrange
+        repository.Setup(m => m.Read(1)).Returns(Task.FromResult<ProjectDetailsDTO>(null));
+        repository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.NotFound);
+        
+        // Act
+        var response = await controller.RemoveUserFromProject(1, 1);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(response);
     }
 }

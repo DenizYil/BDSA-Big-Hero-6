@@ -16,8 +16,10 @@ public class UserController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IEnumerable<UserDetailsDTO>> GetUsers()
-        => await _userRepository.ReadAll();
+    public async Task<IEnumerable<UserDetailsDTO>> GetUsers() 
+    {
+        return await _userRepository.ReadAll();
+    }
     
     [ProducesResponseType(404)]
     [ProducesResponseType(typeof(UserDetailsDTO), 200)]
@@ -39,8 +41,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> CreateUser(UserCreateDTO newUser)
     {
         var user = await _userRepository.Create(newUser);
-
-        return CreatedAtRoute(nameof(GetUser), new {Id = user.Id}, user);
+        return CreatedAtRoute(nameof(GetUser), new {user.Id}, user);
     }
     
     /*[HttpGet]
@@ -68,6 +69,7 @@ public class UserController : ControllerBase
        {
            return NoContent();
        }
+       
        return NotFound();
     }
     

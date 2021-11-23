@@ -1,5 +1,8 @@
-﻿namespace CoProject.Server.Model;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace CoProject.Server.Model;
+
+[ExcludeFromCodeCoverage]
 public static class Extensions
 {
     public static IActionResult ToActionResult(this Status status) => status switch

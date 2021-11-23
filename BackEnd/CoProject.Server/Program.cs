@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Server;
 
+[ExcludeFromCodeCoverage]
 public class Program
 {
     public static void Main(string[] args)

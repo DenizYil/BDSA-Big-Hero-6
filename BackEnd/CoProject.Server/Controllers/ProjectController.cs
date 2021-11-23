@@ -12,8 +12,10 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet("projects")]
-    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjects()
-        => await _projectRepository.ReadAll();
+    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjects() 
+    {
+        return await _projectRepository.ReadAll();
+    }
 
     [ProducesResponseType(404)]
     [ProducesResponseType(typeof(ProjectDetailsDTO), 200)]
@@ -35,7 +37,6 @@ public class ProjectController : ControllerBase
     public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
         var projectDetailsDto = await _projectRepository.Create(project);
-
         return CreatedAtRoute(nameof(GetProject), new {Id = projectDetailsDto.Id}, projectDetailsDto);
     }
 
@@ -46,7 +47,6 @@ public class ProjectController : ControllerBase
     public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO project)
     {
         var response = await _projectRepository.Update(id, project);
-        
 
         if (response == Status.Updated)
         {
@@ -56,12 +56,12 @@ public class ProjectController : ControllerBase
         return NotFound();
     }
 
-    [HttpPut("{ProjectId}/{UserId}")]
+    [HttpPut("{projectId}/{userId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult> AddUserToProject(int ProjectId, int UserId)
+    public async Task<ActionResult> AddUserToProject(int projectId, int userId)
     {
-        var project = await _projectRepository.Read(ProjectId);
+        var project = await _projectRepository.Read(projectId);
 
         if (project == null)
         {
@@ -69,12 +69,9 @@ public class ProjectController : ControllerBase
         }
         
         var users = project.Users.Select(u => u.Id).ToList();
-        
-        users.Add(UserId);
-        
+        users.Add(userId);
 
-        await _projectRepository.Update(ProjectId, new ProjectUpdateDTO(){Users = users});
-
+        await _projectRepository.Update(projectId, new ProjectUpdateDTO{Users = users});
         return NoContent();
     }
     
@@ -95,7 +92,6 @@ public class ProjectController : ControllerBase
         users.Remove(UserId);
 
         await _projectRepository.Update(ProjectId, new ProjectUpdateDTO(){Users = users});
-
         return NoContent();
     }
 
