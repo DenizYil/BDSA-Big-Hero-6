@@ -1,20 +1,21 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoProject.Server.Tests.Controllers;
 
 public class ProjectControllerTests
 {
+    private static readonly Mock<IProjectRepository> repository = new Mock<IProjectRepository>();
+    private static readonly ProjectController controller = new ProjectController(repository.Object);
+
     [Fact]
     public async void GetProjects_returns_all_projects()
     {
         //Arrange
-        var expected = Array.Empty<ProjectDetailsDTO>();
-        var repository = new Mock<IProjectRepository>();
+        var expected = Array.Empty<ProjectDetailsDTO>(); 
         repository.Setup(m => m.ReadAll()).ReturnsAsync(expected);
-        var controller = new ProjectController(repository.Object);
-        
-        
+
         //Act
         var actual = await controller.GetProjects();
         
@@ -26,10 +27,8 @@ public class ProjectControllerTests
     public async Task GetProject_returns_project_given_id()
     {
         //Arrange
-        var repository = new Mock<IProjectRepository>();
         var project = new ProjectDetailsDTO(){Id = 1, Description = "this is a test project"};
         repository.Setup(m => m.Read(1)).ReturnsAsync(project);
-        var controller = new ProjectController(repository.Object);
 
         //Act
         var actual = await controller.GetProject(1);
@@ -43,9 +42,7 @@ public class ProjectControllerTests
     {
         //Arrange
         var expected = Array.Empty<ProjectDetailsDTO>();
-        var repository = new Mock<IProjectRepository>();
         repository.Setup(m => m.Read(100)).ReturnsAsync(default(ProjectDetailsDTO));
-        var controller = new ProjectController(repository.Object);
         
         
         //Act
@@ -59,10 +56,8 @@ public class ProjectControllerTests
     public async Task UpdateProject_given_existing_id_updates_project()
     {
         //Arrange
-        var repository = new Mock<IProjectRepository>();
         var project = new ProjectUpdateDTO();
         repository.Setup(m => m.Update(project)).ReturnsAsync(Status.Updated);
-        var controller = new ProjectController(repository.Object);
         
         //Act
         var response = await controller.UpdateProject(1, project);
@@ -75,10 +70,8 @@ public class ProjectControllerTests
     public async Task UpdateProject_given_nonexistent_id_returns_NotFound()
     {
         //Arrange
-        var repository = new Mock<IProjectRepository>();
         var project = new ProjectUpdateDTO();
         repository.Setup(m => m.Update(project)).ReturnsAsync(Status.NotFound);
-        var controller = new ProjectController(repository.Object);
         
         //Act
         var response = await controller.UpdateProject(1, project);
@@ -86,25 +79,39 @@ public class ProjectControllerTests
         //Assert
         Assert.IsType<NotFoundResult>(response);
     }
-    
+
     [Fact]
-    public void CreateProject_creates_a_new_project_and_returns_status_code_201()
+    public async void CreateProject_creates_a_new_project()
     {
-        throw new NotImplementedException();
+        //Arrange
+        var toCreate = new ProjectCreateDTO();
+        var project = new ProjectDetailsDTO(){Id = 1, Description = "this is a test project"};
+        repository.Setup(m => m.Create(toCreate)).ReturnsAsync(project);
+        
+        //Act
+        var result = await controller.CreateProject(toCreate) as CreatedAtRouteResult;
+        
+        //Assert
+        Assert.Equal(project, result?.Value);
+        Assert.Equal("GetProject", result?.RouteName);
+        Assert.Equal(KeyValuePair.Create("Id", (object?)1), result?.RouteValues?.Single());
     }
-    
+
     [Fact]
     public async void DeleteProject_deletes_a_projects_given_id_and_returns_status_code_204()
     {
         // Arrange
-        var repository = new Mock<IProjectRepository>();
         repository.Setup(m => m.Delete(1)).ReturnsAsync(Status.Deleted);
-        var controller = new ProjectController(repository.Object);
-
         // Act
         var response = await controller.DeleteProject(1);
 
         // Assert
         Assert.IsType<NoContentResult>(response);
+    }
+
+    [Fact]
+    public void AddUserToProject_adds_user_to_project_and_returns_status_code_204()
+    {
+        
     }
 }

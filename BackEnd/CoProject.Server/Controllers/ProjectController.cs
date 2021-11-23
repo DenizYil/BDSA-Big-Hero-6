@@ -48,9 +48,23 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPut("{ProjectId}/{UserId}")]
-    public Task<IActionResult> AddUserToProject(int ProjectId, int UserId)
+    public async Task<IActionResult> AddUserToProject(int ProjectId, int UserId)
     {
-        throw new NotImplementedException();
+        var project = await _projectRepository.Read(ProjectId);
+
+        if (project == null)
+        {
+            return null;
+        }
+
+        var users = project.Users.Select(u => u.Id).ToList();
+        
+        users.Add(UserId);
+        
+
+        await _projectRepository.Update(new ProjectUpdateDTO(){Id = ProjectId, Users = users});
+
+        return NoContent();
     }
 
 
