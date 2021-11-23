@@ -1,6 +1,8 @@
-﻿namespace CoProject.Infrastructure;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace CoProject.Infrastructure;
 
+[ExcludeFromCodeCoverage]
 public struct Option<T> where T : class
 {
     private readonly T? _value;
