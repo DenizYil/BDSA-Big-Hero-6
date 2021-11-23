@@ -36,7 +36,7 @@ public class UserControllerTest
         //Assert
         Assert.Equal(project, actual.Value);
     }
-    
+
     [Fact]
     public async Task GetUser_returns_notfound_given_nonexistent_id()
     {
@@ -48,7 +48,7 @@ public class UserControllerTest
         var response = await controller.GetUser(100);
         
         //Assert
-        Assert.IsType<NotFoundResult>(response);
+        Assert.IsType<NotFoundResult>(response.Result);
     }
     
     [Fact]
