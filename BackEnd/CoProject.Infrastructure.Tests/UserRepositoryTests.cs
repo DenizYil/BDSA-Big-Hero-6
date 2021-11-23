@@ -138,7 +138,7 @@ public class UserRepositoryTests : DefaultTests
     public async void Update_Given_Non_Existing_UserUpdateDTO_Returning_Status_NotFound()
     {
         var expected = Status.NotFound;
-        var actual = await _repo.Update(1, new UserUpdateDTO());
+        var actual = await _repo.Update(2, new UserUpdateDTO());
         
         Assert.Equal(expected, actual);
     }
@@ -147,29 +147,7 @@ public class UserRepositoryTests : DefaultTests
     public async void Update_Given_Existing_UserUpdateDTO_Returning_Status_Updated()
     {
         var expected = Status.Updated;
-        var user = new User()
-        {
-            Id = 1,
-            Email = "me@me.dk",
-            NormalizedEmail = "me@me.dk",
-            Projects = new List<Project>(),
-            Supervisor = true,
-            EmailConfirmed = true,
-            PhoneNumber = "12345678",
-            LockoutEnabled = false,
-            LockoutEnd = null,
-            UserName = "Myself",
-            ConcurrencyStamp = "N/A",
-            PasswordHash = "N/A",
-            SecurityStamp = "N/A",
-            AccessFailedCount = 0,
-            NormalizedUserName = "MyselfButNormalized",
-            PhoneNumberConfirmed = true,
-            TwoFactorEnabled = false
-        };
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
-        var actual = await _repo.Update(1, new UserUpdateDTO()
+        var actual = await _repo.Update(1, new UserUpdateDTO
         {
             Name = "YeehaaSelf",
             Email = "you@you.dk"
@@ -181,29 +159,7 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Update_actually_updates_User_with_specified_changes()
     {
-        var user = new User()
-        {
-            Id = 1,
-            Email = "me@me.dk",
-            NormalizedEmail = "me@me.dk",
-            Projects = new List<Project>(),
-            Supervisor = true,
-            EmailConfirmed = true,
-            PhoneNumber = "12345678",
-            LockoutEnabled = false,
-            LockoutEnd = null,
-            UserName = "Myself",
-            ConcurrencyStamp = "N/A",
-            PasswordHash = "N/A",
-            SecurityStamp = "N/A",
-            AccessFailedCount = 0,
-            NormalizedUserName = "MyselfButNormalized",
-            PhoneNumberConfirmed = true,
-            TwoFactorEnabled = false
-        };
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
-        await _repo.Update(1, new UserUpdateDTO()
+        await _repo.Update(2, new UserUpdateDTO
         {
             Name = "YeehaaSelf",
             Email = "you@you.dk"

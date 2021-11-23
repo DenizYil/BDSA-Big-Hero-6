@@ -192,18 +192,6 @@ public class ProjectRepositoryTests : DefaultTests
     {
         // Arrange
         var expected = Status.Updated;
-
-        await _context.Projects.AddAsync(new Project
-        {
-            Id = 1,
-            Name = "Phillip",
-            Description = "This is another cool description",
-            SupervisorId = 2,
-            Created = DateTime.Now,
-            State = State.Open
-        });
-        await _context.SaveChangesAsync();
-
         var actual = await _repo.Update(1, new ProjectUpdateDTO());
 
         Assert.Equal(expected, actual);
@@ -234,7 +222,7 @@ public class ProjectRepositoryTests : DefaultTests
             Description = "New description",
             State = State.Hidden
         };
-        await _repo.Update(5, update);
+        await _repo.Update(2, update);
 
         var actual = await _context.Projects.FirstAsync(p => p.Id == 2);
 
