@@ -19,6 +19,7 @@ public class UserRepository : IUserRepository
             .Where(u => u.Id == id)
             .Select(u => new UserDetailsDTO
             {
+                Id = u.Id,
                 UserName = u.NormalizedUserName,
                 Email = u.Email,
                 Name = u.UserName
@@ -31,6 +32,7 @@ public class UserRepository : IUserRepository
         return await _context.Users
             .Select(u => new UserDetailsDTO
             {
+                Id = u.Id,
                 UserName = u.NormalizedUserName,
                 Email = u.Email,
                 Name = u.UserName
