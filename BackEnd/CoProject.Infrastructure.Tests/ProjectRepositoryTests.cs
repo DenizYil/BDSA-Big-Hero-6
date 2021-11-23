@@ -4,25 +4,12 @@ using FluentAssertions;
 
 namespace CoProject.Infrastructure.Tests;
 
-public class ProjectRepositoryTests
+public class ProjectRepositoryTests : DefaultTests
 {
-    private readonly ICoProjectContext _context;
     private readonly ProjectRepository _repo;
 
     public ProjectRepositoryTests()
     {
-        var connection = new SqliteConnection("Filename=:memory:");
-        connection.Open();
-
-        var builder = new DbContextOptionsBuilder<CoProjectContext>();
-        builder.UseSqlite(connection);
-        builder.EnableSensitiveDataLogging();
-
-        var context = new CoProjectContext(builder.Options);
-        context.Database.EnsureCreated();
-        context.SaveChanges();
-
-        _context = context;
         _repo = new ProjectRepository(_context);
     }
 

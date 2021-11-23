@@ -4,26 +4,13 @@ using FluentAssertions;
 
 namespace CoProject.Infrastructure.Tests;
 
-public class UserRepositoryTests
+public class UserRepositoryTests : DefaultTests
 {
-    private readonly ICoProjectContext _context;
     private readonly UserRepository _repo;
 
     private User user;
     public UserRepositoryTests()
     {
-        var connection = new SqliteConnection("Filename=:memory:");
-        connection.Open();
-
-        var builder = new DbContextOptionsBuilder<CoProjectContext>();
-        builder.UseSqlite(connection);
-        builder.EnableSensitiveDataLogging();
-
-        var context = new CoProjectContext(builder.Options);
-        context.Database.EnsureCreated();
-        context.SaveChanges();
-
-        _context = context;
         _repo = new UserRepository(_context);
 
         user = new User
