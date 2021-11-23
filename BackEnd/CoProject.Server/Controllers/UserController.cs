@@ -18,7 +18,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(404)]
     [ProducesResponseType(typeof(UserDetailsDTO), 200)]
     [HttpGet("{id}")]
-    public async Task<ActionResult<UserDetailsDTO>> GetUser(int id)
+    public async Task<ActionResult<UserDetailsDTO?>> GetUser(int id)
     {
         var user = await _userRepository.Read(id);
 

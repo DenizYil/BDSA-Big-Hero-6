@@ -52,7 +52,7 @@ public class UserControllerTest
     }
     
     [Fact]
-    public async void CreateUser_creates_a_new_project()
+    public async void CreateUser_creates_a_new_user()
     {
         //Arrange
         var toCreate = new UserCreateDTO();
@@ -64,7 +64,7 @@ public class UserControllerTest
         
         //Assert
         Assert.Equal(project, result?.Value);
-        Assert.Equal("GetProject", result?.RouteName);
+        Assert.Equal("GetUser", result?.RouteName);
         Assert.Equal(KeyValuePair.Create("Id", (object?)1), result?.RouteValues?.Single());
     }
     
