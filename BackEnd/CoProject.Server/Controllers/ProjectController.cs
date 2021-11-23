@@ -48,7 +48,7 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPut("{ProjectId}/{UserId}")]
-    public Task<IActionResult> AddUserToProject()
+    public Task<IActionResult> AddUserToProject(int ProjectId, int UserId)
     {
         throw new NotImplementedException();
     }
