@@ -27,4 +27,8 @@
     <ProjectReference Include="..\CoProject.server\CoProject.server.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers" />
+  </ItemGroup>
+
 </Project>
