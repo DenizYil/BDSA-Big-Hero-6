@@ -25,6 +25,7 @@ public class ProjectController : ControllerBase
         => await _projectRepository.Read(id);
 
     [HttpPost]
+    [ProducesResponseType(typeof(ProjectDetailsDTO), 201)]
     public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
         var projectDetailsDto = await _projectRepository.Create(project);
@@ -34,6 +35,8 @@ public class ProjectController : ControllerBase
 
 
     [HttpPut("{id}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
     public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO project)
     {
         var response = await _projectRepository.Update(project);
@@ -48,19 +51,43 @@ public class ProjectController : ControllerBase
     }
 
     [HttpPut("{ProjectId}/{UserId}")]
-    public async Task<IActionResult> AddUserToProject(int ProjectId, int UserId)
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult> AddUserToProject(int ProjectId, int UserId)
     {
         var project = await _projectRepository.Read(ProjectId);
 
         if (project == null)
         {
-            return null;
+            return NotFound();
         }
-
-        var users = project.Users.Select(u => u.Id).ToList();
+        
+        //TODO: Why is project.Users null?
+        var users = project.Users == null ? new List<int>() : project.Users.Select(u => u.Id).ToList();
         
         users.Add(UserId);
         
+
+        await _projectRepository.Update(new ProjectUpdateDTO(){Id = ProjectId, Users = users});
+
+        return NoContent();
+    }
+    
+    [HttpDelete("{ProjectId}/{UserId}")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> RemoveUserFromProject(int ProjectId, int UserId)
+    {
+        var project = await _projectRepository.Read(ProjectId);
+
+        if (project == null)
+        {
+            return NotFound();
+        }
+
+        var users = project.Users.Select(u => u.Id).ToList();
+
+        users.Remove(UserId);
 
         await _projectRepository.Update(new ProjectUpdateDTO(){Id = ProjectId, Users = users});
 

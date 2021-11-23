@@ -102,16 +102,51 @@ public class ProjectControllerTests
     {
         // Arrange
         repository.Setup(m => m.Delete(1)).ReturnsAsync(Status.Deleted);
+        
         // Act
         var response = await controller.DeleteProject(1);
 
         // Assert
         Assert.IsType<NoContentResult>(response);
     }
+    
+    [Fact]
+    public async void DeleteProject_returns_status_code_404_given_nonexistent_id()
+    {
+        // Arrange
+        repository.Setup(m => m.Delete(100)).ReturnsAsync(Status.NotFound);
+        
+        // Act
+        var response = await controller.DeleteProject(100);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(response);
+    }
 
     [Fact]
-    public void AddUserToProject_adds_user_to_project_and_returns_status_code_204()
+    public async void AddUserToProject_adds_user_to_project_and_returns_status_code_204()
     {
+        // Arrange
+        repository.Setup(m => m.Update(new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
         
+        // Act
+        var response = await controller.AddUserToProject(1,1);
+
+        // Assert
+        Assert.IsType<NoContentResult>(response);
+    }
+
+    [Fact]
+    public async void RemoveUserFromProject_removes_user_from_project_and_returns_status_code_204()
+    {
+        //Arrange
+        var project = new ProjectUpdateDTO(){Id = 1};
+        repository.Setup(m => m.Update(project)).ReturnsAsync(Status.Updated);
+        
+        //Act
+        var response = await controller.RemoveUserFromProject(1, 1);
+        
+        //Assert
+        Assert.IsType<NoContentResult>(response);
     }
 }
