@@ -1,12 +1,48 @@
 .project {
+    border-style: solid;
     border-color: blue;
-    border-radius: 10%;
+    border-radius: 16px;
+    border-width: 1px;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    padding: 10px;
 }
 
 h1 {
-    font-size: large;
+    font-size: x-large;
 }
 
 .project-description {
-    background-color: aquamarine;
+    font-size: small;
+}
+
+.supv {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.supv-img {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    margin-right: 1%;
+}
+
+.supv-name {
+    font-size: smaller;
+}
+
+.tags {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.tag {
+    background-color: gray;
+    border-style: solid;
+    border-color: darkslategrey;
+    border-radius: 16px;
+    border-width: 1px;
+    padding: 4px;
 }
