@@ -1,3 +1,25 @@
-.center{
+.navcontainer {
+    color: aliceblue;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: #0B4F6C;
+    height: 80px;
     
+    
+}
+
+p {
+    height: 100%;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.navcontainer p a{
+    color: white;
+    text-decoration :none;
+}
+p:hover{
+    background-color: aqua;
 }
