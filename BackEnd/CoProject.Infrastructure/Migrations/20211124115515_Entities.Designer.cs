@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoProject.Infrastructure.Migrations
 {
     [DbContext(typeof(CoProjectContext))]
-    [Migration("20211120173909_EntitiesV1")]
-    partial class EntitiesV1
+    [Migration("20211124115515_Entities")]
+    partial class Entities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
