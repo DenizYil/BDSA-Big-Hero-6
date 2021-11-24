@@ -23,7 +23,7 @@ jobs:
       - name: Build
         working-directory: ./BackEnd
         run: dotnet build --configuration Release --no-restore
-      - name: Test Infrastructure
+      - name: Test Server
         working-directory: ./BackEnd/CoProject.Server.Tests
         run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='../result.xml' --no-restore --verbosity normal
       - name: Test Infrastructure
@@ -42,6 +42,3 @@ jobs:
       - name: Build
         working-directory: ./FrontEnd
         run: dotnet build --configuration Release --no-restore
-      - name: Test
-        working-directory: ./FrontEnd
-        run: dotnet test --no-restore --verbosity normal
