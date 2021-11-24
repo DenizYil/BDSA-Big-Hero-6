@@ -1,0 +1,12 @@
+.project {
+    border-color: blue;
+    border-radius: 10%;
+}
+
+h1 {
+    font-size: large;
+}
+
+.project-description {
+    background-color: aquamarine;
+}
