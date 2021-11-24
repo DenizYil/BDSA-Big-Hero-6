@@ -23,9 +23,12 @@ jobs:
       - name: Build
         working-directory: ./BackEnd
         run: dotnet build --configuration Release --no-restore
-      - name: Test
-        working-directory: ./BackEnd
+      - name: Test Infrastructure
+        working-directory: ./BackEnd/CoProject.Server.Tests
         run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='../result.xml' --no-restore --verbosity normal
+      - name: Test Infrastructure
+        working-directory: ./BackEnd/CoProject.Infrastructure.Tests
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='../result.xml' /p:MergeWith=../result.json --no-restore --verbosity normal
       - name: Upload coverage to Codecov  
         uses: codecov/codecov-action@v1
         with:
