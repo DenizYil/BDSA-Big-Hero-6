@@ -1,0 +1,26 @@
+@page "/ViewProject"
+
+<h1>{project name}</h1>
+<p1>Registered: {amountRegistered}{"/" + maxRegisters}</p1>
+
+<!-------line------->
+<hr/>
+
+<img id="xd" alt="PICTURE OF SUPERVISOR" src="get supervisor image" style="display: flex; margin-top: 20px; margin-bottom: 20px; justify-content: center;">
+<h4 style="display: block; margin: 20px auto 20px">{supervisor name}</h4> 
+
+<p1 style="display: block;">{description}</p1> 
+
+<!-- this is the same as the component with students at the bottom-->
+
+<Button id="editProject">Edit</Button> <!-- redirects to edit profile page-->
+<button>Delete</button> 
+
+<h4>Created on {creationDate}</h4>
+
+<hr/>
+
+<h2>Students registered</h2>
+
+<!-- list of registered students -->
+<!-- this should be 1 component, which is given a list of students, and is creating one component for each student -->
