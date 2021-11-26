@@ -3,9 +3,6 @@ coverage:
     patch:
       default:
         enabled: no
-
-codecov:
-  token: bc89e560-40d8-44ac-9f73-55d81339b1de
         
 ignore:
   - "BackEnd/CoProject.Infrastructure/Migrations"
