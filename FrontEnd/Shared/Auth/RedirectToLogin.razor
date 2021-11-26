@@ -1,0 +1,9 @@
+﻿@inject NavigationManager Navigation
+@namespace Auth.RedirectToLogin
+
+@code {
+    protected override void OnInitialized()
+    {
+        Navigation.NavigateTo($"/?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+    }
+}

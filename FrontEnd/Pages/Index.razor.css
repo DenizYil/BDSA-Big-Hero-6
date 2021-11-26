@@ -1,38 +1,58 @@
-h1 {
-  font-size: xx-large;
-  color: #0b4f6c;
-  text-align: center;
-}
-
-h2 {
-  font-size: large;
-  color: #0b4f6c;
-  text-align: center;
-}
-
-.search {
-  margin: 10px 0;
+.container {
+  width: 100%;
+  height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-#search-bar {
-  width: 300px;
+.container .logo {
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
 }
 
-#search-icon {
-  vertical-align: bottom;
-  color: #0b4f6c;
+.logo img {
+  width: 100%;
 }
 
-.projects {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+.login {
+  width: 100%;
+}
+.login h1 {
+  margin: 0px;
+  padding: 0px;
+  text-align: center;
+  font-size: 35px;
+  margin-top: 20px;
+  font-weight: bold;
 }
 
-@media (max-width: 640px) {
-  .projects {
-    margin: 20px 10px;
-  }
+.login p {
+  margin-top: 10px;
+  font-size: 25px;
+  text-align: center;
+}
+
+.login a {
+  text-decoration: none;
+}
+
+.login:hover {
+  cursor: pointer;
+}
+
+.login button {
+  width: 80%;
+  margin-top: 25px;
+  margin-left: auto;
+  display: block;
+  margin-right: auto;
+  padding: 20px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 20px;
+  background-color: #0b4f6c;
+  color: white;
+  font-size: 18px;
 }

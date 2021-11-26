@@ -1,6 +1,7 @@
-@using CoProject
+@namespace Components.ProjectCard
 
 <div class="project">
+    <a href="/project/@Project.Id">
     <h1 class="project-name">@Project.Name</h1>
     <p class="project-description">@Project.Description</p>
     <div class="supv">
@@ -9,19 +10,20 @@
     </div>
     <div class="tags">
         @foreach (var tag in Project.Tags)
-    {   <button class="tag" @onclick="@(e => Console.WriteLine(tag))">@tag</button> }
+    {   <button class="tag">@tag</button> }
     </div>
-
+    </a>
 </div>
 
 @code {
 
     [Parameter]
-    public CoProject.FrontEnd.ProjectCreateDTO Project { get; set;} =
+    public Models.Project.ProjectDetailsDTO Project { get; set;} =
         new()
         {
+            Id = 1,
             Name = "Lorem ipsum",
-            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
             SupervisorId = -1,
             Tags = InitTags()
         };
@@ -29,7 +31,6 @@
     public static List<string> InitTags()
     {
         var Tags = new List<string>();
-        Tags.Add("testing");
         Tags.Add("lorem ipsum");
         Tags.Add("lorem ipsum");
         Tags.Add("lorem ipsum");
