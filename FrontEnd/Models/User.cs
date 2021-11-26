@@ -1,4 +1,5 @@
-﻿namespace CoProject.FrontEnd;
+﻿namespace Models.User;
+using Models.Project;
 
 #pragma warning disable CS8618
 

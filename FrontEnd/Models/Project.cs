@@ -1,6 +1,6 @@
-namespace CoProject.FrontEnd;
+using Models.User;
 
-#pragma warning disable CS8618
+namespace Models.Project;
 
 public record ProjectCreateDTO 
 {

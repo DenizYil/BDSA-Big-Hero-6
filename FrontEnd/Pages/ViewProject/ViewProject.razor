@@ -1,0 +1,79 @@
+@page "/project/{id?}"
+@inject NavigationManager NavManager
+
+<h1 id="ProjectName">Project name</h1>
+<p1 id="registered">Registered: 78/80</p1>
+
+<hr />
+
+<img id="pictureOfSupervisor" alt="PICTURE OF SUPERVISOR" src="get supervisor image">
+<h4 id="supervisorName">Project creator</h4>
+
+<p1 id="desc">
+
+    Proin ullamcorper nisl sit amet sem venenatis, at iaculis enim accumsan.
+    In sollicitudin augue lacus, ac blandit nisi iaculis eget. Donec egestas neque tellus,
+    in volutpat augue sagittis id. Cras vel cursus velit, eget maximus tortor. In nec congue leo.
+    Vestibulum id sapien ullamcorper arcu sagittis maximus.
+</p1>
+
+<div id="tag">
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+    <p1 class="tagName">python</p1>
+</div>
+
+<button id="editProject">Edit</button> <!-- redirects to edit profile page-->
+
+<button id="delete">Delete</button>
+
+<h4 id="created">Created on 05/11/2021</h4>
+
+<hr />
+
+<h2 id="studentsRegistered">Students registered</h2>
+
+<div id="bagOfStudents">
+    <div class="oneStudent">
+        <div class="studentLeft">
+            <img class="studentImg" alt=":)" />
+        </div>
+        <div class="studentRight">
+            <p1 class="student">The Pendler Kid</p1>
+            <p1 class="email">DenoG@itu.dk <img src="/images/copyIcon.svg" class="material-icons" /></p1>
+        </div>
+    </div>
+    <div class="oneStudent">
+        <div class="studentLeft">
+            <img class="studentImg" alt=":)" />
+        </div>
+        <div class="studentRight">
+            <p1 class="student">The Pendler Kid</p1>
+            <p1 class="email">DenoG@itu.dk <img src="/images/copyIcon.svg" class="material-icons" /></p1>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? id { get; set; }
+    protected override void OnInitialized()
+    {
+        if (id == null)
+        {
+            NavManager.NavigateTo("/projects");
+        }
+    }
+}

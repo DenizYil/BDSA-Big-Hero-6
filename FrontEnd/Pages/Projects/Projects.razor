@@ -1,0 +1,21 @@
+﻿@page "/projects"
+@using Components.ProjectCard;
+
+
+<PageTitle>Index</PageTitle>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons">
+
+<h1>Projects</h1>
+<h2>Below you can see a list of available projects.</h2>
+
+<div class="search">
+  <input id="search-bar" placeholder="Search..." name="searchinput">
+  <img class="searchIcon" src="/images/searchicon.svg" alt="Search icon">
+</div>
+
+<div class="projects">
+  <ProjectCard />
+  <ProjectCard />
+  <ProjectCard />
+</div>

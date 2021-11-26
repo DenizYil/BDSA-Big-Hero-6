@@ -10,6 +10,13 @@
   box-sizing: border-box;
   padding-top: 15px;
   padding-bottom: 15px;
+  position: fixed;
+  width: 100%;
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  height: 91px;
+  z-index: 10000;
 }
 
 .navitem .item {

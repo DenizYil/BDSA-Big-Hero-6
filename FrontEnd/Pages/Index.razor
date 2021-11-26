@@ -1,6 +1,26 @@
 ﻿@page "/"
+@layout EmptyLayout
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 
 
-<PageTitle>Index</PageTitle>
-
-<Projects></Projects>
+<AuthorizeView>
+  <Authorized>
+    @if (true) { Navigation.NavigateTo("/projects"); }
+  </Authorized>
+  <NotAuthorized>
+    <div class="container">
+      <div>
+        <div class="logo">
+          <img src="/images/logo.png" alt="logo">
+        </div>
+        <div class="login">
+          <h1 class="darkblue">CoProject</h1>
+          <p class="darkblue">Login to start using the app</p>
+          <a href="authentication/login"><button>Login with Microsoft</button></a>
+        </div>
+      </div>
+    </div>
+  </NotAuthorized>
+</AuthorizeView>
