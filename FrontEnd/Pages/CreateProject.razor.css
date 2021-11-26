@@ -1,159 +1,150 @@
-
 .center {
-    text-align: center;
+  text-align: center;
 }
 
-
 .required {
-    color: red;
+  color: red;
 }
 
 .container {
-    width: 95%;
-    margin-left: auto;
-    margin-right: auto;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 textarea {
-    width: 100%;
-    height: 150px;
-    padding: 12px 20px;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    background-color: #f8f8f8;
-    resize: none;
-    border-color: black;
-    border-width: 2px;
-    margin-top: 10px;
+  width: 100%;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  resize: none;
+  border-color: black;
+  border-width: 2px;
+  margin-top: 10px;
 }
 
-input[type=text] {
-    width: 100%; 
-    padding: 12px 20px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border-radius: 10px;
+input[type='text'] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border-radius: 10px;
 }
 
-input[type=submit] {
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    margin-bottom: 30px;
-    display: block;
-    background-color: #0B4F6C;
-    color: white;
-    font-size: 30px;
-    border: #707070;
-    border-radius: 5px;
-    height: 50px;
-    width: 300px;
+input[type='submit'] {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  display: block;
+  background-color: #0b4f6c;
+  color: white;
+  font-size: 30px;
+  border: #707070;
+  border-radius: 5px;
+  height: 50px;
+  width: 300px;
 }
 
 label {
-    margin-top: 10px;
-    display:inline-block;
-
+  margin-top: 10px;
+  display: inline-block;
 }
 
 ::placeholder {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 15px;
-    
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 15px;
 }
 
 .min-max-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: row;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
 }
 
 .line {
-    width: 50px;
-    height: 1px;
-    background: black;
-    margin-left: 10px;
-    margin-right: 10px;
+  width: 50px;
+  height: 1px;
+  background: black;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .container {
-    background-color: #FBFBFB;
-    color: #0B4F6C;
+  color: #0b4f6c;
 }
 
 h2 {
-    font-size: 25px;
-    margin-bottom: 25px !important;
+  font-size: 25px;
+  margin-bottom: 25px !important;
 }
 
 h3 {
-    margin-top: 10px;
-    font-size: 20px;
+  margin-top: 10px;
+  font-size: 20px;
 }
 
-
 .header {
-    margin: 0 0 0 0;
-    padding: 0 0 0 0;
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
 }
 
 h1 {
-    font-size: 40px;
-    font-weight: bolder;
+  font-size: 40px;
+  font-weight: bolder;
 }
 
 .form-header {
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .switch-field {
-    display: flex;
-    width: 100%;
-    overflow: hidden;
-    margin: auto;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+  margin: auto;
+  justify-content: center;
+  align-items: center;
 }
 
 .switch-field input {
-    position: absolute !important;
+  position: absolute !important;
 
-    height: 1px;
-    width: 1px;
-    border: 0;
-    overflow: hidden;
+  height: 1px;
+  width: 1px;
+  border: 0;
+  overflow: hidden;
 }
 
 .switch-field label {
-    background-color: white;
-    color: #0B4F6C;
-    font-size: 20px;
-    text-align: center;
-    padding: 8px 16px;
-    margin-right: 20px;
-    margin-right: 20px;
-    border: 1px solid black;
-    border-radius: 10px !important;
-    transition: all 0.1s ease-in-out;
-    width: 140px;
+  background-color: white;
+  color: #0b4f6c;
+  font-size: 20px;
+  text-align: center;
+  padding: 8px 16px;
+  margin-right: 20px;
+  margin-right: 20px;
+  border: 1px solid black;
+  border-radius: 10px !important;
+  transition: all 0.1s ease-in-out;
+  width: 140px;
 }
 
 .switch-field label:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .switch-field input:checked + label {
-    background-color: #01baef;
+  background-color: #01baef;
 }
 
 .switch-field label:first-of-type {
-    border-radius: 4px 0 0 4px;
+  border-radius: 4px 0 0 4px;
 }
 
 .switch-field label:last-of-type {
-    border-radius: 0 4px 4px 0;
+  border-radius: 0 4px 4px 0;
 }
-
-
