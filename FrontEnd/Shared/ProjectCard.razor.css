@@ -60,5 +60,8 @@ h1 {
 }
 
 @media (max-width: 640px) {
-    .project {width: 90%;}
+    .project {
+        width: 90%;
+        margin: 20px 10px;
+    }
 }

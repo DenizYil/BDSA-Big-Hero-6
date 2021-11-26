@@ -1,19 +1,36 @@
 h1 {
     font-size: xx-large;
     color: #0b4f6c;
+    text-align: center;
 }
 
 h2 {
     font-size: large;
     color: #0b4f6c;
+    text-align: center;
 }
 
 .search {
     margin: 10px 0;
+    display: flex;
+    justify-content: center;
+}
+
+#search-bar {
+    width: 300px;
+}
+
+#search-icon {
+    vertical-align: bottom;
+    color: #0b4f6c;
 }
 
 .projects {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
+}
+
+@media (max-width: 640px) {
+    .projects {margin: 20px 10px;}
 }
