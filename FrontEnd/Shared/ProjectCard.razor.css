@@ -1,20 +1,23 @@
 .project {
     border-style: solid;
-    border-color: blue;
+    border-color: #0b4f6c;
     border-radius: 16px;
     border-width: 1px;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    padding: 10px;
-    width: 28%;
+    padding: 2%;
+    width: 26%;
     margin: 20px 20px 20px 0px;
 }
 
 h1 {
     font-size: x-large;
+    color: #0b4f6c;
+    margin: 10px 0;
 }
 
 .project-description {
     font-size: small;
+    color: #0b4f6c;
 }
 
 .supv {
@@ -31,7 +34,8 @@ h1 {
 }
 
 .supv-name {
-    font-size: smaller;
+    font-size: small;
+    color: gray;
 }
 
 .tags {
@@ -41,13 +45,13 @@ h1 {
 }
 
 .tag {
-    background-color: gray;
+    background-color: #0b4f6c;
     border-style: solid;
-    border-color: darkslategrey;
     border-radius: 16px;
     border-width: 1px;
-    padding: 4px;
+    padding: 4px 6px;
     font-size: small;
+    color: white;
 }
 
 
