@@ -1,0 +1,39 @@
+﻿@page "/createproject"
+@inherits LayoutComponentBase
+@layout AuthLayout
+
+<PageTitle>Create Project - CoProject</PageTitle>
+<div class="container">
+    <div class="center">
+        <h1>Create Project</h1>
+        <hr />
+        <h2>Fill in the information below to create a new project.</h2>
+    </div>
+
+    <form>
+        <label for="name" class="form-header">Project Name <span class="required">*</span></label>
+        <input type="text" id="name" name="name" placeholder="Project name">
+
+        <label for="description" class="form-header">Project Description <span class="required">*</span></label>
+        <textarea id="description" placeholder="Write the description of the project"></textarea>
+
+        <label for="min" class="form-header">Students</label>
+        <div class="min-max-container">
+            <input type="text" id="min" name="name" placeholder="Minimum">
+            <div class="line"></div>
+            <input type="text" id="max" name="name" placeholder="Maximum">
+        </div>
+
+        <label for="tags" class="form-header">Project Tags</label>
+        <input type="text" id="tags" name="name" placeholder="Write the tags seperated by comma">
+
+        <h3>Project State</h3>
+        <div class="switch-field center">
+            <p class="switch-item active-switch-item" data-status="OPEN">OPEN</p>
+            <p class="switch-item" data-status="CLOSED">CLOSED</p>
+            <p class="switch-item" data-status="HIDDEN">HIDDEN</p>
+        </div>
+
+        <input type="submit" value="Create Project" name="submit">
+    </form>
+</div>

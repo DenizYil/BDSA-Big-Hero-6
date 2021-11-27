@@ -1,67 +1,57 @@
-@page "/project/{id?}"
+@page "/project/{id}"
 @inject NavigationManager NavManager
+@layout AuthLayout
+
+<PageTitle>View Project - CoProject</PageTitle>
 
 <h1 id="ProjectName">Project name</h1>
-<p1 id="registered">Registered: 78/80</p1>
+<h2 id="registered">Registered: 78/80</h2>
 
 <hr />
 
-<img id="pictureOfSupervisor" alt="PICTURE OF SUPERVISOR" src="get supervisor image">
-<h4 id="supervisorName">Project creator</h4>
-
-<p1 id="desc">
-
-    Proin ullamcorper nisl sit amet sem venenatis, at iaculis enim accumsan.
-    In sollicitudin augue lacus, ac blandit nisi iaculis eget. Donec egestas neque tellus,
-    in volutpat augue sagittis id. Cras vel cursus velit, eget maximus tortor. In nec congue leo.
-    Vestibulum id sapien ullamcorper arcu sagittis maximus.
-</p1>
-
-<div id="tag">
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
-    <p1 class="tagName">python</p1>
+<div class="supervisorContainer">
+    <img class="imageOfSupervisor" alt="PICTURE OF SUPERVISOR" src="https://via.placeholder.com/150">
+    <p class="supervisorName">Project creator</p>
+    <p class="createdBy">Created on 05/11/2021</p>
 </div>
 
-<button id="editProject">Edit</button> <!-- redirects to edit profile page-->
+<p class="projectDescription">
+    Proin ullamcorper nisl sit amet sem venenatis, at iaculis enim accumsan.
+    In sollicitudin augue lacus, ac blandit nisi iaculis eget.
+</p>
+
+<div class="tags">
+    <p class="tagName">python</p>
+    <p class="tagName">python</p>
+    <p class="tagName">python</p>
+    <p class="tagName">python</p>
+    <p class="tagName">python</p>
+</div>
+
+<button id="editProject"><a href="/editproject/@id">Edit project</a></button>
 
 <button id="delete">Delete</button>
-
-<h4 id="created">Created on 05/11/2021</h4>
-
 <hr />
 
-<h2 id="studentsRegistered">Students registered</h2>
+<p id="studentsRegistered">Students registered</p>
 
 <div id="bagOfStudents">
     <div class="oneStudent">
         <div class="studentLeft">
-            <img class="studentImg" alt=":)" />
+            <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student" />
         </div>
         <div class="studentRight">
-            <p1 class="student">The Pendler Kid</p1>
-            <p1 class="email">DenoG@itu.dk <img src="/images/copyIcon.svg" class="material-icons" /></p1>
+            <p class="student">The Pendler Kid</p>
+            <p class="email">DenoG@itu.dk <img src="/images/copyIcon.svg" class="material-icons" /></p>
         </div>
     </div>
     <div class="oneStudent">
         <div class="studentLeft">
-            <img class="studentImg" alt=":)" />
+            <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student" />
         </div>
         <div class="studentRight">
-            <p1 class="student">The Pendler Kid</p1>
-            <p1 class="email">DenoG@itu.dk <img src="/images/copyIcon.svg" class="material-icons" /></p1>
+            <p class="student">The Pendler Kid</p>
+            <p class="email">DenoG@itu.dk <img src="/images/copyIcon.svg" class="material-icons" /></p>
         </div>
     </div>
 </div>
