@@ -12,37 +12,25 @@ public class UserRepository : IUserRepository
     {
         _context = context;
     }
-    
+
     public async Task<UserDetailsDTO?> Read(int id)
     {
         return await _context.Users
             .Where(u => u.Id == id)
-            .Select(u => new UserDetailsDTO
-            {
-                Id = u.Id,
-                UserName = u.NormalizedUserName,
-                Email = u.Email,
-                Name = u.UserName
-            })
+            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.NormalizedUserName, u.Email))
             .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<UserDetailsDTO>> ReadAll()
     {
         return await _context.Users
-            .Select(u => new UserDetailsDTO
-            {
-                Id = u.Id,
-                UserName = u.NormalizedUserName,
-                Email = u.Email,
-                Name = u.UserName
-            })
+            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.NormalizedUserName, u.Email))
             .ToListAsync();
     }
 
     public async Task<UserDetailsDTO> Create(UserCreateDTO create)
     {
-        var newUser = new User()
+        var user = new User
         {
             Id = create.Id,
             Email = create.Email,
@@ -63,17 +51,10 @@ public class UserRepository : IUserRepository
             TwoFactorEnabled = create.TwoFactorEnabled
         };
 
-        await _context.Users.AddAsync(newUser);
+        await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return new UserDetailsDTO()
-        {
-            Name = create.UserName,
-            Email = create.Email,
-            Id = create.Id,
-            UserName = create.NormalizedUserName
-        };
-
+        return new UserDetailsDTO(user.Id, user.UserName, user.NormalizedUserName, user.Email);
     }
 
     public async Task<Status> Update(int id, UserUpdateDTO update)
@@ -96,7 +77,6 @@ public class UserRepository : IUserRepository
         }
 
         return Status.Updated;
-
     }
 
     public async Task<Status> Delete(int id)
