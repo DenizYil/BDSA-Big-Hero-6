@@ -15,80 +15,89 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<ProjectDetailsDTO> Create(ProjectCreateDTO create)
     {
-        var now = DateTime.Now;
-        var project = new Project{
+        var project = new Project
+        {
             Name = create.Name,
             Description = create.Description,
-            Created = now,
-            SupervisorId = create.SupervisorId, 
-            Min = create.Min, 
-            Max = create.Max, 
-            Tags = await GetTagsFromNames(create.Tags), 
-            Users = new List<User>(), 
+            Created = DateTime.Now,
+            SupervisorId = create.SupervisorId,
+            Min = create.Min,
+            Max = create.Max,
+            Tags = await GetTagsFromNames(create.Tags),
+            Users = new List<User>(),
             State = create.State
         };
+
         await _context.Projects.AddAsync(project);
         await _context.SaveChangesAsync();
-        return new ProjectDetailsDTO {
-            Id = project.Id,
-            Name = project.Name,
-            Description = project.Description,
-            Created = now,
-            SupervisorId = project.SupervisorId, 
-            Min = project.Min, 
-            Max = project.Max, 
-            Tags = project.Tags.Select(tag => tag.Name).ToList(), 
-            Users = new List<UserDetailsDTO>(), 
-            State = project.State
-        };
+
+        return
+            new ProjectDetailsDTO(
+                project.Id,
+                project.Name,
+                project.Description,
+                project.SupervisorId,
+                project.State,
+                project.Created,
+                project.Tags.Select(tag => tag.Name).ToList(),
+                new List<UserDetailsDTO>()
+            )
+            {
+                Min = project.Min,
+                Max = project.Max
+            };
     }
-    
+
     public async Task<ProjectDetailsDTO?> Read(int id)
     {
         return await _context.Projects
             .Where(p => p.Id == id)
-            .Select(p => new ProjectDetailsDTO
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Created = p.Created,
-                SupervisorId = p.SupervisorId,
-                Min = p.Min,
-                Max = p.Max,
-                State = p.State,
-                Tags = p.Tags.Select(tag => tag.Name).ToList(),
-                Users = p.Users.Select(user => new UserDetailsDTO()
+            .Select(project =>
+                new ProjectDetailsDTO(
+                    project.Id,
+                    project.Name,
+                    project.Description,
+                    project.SupervisorId,
+                    project.State,
+                    project.Created,
+                    project.Tags.Select(tag => tag.Name).ToList(),
+                    project.Users.Select(user => new UserDetailsDTO
+                    {
+                        Name = user.NormalizedUserName,
+                        UserName = user.UserName,
+                        Email = user.Email
+                    }).ToList()
+                )
                 {
-                    Name = user.NormalizedUserName,
-                    UserName = user.UserName,
-                    Email = user.Email
-                }).ToList()
-            })
+                    Min = project.Min,
+                    Max = project.Max
+                })
             .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<ProjectDetailsDTO>> ReadAll()
     {
         return await _context.Projects
-            .Select(p => new ProjectDetailsDTO
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Description = p.Description,
-                Created = p.Created,
-                SupervisorId = p.SupervisorId,
-                Min = p.Min,
-                Max = p.Max,
-                State = p.State,
-                Tags = p.Tags.Select(tag => tag.Name).ToList(),
-                Users = p.Users.Select(user => new UserDetailsDTO()
+            .Select(project =>
+                new ProjectDetailsDTO(
+                    project.Id,
+                    project.Name,
+                    project.Description,
+                    project.SupervisorId,
+                    project.State,
+                    project.Created,
+                    project.Tags.Select(tag => tag.Name).ToList(),
+                    project.Users.Select(user => new UserDetailsDTO
+                    {
+                        Name = user.NormalizedUserName,
+                        UserName = user.UserName,
+                        Email = user.Email
+                    }).ToList()
+                )
                 {
-                    Name = user.NormalizedUserName,
-                    UserName = user.UserName,
-                    Email = user.Email
-                }).ToList()
-            })
+                    Min = project.Min,
+                    Max = project.Max
+                })
             .ToListAsync();
     }
 
@@ -105,7 +114,7 @@ public class ProjectRepository : IProjectRepository
         {
             project.Name = update.Name;
         }
-        
+
         if (update.Description != null && update.Description != project.Description)
         {
             project.Description = update.Description;
@@ -156,7 +165,7 @@ public class ProjectRepository : IProjectRepository
         await _context.SaveChangesAsync();
         return Status.Deleted;
     }
-    
+
     /*
      * HELPER METHODS
      */
@@ -175,7 +184,7 @@ public class ProjectRepository : IProjectRepository
                 await _context.Tags.AddAsync(tag);
                 await _context.SaveChangesAsync();
             }
-            
+
             tags.Add(tag);
         }
 
