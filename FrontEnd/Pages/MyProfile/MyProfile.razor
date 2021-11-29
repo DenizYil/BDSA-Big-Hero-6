@@ -1,0 +1,23 @@
+﻿@page "/profile"
+@inherits LayoutComponentBase
+@layout AuthLayout
+
+<PageTitle>My Profile - CoProject</PageTitle>
+
+<div class="container">
+    <div class="center">
+        <h1>My Profile</h1>
+        <hr />
+        <h2>Update your information</h2>
+    </div>
+
+    <form>
+        <label for="name" class="form-header"> Your name <span class="required">*</span></label>
+        <input type="text" id="name" name="name" placeholder="Enter your name new name here">
+
+        <label for="email" class="form-header">Your email <span class="required">*</span></label>
+        <input type="text" id="email" placeholder="Enter your new e-mail address here">
+
+        <button type="submit">Update profile</button>
+    </form>
+</div>

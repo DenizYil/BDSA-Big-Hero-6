@@ -1,0 +1,22 @@
+﻿@inherits LayoutComponentBase
+@namespace Components.AuthLayout
+@inject NavigationManager Navigation
+@using Components.NavBar;
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Auth.RedirectToLogin;
+
+<AuthorizeView>
+    <Authorized>
+        <div class="navbar">
+            <NavBar />
+        </div>
+
+        <div class="content">
+            @Body
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>

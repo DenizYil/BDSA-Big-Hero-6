@@ -1,12 +1,11 @@
 ﻿@page "/projects"
 @using Components.ProjectCard;
+@layout AuthLayout
 
 
-<PageTitle>Index</PageTitle>
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Material+Icons">
-
+<PageTitle>Projects - CoProject</PageTitle>
 <h1>Projects</h1>
+<hr />
 <h2>Below you can see a list of available projects.</h2>
 
 <div class="search">
@@ -18,4 +17,8 @@
   <ProjectCard />
   <ProjectCard />
   <ProjectCard />
+</div>
+
+<div class="createProject">
+  <a href="/createproject"><button>Create new project</button></a>
 </div>
