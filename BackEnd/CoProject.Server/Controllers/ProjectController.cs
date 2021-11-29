@@ -36,6 +36,7 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(typeof(ProjectDetailsDTO), 201)]
     public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
+        Console.WriteLine(project.Name);
         var projectDetailsDto = await _projectRepository.Create(project);
         return CreatedAtRoute(nameof(GetProject), new {Id = projectDetailsDto.Id}, projectDetailsDto);
     }

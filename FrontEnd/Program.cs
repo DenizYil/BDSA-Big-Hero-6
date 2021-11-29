@@ -7,7 +7,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddHttpClient("FrontEnd.ServerAPI", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+builder.Services.AddHttpClient("FrontEnd.ServerAPI", client => client.BaseAddress = new Uri("https://localhost:7021/"))
     .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
 // https://stackoverflow.com/questions/36656777/azureb2c-identity-provider-login-failed-aadb2c99002-user-does-not-exist

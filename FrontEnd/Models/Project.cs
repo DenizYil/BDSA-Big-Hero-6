@@ -10,7 +10,7 @@ public record ProjectCreateDTO
     public int? Min { get; init; }
     public int? Max { get; init; }
     
-    public string State { get; init; }
+    public int State { get; init; }
     public IReadOnlyCollection<string> Tags { get; init; }
 }
 
