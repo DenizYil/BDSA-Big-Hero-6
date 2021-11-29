@@ -32,33 +32,21 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Create_Project_Given_ProjectCreateDTO_Returns_ProjectDetailsDTO()
     {
         //Arrange
-        var createProject = new ProjectCreateDTO
+        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden, new List<string>())
         {
-            Name = "CoolProject",
-            Description = "Description for the Coolest Project",
-            SupervisorId = 5,
             Min = 1,
-            Max = 4,
-            State = State.Hidden,
-            Tags = new List<string>()
+            Max = 4
         };
-
+        
         //Act
         var actual = await _repo.Create(createProject);
 
-        var expected = new ProjectDetailsDTO
+        var expected = new ProjectDetailsDTO(2, "CoolProject", "Description for the Coolest Project", 5, State.Hidden, actual.Created, new List<string>(), new List<UserDetailsDTO>())
         {
-            Id = 2,
-            Created = actual.Created, 
-            Users = new List<UserDetailsDTO>(),
-            Name = "CoolProject",
-            Description = "Description for the Coolest Project",
-            SupervisorId = 5,
             Min = 1,
             Max = 4,
-            State = State.Hidden,
-            Tags = new List<string>()
         };
+        
         //Assert
         expected.Should().BeEquivalentTo(actual);
     }
@@ -66,14 +54,11 @@ public class ProjectRepositoryTests : DefaultTests
     [Fact]
     public async void Create_Project_Saves_Project_To_Database()
     {
-        var createProject = new ProjectCreateDTO
+        //Arrange
+        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden, new List<string>())
         {
-            Name = "CoolProject",
-            Description = "Description for the Coolest Project",
-            Max = 4,
-            SupervisorId = 5,
-            State = State.Hidden,
-            Tags = new List<string>()
+            Min = 1,
+            Max = 4
         };
 
         //Act
@@ -87,16 +72,13 @@ public class ProjectRepositoryTests : DefaultTests
     {
         var expected = new List<string> {"AI", "Python"};
         
-        var createP = new ProjectCreateDTO
+        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden, new List<string>{"AI", "Python"})
         {
-            Name = "CoolProject",
-            Description = "Description for the Coolest Project",
-            Max = 4,
-            SupervisorId = 5,
-            State = State.Hidden,
-            Tags = new List<string>(){"AI", "Python"}
+            Min = 1,
+            Max = 4
         };
-        var xd = await _repo.Create(createP);
+        
+        var xd = await _repo.Create(createProject);
         var actual = _context.Tags.Select(t => t.Name).ToList();
         
         Assert.Equal(expected, actual);
@@ -112,22 +94,11 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Read_Given_Existing_Project_Returns_Project()
     {
         //Arrange
-
-        var expected = new ProjectDetailsDTO
-        {
-            Id = 1,
-            Name = "Karl",
-            Description = "yep hehe smiley",
-            SupervisorId = 1,
-            Created = now,
-            State = State.Open,
-            Tags = new List<string>(),
-            Users = new List<UserDetailsDTO>()
-        };
+        var expected = new ProjectDetailsDTO(1, "Karl", "yep hehe smiley", 1, State.Open, now, new List<string>(), new List<UserDetailsDTO>());
 
         // Act
         var actual = await _repo.Read(1);
-
+        
         //Assert
         actual.Should().BeEquivalentTo(expected);
     }
@@ -138,28 +109,8 @@ public class ProjectRepositoryTests : DefaultTests
 
         var expected = new List<ProjectDetailsDTO>
         {
-            new()
-            {
-                Id = 1,
-                Name = "Karl",
-                Description = "yep hehe smiley",
-                SupervisorId = 1,
-                Created = now,
-                State = State.Open,
-                Tags = new List<string>(),
-                Users = new List<UserDetailsDTO>()
-            },
-            new()
-            {
-                Id = 2,
-                Name = "Phillip",
-                Description = "This is another cool description",
-                SupervisorId = 2,
-                Created = now,
-                State = State.Open,
-                Tags = new List<string>(),
-                Users = new List<UserDetailsDTO>()
-            }
+            new(1, "Karl", "yep hehe smiley", 1, State.Open, now, new List<string>(), new List<UserDetailsDTO>()),
+            new(2, "Phillip", "This is another cool description", 2, State.Open, now, new List<string>(), new List<UserDetailsDTO>())
         };
 
         var newProject = project;

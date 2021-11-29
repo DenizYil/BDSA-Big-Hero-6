@@ -24,10 +24,10 @@ public class UserControllerTest
     }
     
     [Fact]
-    public async Task GetUser_returns_user_given_id()
+    public async void GetUser_returns_user_given_id()
     {
         //Arrange
-        var project = new UserDetailsDTO(){Id = 1, Name = "This is a test user"};
+        var project = new UserDetailsDTO(1, "Example User", "Example User Name", "user@user.dk");
         repository.Setup(m => m.Read(1)).ReturnsAsync(project);
 
         //Act
@@ -38,7 +38,7 @@ public class UserControllerTest
     }
 
     [Fact]
-    public async Task GetUser_returns_notfound_given_nonexistent_id()
+    public async void GetUser_returns_notfound_given_nonexistent_id()
     {
         //Arrange
         repository.Setup(m => m.Read(100)).ReturnsAsync(default(UserDetailsDTO));
@@ -55,8 +55,11 @@ public class UserControllerTest
     public async void CreateUser_creates_a_new_user()
     {
         //Arrange
-        var toCreate = new UserCreateDTO();
-        var project = new UserDetailsDTO(){Id = 1, Name = "This is a test User"};
+        var toCreate = new UserCreateDTO(
+            2, "Wee", "WeeButNormalized", "wee@wee.dk", "wee@wee.dk", "12345678",
+            "N/A", "N/A", "N/A", true, true, false, true, false, 0, new List<Project>()
+        );
+        var project = new UserDetailsDTO(1, "Example User", "Example User Name", "user@user.dk");
         repository.Setup(m => m.Create(toCreate)).ReturnsAsync(project);
         
         //Act
@@ -69,10 +72,10 @@ public class UserControllerTest
     }
     
     [Fact]
-    public async Task UpdateUser_given_existing_id_updates_user_and_returns_NoContent()
+    public async void UpdateUser_given_existing_id_updates_user_and_returns_NoContent()
     {
         //Arrange
-        var user = new UserUpdateDTO();
+        var user = new UserUpdateDTO("Example User", "user@user.dk");
         repository.Setup(m => m.Update(1, user)).ReturnsAsync(Status.Updated);
         
         //Act
@@ -83,10 +86,10 @@ public class UserControllerTest
     }
     
     [Fact]
-    public async Task UpdateUser_given_nonexistent_id_returns_NotFound()
+    public async void UpdateUser_given_nonexistent_id_returns_NotFound()
     {
         //Arrange
-        var user = new UserUpdateDTO();
+        var user = new UserUpdateDTO("Example User", "user@user.dk");
         repository.Setup(m => m.Update(1, user)).ReturnsAsync(Status.NotFound);
         
         //Act
