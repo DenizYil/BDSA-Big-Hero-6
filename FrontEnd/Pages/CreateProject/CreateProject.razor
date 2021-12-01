@@ -4,6 +4,8 @@
 @using System.Net.Http
 @using System.Threading.Tasks
 @using System.ComponentModel.DataAnnotations;
+@using FrontEnd.Forms
+@using Microsoft.AspNetCore.Components
 @inject HttpClient Http
 @layout AuthLayout
 
@@ -51,26 +53,26 @@
         <h2>Fill in the information below to create a new project.</h2>
     </div>
 
-    <EditForm Model="@projectModel" OnValidSubmit="@OnSubmit">
+    <EditForm Model="@form" OnValidSubmit="@OnSubmit">
         <div class="form">
             <label for="name" class="form-header">Project Name <span class="required">*</span></label>
-            <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name" @bind-Value="projectModel.Name" />
+            <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name" @bind-Value="form.Name" />
 
             <label for="description" class="form-header">Project Description <span class="required">*</span></label>
-            <InputTextArea @bind-Value="projectModel.Description" class="inputTextArea" id="description" placeholder="Write the description of the project" />
+            <InputTextArea @bind-Value="form.Description" class="inputTextArea" id="description" placeholder="Write the description of the project" />
 
             <label for="min" class="form-header">Students</label>
             <div class="min-max-container">
-                <InputNumber class="inputNumber" @bind-Value="projectModel.studentMin" type="number" id="min" name="name" placeholder="Minimum" />
+                <InputNumber class="inputNumber" @bind-Value="form.Min" type="number" id="min" name="name" placeholder="Minimum" />
                 <div class="line"></div>
-                <InputNumber @bind-Value="projectModel.studentMax" class="inputNumber" type="number" id="max" name="name" placeholder="Maximum" />
+                <InputNumber @bind-Value="form.Max" class="inputNumber" type="number" id="max" name="name" placeholder="Maximum" />
             </div>
 
             <label for="tags" class="form-header">Project Tags</label>
-            <InputText @bind-Value="projectModel.tags" class="inputText" type="text" id="tags" name="name" placeholder="Write the tags seperated by comma" />
+            <InputText @bind-Value="form.Tags" class="inputText" type="text" id="tags" name="name" placeholder="Write the tags seperated by comma" />
 
             <h3>Project State</h3>
-            <InputSelect class="inputText" @bind-Value="projectModel.state">
+            <InputSelect class="inputText" @bind-Value="form.State">
                 <option value="">Select state</option>
                 <option value="1">OPEN</option>
                 <option value="2">CLOSED</option>
@@ -81,8 +83,7 @@
                 <p class="switch-item" data-status="CLOSED">CLOSED</p>
                 <p class="switch-item" data-status="HIDDEN">HIDDEN</p>
             </div>
-
-
+            
             <button type="submit" class="submitButton">Create Project</button>
         </div>
     </EditForm>
@@ -91,29 +92,20 @@
 
 @code {
 
-    private ProjectForm projectModel = new();
-    public class ProjectForm
-    {
-
-        [Required]
-        [StringLength(100, ErrorMessage = "Name is too long")]
-        public string Name { get; set; }
-
-        [Required]
-        public string Description { get; set; }
-
-        public int? studentMin { get; set; }
-
-        public int? studentMax { get; set; }
-
-        public string? tags { get; set; }
-
-        public int state { get; set; }
-    }
-
+    private ProjectForm form = new();
+    
     private async void OnSubmit()
     {
-        var addItem = new ProjectCreateDTO() { Name = projectModel.Name, Description = projectModel.Description, Max = projectModel.studentMax, Min = projectModel.studentMin, State = 1, Tags = projectModel.tags.Split(","), SupervisorId = 123  };
+        var addItem = new ProjectCreateDTO
+        {
+            Name = form.Name,
+            Description = form.Description, 
+            Max = form.Max, 
+            Min = form.Min, 
+            State = 1, 
+            Tags = form.Tags.Split(","), 
+            SupervisorId = 123
+        };
         var response = await Http.PostAsJsonAsync("/projects", addItem);
 
         Console.WriteLine(response.StatusCode);
