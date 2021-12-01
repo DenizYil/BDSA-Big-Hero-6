@@ -2,33 +2,30 @@
 
 <div class="project">
     <a href="/project/@Project.Id">
-    <h1 class="project-name">@Project.Name</h1>
-    <p class="project-description">@Project.Description</p>
-    <div class="supv">
-        <img class="supv-img" src=@GetSupervisorImgSrc()/>
-        <p class="supv-name">Made by @GetSupervisorName()</p>
-    </div>
-    <div class="tags">
-        @foreach (var tag in Project.Tags)
-    {   <button class="tag">@tag</button> }
-    </div>
+        <h1 class="project-name">@Project.Name</h1>
+        <p class="project-description">@Project.Description</p>
+        <div class="supv">
+            <img class="supv-img" src=@GetSupervisorImgSrc()/>
+            <p class="supv-name">Made by @Project.SupervisorId</p>
+        </div>
+        <div class="tags">
+            @foreach (var tag in Project.Tags)
+            {
+                <button class="tag">@tag</button>
+            }
+        </div>
     </a>
 </div>
 
 @code {
 
     [Parameter]
-    public Models.Project.ProjectDetailsDTO Project { get; set;}
+    public Models.Project.ProjectDetailsDTO Project { get; set; }
 
     public string GetSupervisorImgSrc()
     {
-        //return userrepo.Read(Project.SupervisorId).Img;
+    //return userrepo.Read(Project.SupervisorId).Img;
         return "https://www.w3schools.com/images/picture.jpg";
     }
 
-    public string GetSupervisorName()
-    {
-        //return userrepo.Read(Project.SupervisorId).Name;
-        return "Mr. Supervisor";
-    }
 }

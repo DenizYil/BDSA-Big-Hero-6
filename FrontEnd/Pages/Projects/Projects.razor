@@ -1,7 +1,6 @@
 ﻿@page "/projects"
 @using Components.ProjectCard;
 @using Models.Project
-@using System.Text.Json.Nodes
 
 @inject HttpClient client
 
@@ -24,11 +23,10 @@ else
 {
     @if (!_projects.Any())
     {
-        <p>There are somehow no projects</p>
+        <p>There is somehow no projects</p>
     }
     else
     {
-        <p>@_projects.Count()</p>
         <div class="projects">
 
             @foreach (var project in _projects)
@@ -52,4 +50,5 @@ else
     {
         _projects = await client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
     }
+
 }
