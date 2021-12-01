@@ -35,6 +35,12 @@ public class UserController : ControllerBase
 
         return user;
     }
+    
+    [HttpGet("/projects")]
+    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjectsByUser()
+    {
+        return await _userRepository.ReadAllByUser(123);
+    }
 
     [ProducesResponseType(201)]
     [HttpPost]
