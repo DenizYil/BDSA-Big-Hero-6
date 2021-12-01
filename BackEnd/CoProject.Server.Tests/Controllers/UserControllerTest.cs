@@ -43,12 +43,27 @@ public class UserControllerTest
         //Arrange
         repository.Setup(m => m.Read(100)).ReturnsAsync(default(UserDetailsDTO));
         
-        
         //Act
         var response = await controller.GetUser(100);
         
         //Assert
         Assert.IsType<NotFoundResult>(response.Result);
+    }
+
+    [Fact]
+    public async void GetProjectsByUser_returns_list_of_projects_by_user()
+    {
+        //Arrange
+        var projects = new List<ProjectDetailsDTO>
+        {
+            new(1, "Project Name", "Project Description", 1, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>())
+        };
+        repository.Setup(m => m.ReadAllByUser(1)).ReturnsAsync(projects);
+
+        var response = await controller.GetProjectsByUser(1);
+        
+        Assert.Equal(projects, response);
+
     }
     
     [Fact]
