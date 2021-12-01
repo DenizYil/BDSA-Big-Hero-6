@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -17,25 +18,26 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
+            .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
 
         builder.Services.Configure<JwtBearerOptions>(
-    JwtBearerDefaults.AuthenticationScheme, options =>
-    {
-        options.TokenValidationParameters.NameClaimType = "name";
-    });
+            JwtBearerDefaults.AuthenticationScheme,
+            options => { options.TokenValidationParameters.NameClaimType = "name"; }
+        );
         
-
         var allowAllPolicy = "AllowAll";
-        builder.Services.AddCors(options => {
-            options.AddPolicy(name: allowAllPolicy, builder => {
-                builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
-            });
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(allowAllPolicy,
+                policyBuilder =>
+                {
+                    policyBuilder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                });
         });
 
         // Add services to the container.
         builder.Services.AddControllers();
-        
+
         // Database handling
         builder.Services.AddDbContext<CoProjectContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CoProject")));
         builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -48,11 +50,14 @@ public class Program
         {
             options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
             {
-                Title= "CoProject - API",
+                Title = "CoProject - API",
                 Version = "v1",
                 Description = "The documentation for the CoProject REST API."
             });
         });
+
+        builder.Services.AddMvc(options => options.SuppressAsyncSuffixInActionNames = false);
+        builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
 
         var app = builder.Build();
 
@@ -61,13 +66,16 @@ public class Program
         {
             app.UseSwagger();
             app.UseSwaggerUI();
+            app.UseDeveloperExceptionPage();
         }
-
+        
 
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
+
+        app.UseRouting();
 
         app.UseCors(allowAllPolicy);
 

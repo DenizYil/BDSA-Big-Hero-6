@@ -1,7 +1,7 @@
 ﻿@page "/projects"
 @using Components.ProjectCard;
 @using Models.Project
-@layout AuthLayout
+@using System.Text.Json.Nodes
 
 @inject HttpClient client
 
@@ -22,12 +22,13 @@
 }
 else
 {
-    @if (_projects.Any())
+    @if (!_projects.Any())
     {
         <p>There are somehow no projects</p>
     }
     else
     {
+        <p>@_projects.Count()</p>
         <div class="projects">
 
             @foreach (var project in _projects)
@@ -45,10 +46,10 @@ else
 </div>
 
 @code {
-    private List<ProjectDetailsDTO>? _projects;
+    private IEnumerable<ProjectDetailsDTO>? _projects;
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = await client.GetFromJsonAsync<List<ProjectDetailsDTO>>("/projects");
+        _projects = await client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
     }
 }

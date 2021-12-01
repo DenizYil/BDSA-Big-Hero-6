@@ -4,10 +4,11 @@
 @using System.Net.Http
 @using System.Threading.Tasks
 @using System.ComponentModel.DataAnnotations;
+@using System.Text.Json.Nodes
 @using FrontEnd.Forms
 @using Microsoft.AspNetCore.Components
-@inject HttpClient Http
-@layout AuthLayout
+@inject NavigationManager NavManager
+@inject HttpClient Client
 
 <PageTitle>Create Project - CoProject</PageTitle>
 
@@ -106,8 +107,11 @@
             Tags = form.Tags.Split(","), 
             SupervisorId = 123
         };
-        var response = await Http.PostAsJsonAsync("/projects", addItem);
+        var response = await Client.PostAsJsonAsync("api/projects", addItem);
+       // Console.WriteLine(await response.Content.ReadFromJsonAsync<JsonObject>());
+        var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 
-        Console.WriteLine(response.StatusCode);
+        NavManager.NavigateTo($"/projects/{created.Id}");
+       // Console.WriteLine(response.StatusCode);
     }
 }
