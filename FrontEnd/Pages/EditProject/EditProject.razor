@@ -1,8 +1,45 @@
 ﻿@page "/editproject/{id}"
 @inherits LayoutComponentBase
+@using System.ComponentModel.DataAnnotations;
+@inject HttpClient Http
+@using Models.Project
 @inject NavigationManager NavManager
 
 @layout AuthLayout
+
+
+<style>
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 12px 20px;
+        box-sizing: border-box;
+        border-radius: 10px;
+        resize: none;
+        border-color: black;
+        border-width: 2px;
+        margin-top: 10px;
+        border: 1px solid gray;
+    }
+
+    input[type=text] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 10px;
+        border: 1px solid gray;
+    }
+
+    input[type=number] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 10px;
+        border: 1px solid gray;
+    }
+</style>
 
 <PageTitle>Edit project - CoProject</PageTitle>
 <div class="container">
@@ -12,33 +49,49 @@
         <h2>Edit the project by editing the inputs below</h2>
     </div>
 
-    <form>
-        <label for="name" class="form-header">Project Name <span class="required">*</span></label>
-        <input type="text" id="name" name="name" placeholder="Project name">
+    <EditForm Model="@projectModel" OnValidSubmit="@OnSubmit">
+        <div class="form">
+            <label for="name" class="form-header">Project Name <span class="required">*</span></label>
+            <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
+                @bind-Value="projectModel.Name" />
 
-        <label for="description" class="form-header">Project Description <span class="required">*</span></label>
-        <textarea id="description" placeholder="Write the description of the project"></textarea>
+            <label for="description" class="form-header">Project Description <span class="required">*</span></label>
+            <InputTextArea @bind-Value="projectModel.Description" class="inputTextArea" id="description"
+                placeholder="Write the description of the project" />
 
-        <label for="min" class="form-header">Students</label>
-        <div class="min-max-container">
-            <input type="text" id="min" name="name" placeholder="Minimum">
-            <div class="line"></div>
-            <input type="text" id="max" name="name" placeholder="Maximum">
+            <label for="min" class="form-header">Students</label>
+            <div class="min-max-container">
+                <InputNumber class="inputNumber" @bind-Value="projectModel.studentMin" type="number" id="min"
+                    name="name" placeholder="Minimum" />
+                <div class="line"></div>
+                <InputNumber @bind-Value="projectModel.studentMax" class="inputNumber" type="number" id="max"
+                    name="name" placeholder="Maximum" />
+            </div>
+
+            <label for="tags" class="form-header">Project Tags</label>
+            <InputText @bind-Value="projectModel.tags" class="inputText" type="text" id="tags" name="name"
+                placeholder="Write the tags seperated by comma" />
+
+            <h3>Project State</h3>
+            <InputSelect class="inputText" @bind-Value="projectModel.state">
+                <option value="">Select state</option>
+                <option value="1">OPEN</option>
+                <option value="2">CLOSED</option>
+                <option value="3">HIDDEN</option>
+            </InputSelect>
+            <div class="switch-field center">
+                <p class="switch-item active-switch-item" data-status="OPEN">OPEN</p>
+                <p class="switch-item" data-status="CLOSED">CLOSED</p>
+                <p class="switch-item" data-status="HIDDEN">HIDDEN</p>
+            </div>
+
+            <input type="submit" value="Save Changes" name="submit">t
         </div>
-
-        <label for="tags" class="form-header">Project Tags</label>
-        <input type="text" id="tags" name="name" placeholder="Write the tags seperated by comma">
-
-        <h3>Project State</h3>
-        <div class="switch-field center">
-            <p class="switch-item active-switch-item" data-status="OPEN">OPEN</p>
-            <p class="switch-item" data-status="CLOSED">CLOSED</p>
-            <p class="switch-item" data-status="HIDDEN">HIDDEN</p>
-        </div>
-
-        <input type="submit" value="Save Changes" name="submit">
-    </form>
+    </EditForm>
 </div>
+
+
+
 
 @code {
     [Parameter]
@@ -50,4 +103,30 @@
             NavManager.NavigateTo("/projects");
         }
     }
+
+    private ProjectForm projectModel = new();
+    public class ProjectForm
+    {
+
+        [Required]
+        [StringLength(100, ErrorMessage = "Name is too long")]
+        public string Name { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        public int? studentMin { get; set; }
+
+        public int? studentMax { get; set; }
+
+        public string? tags { get; set; }
+
+        public int state { get; set; }
+    }
+
+    private async void OnSubmit()
+    {
+        Console.WriteLine("Edit project");
+    }
+
 }

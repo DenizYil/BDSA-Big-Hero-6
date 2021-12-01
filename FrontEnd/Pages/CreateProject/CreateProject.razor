@@ -15,7 +15,6 @@
         height: 150px;
         padding: 12px 20px;
         box-sizing: border-box;
-        border: 2px solid #ccc;
         border-radius: 10px;
         resize: none;
         border-color: black;
@@ -54,20 +53,25 @@
     <EditForm Model="@projectModel" OnValidSubmit="@OnSubmit">
         <div class="form">
             <label for="name" class="form-header">Project Name <span class="required">*</span></label>
-            <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name" @bind-Value="projectModel.Name" />
+            <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
+                @bind-Value="projectModel.Name" />
 
             <label for="description" class="form-header">Project Description <span class="required">*</span></label>
-            <InputTextArea @bind-Value="projectModel.Description" class="inputTextArea" id="description" placeholder="Write the description of the project" />
+            <InputTextArea @bind-Value="projectModel.Description" class="inputTextArea" id="description"
+                placeholder="Write the description of the project" />
 
             <label for="min" class="form-header">Students</label>
             <div class="min-max-container">
-                <InputNumber class="inputNumber" @bind-Value="projectModel.studentMin" type="number" id="min" name="name" placeholder="Minimum" />
+                <InputNumber class="inputNumber" @bind-Value="projectModel.studentMin" type="number" id="min"
+                    name="name" placeholder="Minimum" />
                 <div class="line"></div>
-                <InputNumber @bind-Value="projectModel.studentMax" class="inputNumber" type="number" id="max" name="name" placeholder="Maximum" />
+                <InputNumber @bind-Value="projectModel.studentMax" class="inputNumber" type="number" id="max"
+                    name="name" placeholder="Maximum" />
             </div>
 
             <label for="tags" class="form-header">Project Tags</label>
-            <InputText @bind-Value="projectModel.tags" class="inputText" type="text" id="tags" name="name" placeholder="Write the tags seperated by comma" />
+            <InputText @bind-Value="projectModel.tags" class="inputText" type="text" id="tags" name="name"
+                placeholder="Write the tags seperated by comma" />
 
             <h3>Project State</h3>
             <InputSelect class="inputText" @bind-Value="projectModel.state">
@@ -113,7 +117,18 @@
 
     private async void OnSubmit()
     {
-        var addItem = new ProjectCreateDTO() { Name = projectModel.Name, Description = projectModel.Description, Max = projectModel.studentMax, Min = projectModel.studentMin, State = 1, Tags = projectModel.tags.Split(","), SupervisorId = 123  };
+        var addItem = new ProjectCreateDTO()
+        {
+            Name = projectModel.Name,
+            Description = projectModel.Description,
+            Max =
+        projectModel.studentMax,
+            Min = projectModel.studentMin,
+            State = 1,
+            Tags = projectModel.tags.Split(","),
+            SupervisorId =
+        123
+        };
         var response = await Http.PostAsJsonAsync("/projects", addItem);
 
         Console.WriteLine(response.StatusCode);
