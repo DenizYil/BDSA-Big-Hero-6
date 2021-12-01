@@ -28,6 +28,35 @@ public class UserRepository : IUserRepository
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<ProjectDetailsDTO>> ReadAllByUser(int id)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+
+        if (user == null)
+        {
+            return new List<ProjectDetailsDTO>();
+        }
+
+        return user.Projects
+            .Select(project =>
+                new ProjectDetailsDTO(
+                    project.Id,
+                    project.Name,
+                    project.Description,
+                    project.SupervisorId,
+                    project.State,
+                    project.Created,
+                    project.Tags.Select(tag => tag.Name).ToList(),
+                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.UserName, u.NormalizedUserName, u.Email))
+                        .ToList()
+                )
+                {
+                    Min = project.Min,
+                    Max = project.Max
+                })
+            .ToList();
+    }
+
     public async Task<UserDetailsDTO> Create(UserCreateDTO create)
     {
         var user = new User

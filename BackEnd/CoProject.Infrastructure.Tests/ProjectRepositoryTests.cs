@@ -7,25 +7,10 @@ namespace CoProject.Infrastructure.Tests;
 public class ProjectRepositoryTests : DefaultTests
 {
     private readonly ProjectRepository _repo;
-    private readonly Project project;
-    private readonly DateTime now = DateTime.Now;
+    
     public ProjectRepositoryTests()
     {
         _repo = new ProjectRepository(_context);
-        
-        project = new Project
-        {
-            Id = 1,
-            Name = "Karl",
-            Description = "yep hehe smiley",
-            SupervisorId = 1,
-            Created = now,
-            State = State.Open,
-            Tags = new List<Tag>(),
-            Users = new List<User>()
-        };
-        _context.Projects.Add(project);
-        _context.SaveChanges();
     }
 
     [Fact]
