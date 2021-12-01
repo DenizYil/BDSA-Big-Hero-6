@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CoProject.Server.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("users")]
 public class UserController : ControllerBase
@@ -26,6 +25,7 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<UserDetailsDTO?>> GetUser(int id)
     {
+        Console.WriteLine("Det er her!");
         var user = await _userRepository.Read(id);
 
         if (user == null)

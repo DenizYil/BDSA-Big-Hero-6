@@ -24,6 +24,14 @@ public class Program
     {
         options.TokenValidationParameters.NameClaimType = "name";
     });
+        
+
+        var allowAllPolicy = "AllowAll";
+        builder.Services.AddCors(options => {
+            options.AddPolicy(name: allowAllPolicy, builder => {
+                builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+            });
+        });
 
         // Add services to the container.
         builder.Services.AddControllers();
@@ -32,6 +40,7 @@ public class Program
         builder.Services.AddDbContext<CoProjectContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CoProject")));
         builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
         builder.Services.AddScoped<ICoProjectContext, CoProjectContext>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
 
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -59,6 +68,8 @@ public class Program
         app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
+
+        app.UseCors(allowAllPolicy);
 
         app.Run();
     }
