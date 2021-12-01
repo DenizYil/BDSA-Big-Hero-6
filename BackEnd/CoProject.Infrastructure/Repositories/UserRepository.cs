@@ -47,7 +47,7 @@ public class UserRepository : IUserRepository
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.NormalizedUserName, u.UserName, u.Email))
+                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.UserName, u.NormalizedUserName, u.Email))
                         .ToList()
                 )
                 {

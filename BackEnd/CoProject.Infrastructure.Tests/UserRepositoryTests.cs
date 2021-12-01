@@ -73,6 +73,42 @@ public class UserRepositoryTests : DefaultTests
     }
 
     [Fact]
+    public async void ReadAllByUser_given_unexisting_id_returns_empty_list()
+    {
+        var expected = new List<ProjectDetailsDTO>();
+        var actual = await _repo.ReadAllByUser(2);
+        
+        Assert.Equal(expected, actual);
+    }
+    
+    [Fact]
+    public async void ReadAllByUser_given_existing_id_returns_list_of_projects()
+    {
+        var expected = new List<ProjectDetailsDTO>
+        {
+            new(
+                1,
+                "Karl",
+                "yep hehe smiley",
+                1,
+                State.Open,
+                now,
+                new List<string>(),
+                new List<UserDetailsDTO>
+                {
+                    new(1, "Myself", "MyselfButNormalized", "me@me.dk")
+                }
+            )
+        };
+
+        project.Users = new List<User> {user};
+        await _context.SaveChangesAsync();
+        var actual = await _repo.ReadAllByUser(1);
+
+        expected.Should().BeEquivalentTo(actual);
+    }
+    
+    [Fact]
     public async void Update_Given_Non_Existing_UserUpdateDTO_Returning_Status_NotFound()
     {
         var expected = Status.NotFound;
