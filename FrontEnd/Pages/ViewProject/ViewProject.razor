@@ -1,69 +1,97 @@
-@page "/project/{id}"
-@inject NavigationManager NavManager
+@page "/project/{Id}"
+@inject NavigationManager _navManager
 @layout AuthLayout
+@inject HttpClient _client
+@using Models.Project
 
 <PageTitle>View Project - CoProject</PageTitle>
 
-<h1 id="ProjectName">Project name</h1>
-<h2 id="registered">Registered: 78/80</h2>
+@if (_project == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h1 id="ProjectName">@_project.Name</h1>
+    <h2 id="registered">Registered: @_project.Users.Count/@_project.Max</h2>
 
-<hr />
+    <hr/>
 
-<div class="supervisorContainer">
-    <img class="imageOfSupervisor" alt="PICTURE OF SUPERVISOR" src="https://via.placeholder.com/150">
-    <p class="supervisorName">Project creator</p>
-    <p class="createdBy">Created on 05/11/2021</p>
-</div>
-
-<p class="projectDescription">
-    Proin ullamcorper nisl sit amet sem venenatis, at iaculis enim accumsan.
-    In sollicitudin augue lacus, ac blandit nisi iaculis eget.
-</p>
-
-<div class="tags">
-    <p class="tagName">python</p>
-    <p class="tagName">python</p>
-    <p class="tagName">python</p>
-    <p class="tagName">python</p>
-    <p class="tagName">python</p>
-</div>
-
-<button id="editProject"><a href="/editproject/@id">Edit project</a></button>
-
-<button id="delete">Delete</button>
-<hr />
-
-<p id="studentsRegistered">Students registered</p>
-
-<div id="bagOfStudents">
-    <div class="oneStudent">
-        <div class="studentLeft">
-            <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student" />
-        </div>
-        <div class="studentRight">
-            <p class="student">The Pendler Kid</p>
-            <p class="email">DenoG@itu.dk <img src="/images/copyIcon.svg" class="material-icons" /></p>
-        </div>
+    <div class="supervisorContainer">
+        <img class="imageOfSupervisor" alt="PICTURE OF SUPERVISOR" src="https://via.placeholder.com/150">
+        <p class="supervisorName">Project creator id :> @_project.SupervisorId</p>
+        <p class="createdBy">Created on @_project.Created</p>
     </div>
-    <div class="oneStudent">
-        <div class="studentLeft">
-            <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student" />
-        </div>
-        <div class="studentRight">
-            <p class="student">The Pendler Kid</p>
-            <p class="email">DenoG@itu.dk <img src="/images/copyIcon.svg" class="material-icons" /></p>
-        </div>
+
+    <p class="projectDescription">
+        @_project.Description
+    </p>
+
+    <div class="tags">
+        @foreach (var t in _project.Tags)
+        {
+            <p class="tagName">@t</p>
+        }
     </div>
-</div>
+
+    <button id="editProject">
+        <a href="/editproject/@Id">Edit project</a>
+    </button>
+
+    <button id="delete" onclick=@Delete>Delete</button>
+    <hr/>
+
+    <p id="studentsRegistered">Students registered</p>
+
+    <div id="bagOfStudents">
+
+        @foreach (var u in _project.Users)
+        {
+            <div class="oneStudent">
+                <div class="studentLeft">
+                    <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student"/>
+                </div>
+                <div class="studentRight">
+                    <p class="student">@u.Name</p>
+                    <p class="email">
+                        @u.Email<img src="/images/copyIcon.svg" class="material-icons"/>
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 @code {
+    private ProjectDetailsDTO? _project;
+
     [Parameter]
-    public string? id { get; set; }
+    public string? Id { get; set; }
+
     protected override void OnInitialized()
     {
-        if (id == null)
+        if (Id == null)
         {
-            NavManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects");
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _client.GetAsync($"api/projects/{Id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            _project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+        }
+        else
+        {
+            _navManager.NavigateTo("/projects");
+        }
+    }
+
+    private async void Delete()
+    {
+        await _client.DeleteAsync($"api/projects/{Id}");
     }
 }

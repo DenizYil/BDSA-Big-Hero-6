@@ -1,7 +1,11 @@
 ﻿@page "/profile"
 @inherits LayoutComponentBase
-@using System.ComponentModel.DataAnnotations;
+@using FrontEnd.Forms
+@using Microsoft.AspNetCore.Components
+@using Models.User
 @layout AuthLayout
+@inject HttpClient _client
+@inject NavigationManager _navManager
 
 <PageTitle>My Profile - CoProject</PageTitle>
 
@@ -35,43 +39,53 @@
 <div class="container">
     <div class="center">
         <h1>My Profile</h1>
-        <hr />
+        <hr/>
         <h2>Update your information</h2>
     </div>
 
-    <EditForm Model="@formModel" OnValidSubmit="@OnSubmit">
-        <label for="name" class="form-header"> Your name <span class="required">*</span></label>
-        <InputText type="text" id="name" name="name" placeholder="Enter your new name here"
-            @bind-Value="formModel.Name" />
+    @if (_user == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
+            <label for="name" class="form-header"> Your name <span class="required">*</span></label>
+            <InputText type="text" id="name" name="name" placeholder="Enter your new name here" @bind-Value="_form.Name"/>
 
-        <label for="email" class="form-header">Your email <span class="required">*</span></label>
-        <InputText type="text" id="email" placeholder="Enter your new e-mail address here"
-            @bind-Value="formModel.Email" />
+            <label for="email" class="form-header">Your email <span class="required">*</span></label>
+            <InputText type="text" id="email" placeholder="Enter your new e-mail address here" @bind-Value="_form.Email"/>
 
-        <button type="submit">Update profile</button>
-    </EditForm>
+            <button type="submit">Update profile</button>
+        </EditForm>
+    }
 </div>
 
 @code {
 
-    private MyProfileForm formModel = new();
-    public class MyProfileForm
+    private int Id { get; set; }
+
+    private ProfileForm _form = new();
+    private UserDetailsDTO? _user;
+
+    protected override async Task OnInitializedAsync()
     {
+        var resp = await _client.GetAsync($"api/users/{Id}");
 
-        [Required]
-        [StringLength(100, ErrorMessage = "Name is too long")]
-        public string Name { get; set; }
+        if (!resp.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("/projects");
+            return;
+        }
 
+        _user = await resp.Content.ReadFromJsonAsync<UserDetailsDTO>();
 
-        [StringLength(100, ErrorMessage = "Name is too long")]
-        [EmailAddress]
-        [Required]
-        public string Email { get; set; }
+        _form.Name = _user!.Name;
+        _form.Email = _user!.Email;
     }
 
     private async void OnSubmit()
     {
-        Console.WriteLine("Update profile : " + formModel.Name);
+        await _client.PutAsJsonAsync($"api/users/{Id}", _form);
     }
-
 }

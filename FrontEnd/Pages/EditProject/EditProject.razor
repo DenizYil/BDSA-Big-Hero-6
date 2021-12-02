@@ -1,9 +1,10 @@
 ﻿@page "/editproject/{id}"
 @inherits LayoutComponentBase
-@using System.ComponentModel.DataAnnotations;
-@inject HttpClient Http
+@using FrontEnd.Forms
+@using Microsoft.AspNetCore.Components
+@inject HttpClient _client
 @using Models.Project
-@inject NavigationManager NavManager
+@inject NavigationManager _navManager
 
 @layout AuthLayout
 
@@ -17,7 +18,6 @@
         border-radius: 10px;
         resize: none;
         border-color: black;
-        border-width: 2px;
         margin-top: 10px;
         border: 1px solid gray;
     }
@@ -45,44 +45,38 @@
 <div class="container">
     <div class="center">
         <h1>Edit Project</h1>
-        <hr />
+        <hr/>
         <h2>Edit the project by editing the inputs below</h2>
     </div>
 
-    <EditForm Model="@projectModel" OnValidSubmit="@OnSubmit">
+    <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
         <div class="form">
             <label for="name" class="form-header">Project Name <span class="required">*</span></label>
             <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
-                @bind-Value="projectModel.Name" />
+                       @bind-Value="_form.Name"/>
 
             <label for="description" class="form-header">Project Description <span class="required">*</span></label>
-            <InputTextArea @bind-Value="projectModel.Description" class="inputTextArea" id="description"
-                placeholder="Write the description of the project" />
+            <InputTextArea @bind-Value="_form.Description" class="inputTextArea" id="description"
+                           placeholder="Write the description of the project"/>
 
             <label for="min" class="form-header">Students</label>
             <div class="min-max-container">
-                <InputNumber class="inputNumber" @bind-Value="projectModel.studentMin" type="number" id="min"
-                    name="name" placeholder="Minimum" />
+                <InputNumber class="inputNumber" @bind-Value="_form.Min" type="number" id="min"
+                             name="name" placeholder="Minimum"/>
                 <div class="line"></div>
-                <InputNumber @bind-Value="projectModel.studentMax" class="inputNumber" type="number" id="max"
-                    name="name" placeholder="Maximum" />
+                <InputNumber @bind-Value="_form.Max" class="inputNumber" type="number" id="max"
+                             name="name" placeholder="Maximum"/>
             </div>
 
             <label for="tags" class="form-header">Project Tags</label>
-            <InputText @bind-Value="projectModel.tags" class="inputText" type="text" id="tags" name="name"
-                placeholder="Write the tags seperated by comma" />
+            <InputText @bind-Value="_form.Tags" class="inputText" type="text" id="tags" name="name"
+                       placeholder="Write the tags seperated by comma"/>
 
             <h3>Project State</h3>
-            <InputSelect class="inputText" @bind-Value="projectModel.state">
-                <option value="">Select state</option>
-                <option value="1">OPEN</option>
-                <option value="2">CLOSED</option>
-                <option value="3">HIDDEN</option>
-            </InputSelect>
             <div class="switch-field center">
-                <p class="switch-item active-switch-item" data-status="OPEN">OPEN</p>
-                <p class="switch-item" data-status="CLOSED">CLOSED</p>
-                <p class="switch-item" data-status="HIDDEN">HIDDEN</p>
+                <p class="switch-item @(_form.State == 1 ? "active-switch-item" : "")" @onclick="() => SwitchItem(1)" data-status="OPEN">OPEN</p>
+                <p class="switch-item @(_form.State == 2 ? "active-switch-item" : "")" @onclick="() => SwitchItem(2)" data-status="CLOSED">CLOSED</p>
+                <p class="switch-item @(_form.State == 3 ? "active-switch-item" : "")" @onclick="() => SwitchItem(3)" data-status="HIDDEN">HIDDEN</p>
             </div>
 
             <input type="submit" value="Save Changes" name="submit">t
@@ -91,42 +85,58 @@
 </div>
 
 
-
-
 @code {
+
     [Parameter]
-    public string? id { get; set; }
+    public string? Id { get; set; }
+    
+    private ProjectForm _form = new();
+
     protected override void OnInitialized()
     {
-        if (id == null)
+        if (Id == null)
         {
-            NavManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects");
         }
     }
 
-    private ProjectForm projectModel = new();
-    public class ProjectForm
+    protected override async Task OnInitializedAsync()
     {
+        var response = await _client.GetAsync($"api/projects/{Id}");
 
-        [Required]
-        [StringLength(100, ErrorMessage = "Name is too long")]
-        public string Name { get; set; }
+        if (!response.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("/projects");
+            return;
+        }
 
-        [Required]
-        public string Description { get; set; }
+        var project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 
-        public int? studentMin { get; set; }
+        var tags = "";
 
-        public int? studentMax { get; set; }
+        foreach (var tag in project!.Tags)
+        {
+            tags += tag + ", ";
+        }
 
-        public string? tags { get; set; }
+        tags = tags.TrimEnd(',', ' ');
 
-        public int state { get; set; }
+        _form.Name = project!.Name;
+        _form.Description = project.Description;
+        _form.Max = project.Max;
+        _form.Min = project.Min;
+        _form.Tags = tags;
+        _form.State = project.State;
+    }
+    
+    private void SwitchItem(int state)
+    {
+        _form.State = state;
     }
 
     private async void OnSubmit()
     {
-        Console.WriteLine("Edit project");
+        await _client.PutAsJsonAsync($"api/projects/{Id}", _form);
+        _navManager.NavigateTo($"/projects/{Id}");
     }
-
 }

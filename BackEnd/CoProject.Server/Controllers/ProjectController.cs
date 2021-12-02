@@ -1,26 +1,27 @@
 ﻿namespace CoProject.Server.Controllers;
 
 [ApiController]
-[Route("projects")]
+[Route("api/projects")]
 public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _projectRepository;
 
+    
     public ProjectController(IProjectRepository projectRepository)
     {
         _projectRepository = projectRepository;
     }
 
-    [HttpGet("projects")]
-    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjects() 
+    [HttpGet]
+    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjects()
     {
         return await _projectRepository.ReadAll();
     }
 
     [ProducesResponseType(404)]
     [ProducesResponseType(typeof(ProjectDetailsDTO), 200)]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ProjectDetailsDTO?>> GetProject(int id)
+    [HttpGet("{id}",  Name = nameof(GetProject))]
+    public async Task<ActionResult<ProjectDetailsDTO>> GetProject(int id)
     {
         var project = await _projectRepository.Read(id);
         
@@ -36,9 +37,9 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(typeof(ProjectDetailsDTO), 201)]
     public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
-        Console.WriteLine(project.Name);
-        var projectDetailsDto = await _projectRepository.Create(project);
-        return CreatedAtRoute(nameof(GetProject), new {Id = projectDetailsDto.Id}, projectDetailsDto);
+        var created = await _projectRepository.Create(project);
+        
+        return CreatedAtRoute(nameof(GetProject), new {created.Id}, created);
     }
 
 
@@ -76,12 +77,12 @@ public class ProjectController : ControllerBase
         return NoContent();
     }
     
-    [HttpDelete("{ProjectId}/{UserId}")]
+    [HttpDelete("{projectId}/{userId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> RemoveUserFromProject(int ProjectId, int UserId)
+    public async Task<IActionResult> RemoveUserFromProject(int projectId, int userId)
     {
-        var project = await _projectRepository.Read(ProjectId);
+        var project = await _projectRepository.Read(projectId);
 
         if (project == null)
         {
@@ -90,9 +91,9 @@ public class ProjectController : ControllerBase
 
         var users = project.Users.Select(u => u.Id).ToList();
 
-        users.Remove(UserId);
+        users.Remove(userId);
 
-        await _projectRepository.Update(ProjectId, new ProjectUpdateDTO(){Users = users});
+        await _projectRepository.Update(projectId, new ProjectUpdateDTO(){Users = users});
         return NoContent();
     }
 

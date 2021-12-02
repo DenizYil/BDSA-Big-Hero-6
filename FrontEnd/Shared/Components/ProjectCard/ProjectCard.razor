@@ -2,51 +2,30 @@
 
 <div class="project">
     <a href="/project/@Project.Id">
-    <h1 class="project-name">@Project.Name</h1>
-    <p class="project-description">@Project.Description</p>
-    <div class="supv">
-        <img class="supv-img" src=@GetSupervisorImgSrc()/>
-        <p class="supv-name">Made by @GetSupervisorName()</p>
-    </div>
-    <div class="tags">
-        @foreach (var tag in Project.Tags)
-    {   <button class="tag">@tag</button> }
-    </div>
+        <h1 class="project-name">@Project.Name</h1>
+        <p class="project-description">@Project.Description</p>
+        <div class="supv">
+            <img class="supv-img" src=@GetSupervisorImgSrc()/>
+            <p class="supv-name">Made by @Project.SupervisorId</p>
+        </div>
+        <div class="tags">
+            @foreach (var tag in Project.Tags)
+            {
+                <button class="tag">@tag</button>
+            }
+        </div>
     </a>
 </div>
 
 @code {
 
     [Parameter]
-    public Models.Project.ProjectDetailsDTO Project { get; set;} =
-        new()
-        {
-            Id = 1,
-            Name = "Lorem ipsum",
-            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-            SupervisorId = -1,
-            Tags = InitTags()
-        };
+    public Models.Project.ProjectDetailsDTO Project { get; set; }
 
-    public static List<string> InitTags()
-    {
-        var Tags = new List<string>();
-        Tags.Add("lorem ipsum");
-        Tags.Add("lorem ipsum");
-        Tags.Add("lorem ipsum");
-        Tags.Add("lorem ipsum");
-        return Tags;
-    }
-    
     public string GetSupervisorImgSrc()
     {
-        //return userrepo.Read(Project.SupervisorId).Img;
+    //return userrepo.Read(Project.SupervisorId).Img;
         return "https://www.w3schools.com/images/picture.jpg";
     }
 
-    public string GetSupervisorName()
-    {
-        //return userrepo.Read(Project.SupervisorId).Name;
-        return "Mr. Supervisor";
-    }
 }

@@ -1,10 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
 namespace CoProject.Server.Controllers;
 
 [ApiController]
-[Route("users")]
+[Route("api/users")]
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
@@ -36,7 +33,7 @@ public class UserController : ControllerBase
         return user;
     }
     
-    [HttpGet("/projects")]
+    [HttpGet("/projects/{userId}")]
     public async Task<IEnumerable<ProjectDetailsDTO>> GetProjectsByUser(int userId)
     {
         return await _userRepository.ReadAllByUser(userId);
