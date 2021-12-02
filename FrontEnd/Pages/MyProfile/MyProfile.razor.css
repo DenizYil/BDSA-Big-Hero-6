@@ -43,27 +43,3 @@ form {
   margin-top: 10px;
   display: block;
 }
-
-input[type='text'] {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  box-sizing: border-box;
-  border-radius: 10px;
-  border: 1px solid gray;
-}
-
-button[type='submit'] {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 20px;
-  margin-bottom: 30px;
-  display: block;
-  background-color: #0b4f6c;
-  color: white;
-  font-size: 20px;
-  border: #707070;
-  border-radius: 10px;
-  height: 50px;
-  width: 90%;
-}
