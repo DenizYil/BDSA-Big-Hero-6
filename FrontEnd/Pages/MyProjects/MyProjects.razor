@@ -2,7 +2,7 @@
 @using Components.ProjectCard;
 @using Models.Project
 
-@inject HttpClient client
+@inject HttpClient _client
 
 
 <PageTitle>Projects - CoProject</PageTitle>
@@ -49,6 +49,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = await client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>($"api/users/projects/{UserId}");
+        _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>($"api/users/projects/{UserId}");
     }
 }

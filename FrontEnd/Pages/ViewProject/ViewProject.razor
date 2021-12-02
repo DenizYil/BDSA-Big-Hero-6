@@ -1,34 +1,34 @@
 @page "/project/{Id}"
-@inject NavigationManager NavManager
+@inject NavigationManager _navManager
 @layout AuthLayout
-@inject HttpClient Http
+@inject HttpClient _client
 @using Models.Project
 
 <PageTitle>View Project - CoProject</PageTitle>
 
-@if (project == null)
+@if (_project == null)
 {
     <p>Loading...</p>
 }
 else
 {
-    <h1 id="ProjectName">@project.Name</h1>
-    <h2 id="registered">Registered: @project.Users.Count/@project.Max</h2>
+    <h1 id="ProjectName">@_project.Name</h1>
+    <h2 id="registered">Registered: @_project.Users.Count/@_project.Max</h2>
 
     <hr/>
 
     <div class="supervisorContainer">
         <img class="imageOfSupervisor" alt="PICTURE OF SUPERVISOR" src="https://via.placeholder.com/150">
-        <p class="supervisorName">Project creator id :> @project.SupervisorId</p>
-        <p class="createdBy">Created on @project.Created</p>
+        <p class="supervisorName">Project creator id :> @_project.SupervisorId</p>
+        <p class="createdBy">Created on @_project.Created</p>
     </div>
 
     <p class="projectDescription">
-        @project.Description
+        @_project.Description
     </p>
 
     <div class="tags">
-        @foreach (var t in project.Tags)
+        @foreach (var t in _project.Tags)
         {
             <p class="tagName">@t</p>
         }
@@ -45,7 +45,7 @@ else
 
     <div id="bagOfStudents">
 
-        @foreach (var u in project.Users)
+        @foreach (var u in _project.Users)
         {
             <div class="oneStudent">
                 <div class="studentLeft">
@@ -63,7 +63,7 @@ else
 }
 
 @code {
-    private ProjectDetailsDTO? project;
+    private ProjectDetailsDTO? _project;
 
     [Parameter]
     public string? Id { get; set; }
@@ -72,26 +72,26 @@ else
     {
         if (Id == null)
         {
-            NavManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects");
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await Http.GetAsync($"api/projects/{Id}");
+        var response = await _client.GetAsync($"api/projects/{Id}");
 
         if (response.IsSuccessStatusCode)
         {
-            project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+            _project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
         }
         else
         {
-            NavManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects");
         }
     }
 
     private async void Delete()
     {
-        await Http.DeleteAsync($"api/projects/{Id}");
+        await _client.DeleteAsync($"api/projects/{Id}");
     }
 }

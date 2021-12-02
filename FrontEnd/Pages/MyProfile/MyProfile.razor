@@ -4,8 +4,8 @@
 @using Microsoft.AspNetCore.Components
 @using Models.User
 @layout AuthLayout
-@inject HttpClient Client
-@inject NavigationManager NavManager
+@inject HttpClient _client
+@inject NavigationManager _navManager
 
 <PageTitle>My Profile - CoProject</PageTitle>
 
@@ -43,7 +43,7 @@
         <h2>Update your information</h2>
     </div>
 
-    @if (user == null)
+    @if (_user == null)
     {
         <p>Loading...</p>
     }
@@ -63,29 +63,29 @@
 
 @code {
 
-    private ProfileForm _form = new();
     private int Id { get; set; }
 
-    private UserDetailsDTO? user;
+    private ProfileForm _form = new();
+    private UserDetailsDTO? _user;
 
     protected override async Task OnInitializedAsync()
     {
-        var resp = await Client.GetAsync($"api/users/{Id}");
+        var resp = await _client.GetAsync($"api/users/{Id}");
 
         if (!resp.IsSuccessStatusCode)
         {
-            NavManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects");
             return;
         }
 
-        user = await resp.Content.ReadFromJsonAsync<UserDetailsDTO>();
+        _user = await resp.Content.ReadFromJsonAsync<UserDetailsDTO>();
 
-        _form.Name = user!.Name;
-        _form.Email = user!.Email;
+        _form.Name = _user!.Name;
+        _form.Email = _user!.Email;
     }
 
     private async void OnSubmit()
     {
-        await Client.PutAsJsonAsync($"api/users/{Id}", _form);
+        await _client.PutAsJsonAsync($"api/users/{Id}", _form);
     }
 }

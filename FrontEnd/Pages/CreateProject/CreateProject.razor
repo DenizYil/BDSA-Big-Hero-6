@@ -1,14 +1,10 @@
 ﻿@page "/createproject"
 @inherits LayoutComponentBase
 @using Models.Project
-@using System.Net.Http
-@using System.Threading.Tasks
-@using System.ComponentModel.DataAnnotations;
-@using System.Text.Json.Nodes
 @using FrontEnd.Forms
 @using Microsoft.AspNetCore.Components
-@inject NavigationManager NavManager
-@inject HttpClient Client
+@inject NavigationManager _navManager
+@inject HttpClient _client
 
 <PageTitle>Create Project - CoProject</PageTitle>
 
@@ -76,16 +72,11 @@
             <InputText @bind-Value="_form.Tags" class="inputText" type="text" id="tags" name="name"
                 placeholder="Write the tags seperated by comma" />
             <h3>Project State</h3>
-            <InputSelect class="inputText" @bind-Value="_form.State">
-                <option value="">Select state</option>
-                <option value="1">OPEN</option>
-                <option value="2">CLOSED</option>
-                <option value="3">HIDDEN</option>
-            </InputSelect>
             <div class="switch-field center">
-                <p class="switch-item active-switch-item" data-status="OPEN">OPEN</p>
-                <p class="switch-item" data-status="CLOSED">CLOSED</p>
-                <p class="switch-item" data-status="HIDDEN">HIDDEN</p>
+
+                <p class="switch-item @(_form.State == 1 ? "active-switch-item" : "")" @onclick="() => SwitchItem(1)" data-status="OPEN">OPEN</p>
+                <p class="switch-item @(_form.State == 2 ? "active-switch-item" : "")" @onclick="() => SwitchItem(2)" data-status="CLOSED">CLOSED</p>
+                <p class="switch-item @(_form.State == 3 ? "active-switch-item" : "")" @onclick="() => SwitchItem(3)" data-status="HIDDEN">HIDDEN</p>
             </div>
             
             <button type="submit" class="submitButton">Create Project</button>
@@ -96,7 +87,7 @@
 
 @code {
 
-    private ProjectForm _form = new();
+    private ProjectForm _form = new() {State = 1};
     
     private async void OnSubmit()
     {
@@ -110,9 +101,14 @@
             Tags = _form.Tags!.Split(","),
             SupervisorId = 123
         };
-        var response = await Client.PostAsJsonAsync("/projects", addItem);
+        var response = await _client.PostAsJsonAsync("/projects", addItem);
         var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 
-        NavManager.NavigateTo($"/projects/{created.Id}");
+        _navManager.NavigateTo($"/projects/{created.Id}");
+    }
+    
+    private void SwitchItem(int state)
+    {
+        _form.State = state;
     }
 }
