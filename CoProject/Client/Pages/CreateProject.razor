@@ -104,7 +104,7 @@
             Tags = _form.Tags!.Split(","),
             SupervisorId = 123
         };
-        var response = await _client.PostAsJsonAsync("/projects", addItem);
+        var response = await _client.PostAsJsonAsync("api/projects", addItem);
         var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 
         _navManager.NavigateTo($"/projects/{created.Id}");
