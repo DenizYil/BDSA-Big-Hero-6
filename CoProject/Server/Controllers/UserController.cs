@@ -78,8 +78,6 @@ public class UserController : ControllerBase
         {
             return NotFound();
         }
-
-        
     }
 
     [ProducesResponseType(404)]
