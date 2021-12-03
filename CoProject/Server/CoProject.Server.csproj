@@ -14,6 +14,12 @@
   <ItemGroup>
     <ProjectReference Include="..\Client\CoProject.Client.csproj" />
     <ProjectReference Include="..\Shared\CoProject.Shared.csproj" />
+    <ProjectReference Include="..\Infrastructure.Tests\CoProject.Infrastructure.Tests.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\CoProject.Infrastructure.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
