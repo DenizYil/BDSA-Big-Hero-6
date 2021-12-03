@@ -39,6 +39,22 @@
         border-radius: 10px;
         border: 1px solid gray;
     }
+
+    button[type="submit"] {
+        cursor: pointer;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        display: block;
+        background-color: #0b4f6c;
+        color: white;
+        font-size: 20px;
+        border: #707070;
+        border-radius: 5px;
+        height: 50px;
+        width: 300px;
+    }
 </style>
 
 <PageTitle>Edit project - CoProject</PageTitle>
@@ -82,7 +98,7 @@
                     data-status="HIDDEN">HIDDEN</p>
             </div>
 
-            <input type="submit" value="Save Changes" name="submit">t
+            <button type="submit">Save changes</button>
         </div>
     </EditForm>
 </div>
@@ -140,6 +156,6 @@
     private async void OnSubmit()
     {
         await _client.PutAsJsonAsync($"api/projects/{Id}", _form);
-        _navManager.NavigateTo($"/projects/{Id}");
+        _navManager.NavigateTo($"/project/{Id}");
     }
 }

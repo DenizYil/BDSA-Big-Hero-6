@@ -48,21 +48,6 @@ input[type='text'] {
   border: 1px solid gray;
 }
 
-input[type='submit'] {
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 20px;
-  margin-bottom: 30px;
-  display: block;
-  background-color: #0b4f6c;
-  color: white;
-  font-size: 20px;
-  border: #707070;
-  border-radius: 5px;
-  height: 50px;
-  width: 300px;
-}
-
 label {
   margin-top: 10px;
   display: inline-block;
