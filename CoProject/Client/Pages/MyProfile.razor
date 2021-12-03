@@ -70,7 +70,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var resp = await _client.GetAsync($"api/users/{Id}");
+        var resp = await _client.GetAsync($"api/user");
 
         if (!resp.IsSuccessStatusCode)
         {
@@ -86,6 +86,6 @@
 
     private async void OnSubmit()
     {
-        await _client.PutAsJsonAsync($"api/users/{Id}", _form);
+        await _client.PutAsJsonAsync($"api/user", _form);
     }
 }

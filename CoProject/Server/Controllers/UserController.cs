@@ -1,7 +1,10 @@
 namespace CoProject.Server.Controllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
+[Authorize]
 [ApiController]
-[Route("api/users")]
+[Route("api/user")]
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
@@ -11,32 +14,28 @@ public class UserController : ControllerBase
         _userRepository = userRepository;
     }
     
-    [HttpGet]
-    public async Task<IEnumerable<UserDetailsDTO>> GetUsers() 
-    {
-        return await _userRepository.ReadAll();
-    }
-    
     [ProducesResponseType(404)]
     [ProducesResponseType(typeof(UserDetailsDTO), 200)]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<UserDetailsDTO?>> GetUser(int id)
+    [HttpGet]
+    public async Task<ActionResult<UserDetailsDTO?>> GetUser()
     {
-        Console.WriteLine("Det er her!");
-        var user = await _userRepository.Read(id);
+        Console.WriteLine(User.Identity.Name);
+        var user = await _userRepository.Read(1);
 
         if (user == null)
         {
+            Console.WriteLine("LETS GOO!!");
             return NotFound();
         }
 
         return user;
     }
     
-    [HttpGet("/projects/{userId}")]
-    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjectsByUser(int userId)
+    [HttpGet("projects")]
+    public async Task<IEnumerable<ProjectDetailsDTO>> GetProjectsByUser()
     {
-        return await _userRepository.ReadAllByUser(userId);
+
+        return await _userRepository.ReadAllByUser(1);
     }
 
     [ProducesResponseType(201)]
@@ -46,42 +45,32 @@ public class UserController : ControllerBase
         var user = await _userRepository.Create(newUser);
         return CreatedAtRoute(nameof(GetUser), new {user.Id}, user);
     }
-    
-    /*[HttpGet]
-    [Route("{id}")]
-    public String? GetUser(int id)
+
+    [ProducesResponseType(201)]
+    [HttpPost("signup")]
+    public async Task<IActionResult> SignupUser(UserCreateDTO newUser)
     {
-        Console.WriteLine("ehh what?");
-        if (User.Identity != null)
+
+        var isUserAlready = await _userRepository.Read(1);
+
+        if(isUserAlready == null)
         {
-            return User.Identity.Name?.ToString();
+            var user = await _userRepository.Create(newUser);
+            return CreatedAtRoute(nameof(GetUser), new { user.Id }, user);
         }else
         {
-            return "no user";
+            return NoContent();
         }
-    }*/
 
-    [ProducesResponseType(404)]
-    [ProducesResponseType(204)]
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(int id)
-    {
-       var response = await _userRepository.Delete(id);
-
-       if (response == Status.Deleted)
-       {
-           return NoContent();
-       }
-       
-       return NotFound();
+        
     }
-    
+
     [ProducesResponseType(404)]
     [ProducesResponseType(204)]
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDTO updatedUser)
+    [HttpPut]
+    public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO updatedUser)
     {
-        var response = await _userRepository.Update(id, updatedUser);
+        var response = await _userRepository.Update(1, updatedUser);
 
         if (response == Status.Updated)
         {

@@ -1,5 +1,7 @@
 ﻿namespace CoProject.Server.Controllers;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 [ApiController]
 [Route("api/projects")]
 public class ProjectController : ControllerBase
