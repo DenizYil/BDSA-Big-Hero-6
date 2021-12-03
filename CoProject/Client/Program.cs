@@ -17,6 +17,7 @@ builder.Services.AddMsalAuthentication(options =>
 {
     builder.Configuration.Bind("AzureAdB2C", options.ProviderOptions.Authentication);
     options.ProviderOptions.DefaultAccessTokenScopes.Add("https://coprojectitu.onmicrosoft.com/029a8171-e8c6-49cd-bcce-ad5952ba5ecb/APIAccess");
+    options.ProviderOptions.LoginMode = "redirect";
 });
 
 await builder.Build().RunAsync();

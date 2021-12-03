@@ -1,0 +1,117 @@
+﻿@page "/createproject"
+@inherits LayoutComponentBase
+@using CoProject.Shared
+@using Client.Forms
+@using Microsoft.AspNetCore.Components
+@inject NavigationManager _navManager
+@inject HttpClient _client
+
+<PageTitle>Create Project - CoProject</PageTitle>
+
+<style>
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 12px 20px;
+        box-sizing: border-box;
+        border-radius: 10px;
+        resize: none;
+        border-color: black;
+        border-width: 2px;
+        margin-top: 10px;
+        border: 1px solid gray;
+    }
+
+    input[type=text] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 10px;
+        border: 1px solid gray;
+    }
+
+    input[type=number] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 10px;
+        border: 1px solid gray;
+    }
+</style>
+
+<div class="container">
+
+    <div class="center">
+        <h1>Create Project</h1>
+        <hr />
+        <h2>Fill in the information below to create a new project.</h2>
+    </div>
+
+    <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
+        <div class="form">
+            <label for="name" class="form-header">Project Name <span class="required">*</span></label>
+            <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
+                @bind-Value="_form.Name" />
+
+            <label for="description" class="form-header">Project Description <span class="required">*</span></label>
+            <InputTextArea @bind-Value="_form.Description" class="inputTextArea" id="description"
+                placeholder="Write the description of the project" />
+
+            <label for="min" class="form-header">Students</label>
+            <div class="min-max-container">
+                <InputNumber class="inputNumber" @bind-Value="_form.Min" type="number" id="min" name="name"
+                    placeholder="Minimum" />
+                <div class="line"></div>
+                <InputNumber @bind-Value="_form.Max" class="inputNumber" type="number" id="max" name="name"
+                    placeholder="Maximum" />
+            </div>
+
+            <label for="tags" class="form-header">Project Tags</label>
+            <InputText @bind-Value="_form.Tags" class="inputText" type="text" id="tags" name="name"
+                placeholder="Write the tags seperated by comma" />
+            <h3>Project State</h3>
+            <div class="switch-field center">
+
+                <p class="switch-item @(_form.State == 1 ? "active-switch-item" : "")" @onclick="() => SwitchItem(1)"
+                    data-status="OPEN">OPEN</p>
+                <p class="switch-item @(_form.State == 2 ? "active-switch-item" : "")" @onclick="() => SwitchItem(2)"
+                    data-status="CLOSED">CLOSED</p>
+                <p class="switch-item @(_form.State == 3 ? "active-switch-item" : "")" @onclick="() => SwitchItem(3)"
+                    data-status="HIDDEN">HIDDEN</p>
+            </div>
+
+            <button type="submit" class="submitButton">Create Project</button>
+        </div>
+    </EditForm>
+</div>
+
+
+@code {
+
+    private ProjectForm _form = new() { State = 1 };
+
+    private async void OnSubmit()
+    {
+        var addItem = new ProjectCreateDTO
+        {
+            Name = _form.Name,
+            Description = _form.Description,
+            Max = _form.Max,
+            Min = _form.Min,
+            State = 1,
+            Tags = _form.Tags!.Split(","),
+            SupervisorId = 123
+        };
+        var response = await _client.PostAsJsonAsync("/projects", addItem);
+        var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+
+        _navManager.NavigateTo($"/projects/{created.Id}");
+    }
+
+    private void SwitchItem(int state)
+    {
+        _form.State = state;
+    }
+}
