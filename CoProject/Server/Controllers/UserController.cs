@@ -19,23 +19,32 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<UserDetailsDTO?>> GetUser()
     {
-        Console.WriteLine(User.Identity.Name);
-        var user = await _userRepository.Read("1");
+        var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
 
-        if (user == null)
+        if(idFind != null)
         {
-            Console.WriteLine("LETS GOO!!");
-            return NotFound();
-        }
+            var user = await _userRepository.Read(idFind.Value);
 
-        return user;
+            if(user == null)
+            {
+                return NotFound();
+            }
+            return user;
+        }
+        return NotFound();
+        
     }
     
     [HttpGet("projects")]
     public async Task<IEnumerable<ProjectDetailsDTO>> GetProjectsByUser()
     {
+        var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
 
-        return await _userRepository.ReadAllByUser("1");
+        if (idFind != null)
+        {
+            return await _userRepository.ReadAllByUser(idFind.Value);
+        }
+        return new List<ProjectDetailsDTO>();
     }
 
     [ProducesResponseType(201)]
@@ -85,13 +94,19 @@ public class UserController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO updatedUser)
     {
-        var response = await _userRepository.Update("1", updatedUser);
 
-        if (response == Status.Updated)
+        var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
+
+        if (idFind != null)
         {
+            var response = await _userRepository.Update(idFind.Value, updatedUser);
+
+            if (response == Status.Updated)
+            {
+                return NoContent();
+            }
             return NoContent();
         }
-
         return NotFound();
     }
 }
