@@ -63,7 +63,7 @@ public class ProjectController : ControllerBase
     [HttpPut("{projectId}/{userId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult> AddUserToProject(int projectId, int userId)
+    public async Task<ActionResult> AddUserToProject(int projectId, string userId)
     {
         var project = await _projectRepository.Read(projectId);
 
@@ -82,7 +82,7 @@ public class ProjectController : ControllerBase
     [HttpDelete("{projectId}/{userId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> RemoveUserFromProject(int projectId, int userId)
+    public async Task<IActionResult> RemoveUserFromProject(int projectId, string userId)
     {
         var project = await _projectRepository.Read(projectId);
 

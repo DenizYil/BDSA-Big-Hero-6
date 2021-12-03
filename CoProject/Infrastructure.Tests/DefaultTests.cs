@@ -26,7 +26,7 @@ public class DefaultTests
         _context = context;
         user = new User
         {
-            Id = 1,
+            Id = "1",
             Email = "me@me.dk",
             NormalizedEmail = "me@me.dk",
             Projects = new List<Project>(),

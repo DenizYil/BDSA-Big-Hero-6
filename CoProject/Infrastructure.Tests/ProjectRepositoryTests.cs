@@ -154,7 +154,7 @@ public class ProjectRepositoryTests : DefaultTests
             Min = 3,
             Max = 7,
             Tags = new List<string>{"C#"},
-            Users = new List<int> {1},
+            Users = new List<string> {"1"},
             Description = "New description",
             State = State.Hidden
         };
@@ -171,7 +171,7 @@ public class ProjectRepositoryTests : DefaultTests
             Max = 7,
             Tags = new List<Tag>{project.Tags.ElementAt(0)},
             Users = new List<User> {
-                _context.Users.First(user => user.Id == 1)
+                _context.Users.First(user => user.Id.Equals("1"))
             },
             State = State.Hidden,
             SupervisorId = 2,

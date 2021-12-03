@@ -20,7 +20,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<UserDetailsDTO?>> GetUser()
     {
         Console.WriteLine(User.Identity.Name);
-        var user = await _userRepository.Read(1);
+        var user = await _userRepository.Read("1");
 
         if (user == null)
         {
@@ -35,7 +35,7 @@ public class UserController : ControllerBase
     public async Task<IEnumerable<ProjectDetailsDTO>> GetProjectsByUser()
     {
 
-        return await _userRepository.ReadAllByUser(1);
+        return await _userRepository.ReadAllByUser("1");
     }
 
     [ProducesResponseType(201)]
@@ -48,18 +48,35 @@ public class UserController : ControllerBase
 
     [ProducesResponseType(201)]
     [HttpPost("signup")]
-    public async Task<IActionResult> SignupUser(UserCreateDTO newUser)
+    public async Task<IActionResult> SignupUser()
     {
 
-        var isUserAlready = await _userRepository.Read(1);
+        var nameFind = User.FindFirst("name");
+        var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
+        var emailFind = User.FindFirst("emails");
 
-        if(isUserAlready == null)
+        if (nameFind != null && idFind != null && emailFind != null)
         {
-            var user = await _userRepository.Create(newUser);
-            return CreatedAtRoute(nameof(GetUser), new { user.Id }, user);
+            var name = nameFind.Value.Trim();
+            var userId = idFind.Value.Trim();
+            var email = emailFind.Value.Trim();
+
+            Console.WriteLine("NAME: " + name);
+            Console.WriteLine("USER ID: " + userId);
+            Console.WriteLine("EMAIL: " + email);
+
+            var isUserAlready = await _userRepository.Read(userId);
+
+            if(isUserAlready == null)
+            {
+                var newUser = new UserCreateDTO(userId, name, email, new List<Project>(), false);
+                var user = await _userRepository.Create(newUser);
+                return CreatedAtRoute(nameof(GetUser), new { user.Id }, user);
+            }
+            return NoContent();
         }else
         {
-            return NoContent();
+            return NotFound();
         }
 
         
@@ -70,7 +87,7 @@ public class UserController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO updatedUser)
     {
-        var response = await _userRepository.Update(1, updatedUser);
+        var response = await _userRepository.Update("1", updatedUser);
 
         if (response == Status.Updated)
         {

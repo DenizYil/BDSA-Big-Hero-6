@@ -27,5 +27,5 @@ public record ProjectUpdateDTO
     public int? Max { get; init; }
     public State? State { get; init; }
     public IReadOnlyCollection<string>? Tags { get; init; }
-    public IReadOnlyCollection<int>? Users { get; init; }
+    public IReadOnlyCollection<string>? Users { get; init; }
 }

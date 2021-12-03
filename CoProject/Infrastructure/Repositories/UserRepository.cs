@@ -13,7 +13,7 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public async Task<UserDetailsDTO?> Read(int id)
+    public async Task<UserDetailsDTO?> Read(string id)
     {
         return await _context.Users
             .Where(u => u.Id == id)
@@ -28,7 +28,7 @@ public class UserRepository : IUserRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<ProjectDetailsDTO>> ReadAllByUser(int id)
+    public async Task<IEnumerable<ProjectDetailsDTO>> ReadAllByUser(string id)
     {
         var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
 
@@ -63,21 +63,8 @@ public class UserRepository : IUserRepository
         {
             Id = create.Id,
             Email = create.Email,
-            NormalizedEmail = create.NormalizedEmail,
             Projects = create.Projects,
             Supervisor = create.Supervisor,
-            EmailConfirmed = create.EmailConfirmed,
-            PhoneNumber = create.PhoneNumber,
-            LockoutEnabled = create.LockoutEnabled,
-            LockoutEnd = create.LockoutEnd,
-            UserName = create.UserName,
-            ConcurrencyStamp = create.ConcurrencyStamp,
-            PasswordHash = create.PasswordHash,
-            SecurityStamp = create.SecurityStamp,
-            AccessFailedCount = create.AccessFailedCount,
-            NormalizedUserName = create.NormalizedUserName,
-            PhoneNumberConfirmed = create.PhoneNumberConfirmed,
-            TwoFactorEnabled = create.TwoFactorEnabled
         };
 
         await _context.Users.AddAsync(user);
@@ -86,7 +73,7 @@ public class UserRepository : IUserRepository
         return new UserDetailsDTO(user.Id, user.UserName, user.NormalizedUserName, user.Email);
     }
 
-    public async Task<Status> Update(int id, UserUpdateDTO update)
+    public async Task<Status> Update(string id, UserUpdateDTO update)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
@@ -108,7 +95,7 @@ public class UserRepository : IUserRepository
         return Status.Updated;
     }
 
-    public async Task<Status> Delete(int id)
+    public async Task<Status> Delete(string id)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
