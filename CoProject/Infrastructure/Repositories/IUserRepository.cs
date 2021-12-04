@@ -1,6 +1,4 @@
-﻿using CoProject.Infrastructure.DTOs;
-
-namespace CoProject.Infrastructure.Repositories;
+﻿namespace CoProject.Infrastructure.Repositories;
 
 public interface IUserRepository
 {

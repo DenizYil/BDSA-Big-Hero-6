@@ -1,6 +1,7 @@
 ﻿@page "/editproject/{id}"
 @inherits LayoutComponentBase
 @using CoProject.Client.Forms
+@using CoProject.Infrastructure.Entities
 @using Microsoft.AspNetCore.Components
 @inject HttpClient _client
 @using CoProject.Shared
@@ -90,11 +91,11 @@
 
             <h3>Project State</h3>
             <div class="switch-field center">
-                <p class="switch-item @(_form.State == 1 ? "active-switch-item" : "")" @onclick="() => SwitchItem(1)"
+                <p class="switch-item @(_form.State == State.Open ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Open)"
                     data-status="OPEN">OPEN</p>
-                <p class="switch-item @(_form.State == 2 ? "active-switch-item" : "")" @onclick="() => SwitchItem(2)"
+                <p class="switch-item @(_form.State == State.Closed ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Closed)"
                     data-status="CLOSED">CLOSED</p>
-                <p class="switch-item @(_form.State == 3 ? "active-switch-item" : "")" @onclick="() => SwitchItem(3)"
+                <p class="switch-item @(_form.State == State.Hidden ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Hidden)"
                     data-status="HIDDEN">HIDDEN</p>
             </div>
 
@@ -148,7 +149,7 @@
         _form.State = project.State;
     }
 
-    private void SwitchItem(int state)
+    private void SwitchItem(State state)
     {
         _form.State = state;
     }

@@ -1,12 +1,15 @@
-using System.Linq;
-using System.Runtime.Serialization;
+using CoProject.Infrastructure.Entities;
+using CoProject.Infrastructure.Repositories;
+using CoProject.Shared;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Infrastructure.Tests;
 
 public class UserRepositoryTests : DefaultTests
 {
     private readonly UserRepository _repo;
+
     public UserRepositoryTests()
     {
         _repo = new UserRepository(_context);
@@ -15,11 +18,9 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Create_Given_UserCreateDTO_Returns_UserDetailsDTO()
     {
-        var expected = new UserDetailsDTO("2", "Wee", "WeeButNormalized", "wee@wee.dk");
+        var expected = new UserDetailsDTO("2", "Wee", "wee@gmail.com");
 
-        var actual = await _repo.Create(new UserCreateDTO(
-            "2", "Wee", "wee@gmail.com", new List<Project>(), false
-        ));
+        var actual = await _repo.Create(new UserCreateDTO("2", "Wee", "wee@gmail.com", false));
 
         Assert.Equal(expected, actual);
     }
@@ -27,15 +28,13 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Create_User_Saves_User_To_The_DB()
     {
-        var userDetails = await _repo.Create(new UserCreateDTO(
-            "2", "Wee", "wee@gmail.com", new List<Project>(), false
-        ));
+        var userDetails = await _repo.Create(new UserCreateDTO("2", "Wee", "wee@gmail.com", false));
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userDetails.Id);
-        
+
         Assert.NotNull(user);
     }
-    
+
     [Fact]
     public async void Read_Given_Non_Existing_User()
     {
@@ -45,7 +44,7 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Read_Given_Existing_User()
     {
-        var expected = new UserDetailsDTO("1", "Myself", "MyselfButNormalized", "me@me.dk");
+        var expected = new UserDetailsDTO("1", "Myself", "me@me.dk");
         Assert.Equal(expected, await _repo.Read("1"));
     }
 
@@ -55,18 +54,17 @@ public class UserRepositoryTests : DefaultTests
         var newUser = user;
         newUser.Id = "2";
         newUser.Email = "you@you.dk";
-        newUser.NormalizedUserName = "YourselfButNormalized";
         newUser.UserName = "Yourself";
-        
+
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
-        
+
         var expected = new List<UserDetailsDTO>
         {
-            new("1", "Myself", "MyselfButNormalized", "me@me.dk"),
-            new("2", "Yourself", "YourselfButNormalized", "you@you.dk")
+            new("1", "Myself", "me@me.dk"),
+            new("2", "Yourself", "you@you.dk")
         };
-        
+
         Assert.Equal(expected, await _repo.ReadAll());
     }
 
@@ -75,10 +73,10 @@ public class UserRepositoryTests : DefaultTests
     {
         var expected = new List<ProjectDetailsDTO>();
         var actual = await _repo.ReadAllByUser("2");
-        
+
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
     public async void ReadAllByUser_given_existing_id_returns_list_of_projects()
     {
@@ -92,10 +90,7 @@ public class UserRepositoryTests : DefaultTests
                 State.Open,
                 now,
                 new List<string>(),
-                new List<UserDetailsDTO>
-                {
-                    new("1", "Myself", "MyselfButNormalized", "me@me.dk")
-                }
+                new List<UserDetailsDTO> {new("1", "Myself", "me@me.dk")}
             )
         };
 
@@ -105,16 +100,16 @@ public class UserRepositoryTests : DefaultTests
 
         expected.Should().BeEquivalentTo(actual);
     }
-    
+
     [Fact]
     public async void Update_Given_Non_Existing_UserUpdateDTO_Returning_Status_NotFound()
     {
         var expected = Status.NotFound;
         var actual = await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk"));
-        
+
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
     public async void Update_Given_Existing_UserUpdateDTO_Returning_Status_Updated()
     {
@@ -123,7 +118,7 @@ public class UserRepositoryTests : DefaultTests
 
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
     public async void Update_actually_updates_User_with_specified_changes()
     {
@@ -132,18 +127,18 @@ public class UserRepositoryTests : DefaultTests
         var expected = user;
         expected.UserName = "YeehaaSelf";
         expected.Email = "you@you.dk";
-        
+
         var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id.Equals("1"));
 
         expected.Should().BeEquivalentTo(actual);
     }
-    
+
     [Fact]
     public async void Delete_returns_NotFound_for_non_existing_id()
     {
         var expected = Status.NotFound;
         var actual = await _repo.Delete("5");
-        
+
         Assert.Equal(expected, actual);
     }
 
@@ -152,7 +147,7 @@ public class UserRepositoryTests : DefaultTests
     {
         var expected = Status.Deleted;
         var actual = await _repo.Delete("1");
-        
+
         Assert.Equal(expected, actual);
     }
 }

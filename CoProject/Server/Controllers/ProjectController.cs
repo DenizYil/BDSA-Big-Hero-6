@@ -1,4 +1,6 @@
-﻿namespace CoProject.Server.Controllers;
+﻿using CoProject.Shared;
+
+namespace CoProject.Server.Controllers;
 using Microsoft.AspNetCore.Authorization;
 
 [Authorize]

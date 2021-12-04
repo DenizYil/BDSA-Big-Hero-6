@@ -1,4 +1,3 @@
-using CoProject.Infrastructure.DTOs;
 using CoProject.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -61,7 +60,7 @@ public class ProjectRepository : IProjectRepository
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(user => new UserDetailsDTO(user.Id, user.NormalizedUserName, user.UserName, user.Email)).ToList()
+                    project.Users.Select(user => new UserDetailsDTO(user.Id, user.UserName, user.Email)).ToList()
                 )
                 {
                     Min = project.Min,
@@ -82,7 +81,7 @@ public class ProjectRepository : IProjectRepository
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(user => new UserDetailsDTO(user.Id, user.NormalizedUserName, user.UserName, user.Email)).ToList()
+                    project.Users.Select(user => new UserDetailsDTO(user.Id, user.UserName, user.Email)).ToList()
                 )
                 {
                     Min = project.Min,

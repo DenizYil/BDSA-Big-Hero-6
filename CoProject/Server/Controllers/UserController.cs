@@ -1,3 +1,5 @@
+using CoProject.Shared;
+
 namespace CoProject.Server.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -78,7 +80,7 @@ public class UserController : ControllerBase
 
             if(isUserAlready == null)
             {
-                var newUser = new UserCreateDTO(userId, name, email, new List<Project>(), false);
+                var newUser = new UserCreateDTO(userId, name, email, false);
                 var user = await _userRepository.Create(newUser);
                 return CreatedAtRoute(nameof(GetUser), new { user.Id }, user);
             }

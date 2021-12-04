@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CoProject.Infrastructure.Entities;
 
 namespace CoProject.Client.Forms;
 
@@ -16,5 +17,5 @@ public class ProjectForm
 
     public string? Tags { get; set; }
 
-    public int State { get; set; }
+    public State State { get; set; }
 }

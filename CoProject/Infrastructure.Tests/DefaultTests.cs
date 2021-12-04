@@ -1,3 +1,7 @@
+using CoProject.Infrastructure.Entities;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+
 namespace CoProject.Infrastructure.Tests;
 
 public class DefaultTests
@@ -28,21 +32,9 @@ public class DefaultTests
         {
             Id = "1",
             Email = "me@me.dk",
-            NormalizedEmail = "me@me.dk",
             Projects = new List<Project>(),
             Supervisor = true,
-            EmailConfirmed = true,
-            PhoneNumber = "12345678",
-            LockoutEnabled = false,
-            LockoutEnd = null,
-            UserName = "Myself",
-            ConcurrencyStamp = "N/A",
-            PasswordHash = "N/A",
-            SecurityStamp = "N/A",
-            AccessFailedCount = 0,
-            NormalizedUserName = "MyselfButNormalized",
-            PhoneNumberConfirmed = true,
-            TwoFactorEnabled = false
+            UserName = "Myself"
         };
         _context.Users.Add(user);
         _context.SaveChanges();

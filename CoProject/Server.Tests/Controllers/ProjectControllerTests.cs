@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CoProject.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoProject.Server.Tests.Controllers;
@@ -132,7 +133,7 @@ public class ProjectControllerTests
         _repository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
         
         // Act
-        var response = await _controller.AddUserToProject(1,1);
+        var response = await _controller.AddUserToProject(1,"1");
 
         // Assert
         Assert.IsType<NoContentResult>(response);
@@ -146,7 +147,7 @@ public class ProjectControllerTests
         _repository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.NotFound);
         
         // Act
-        var response = await _controller.AddUserToProject(1, 1);
+        var response = await _controller.AddUserToProject(1, "1");
 
         // Assert
         Assert.IsType<NotFoundResult>(response);
@@ -160,7 +161,7 @@ public class ProjectControllerTests
         _repository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
         
         // Act
-        var response = await _controller.RemoveUserFromProject(1, 1);
+        var response = await _controller.RemoveUserFromProject(1, "1");
         
         // Assert
         Assert.IsType<NoContentResult>(response);
@@ -174,7 +175,7 @@ public class ProjectControllerTests
         _repository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.NotFound);
         
         // Act
-        var response = await _controller.RemoveUserFromProject(1, 1);
+        var response = await _controller.RemoveUserFromProject(1, "1");
 
         // Assert
         Assert.IsType<NotFoundResult>(response);

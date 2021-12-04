@@ -1,23 +1,23 @@
+using CoProject.Infrastructure.Entities;
+
 namespace CoProject.Shared;
 
-public record ProjectCreateDTO 
+public record ProjectCreateDTO(string Name, string Description, int SupervisorId, State State, IReadOnlyCollection<string> Tags)
 {
-    public string Name { get; init; }
-    public string Description { get; init; }
-    public int SupervisorId { get; init; }
     public int? Min { get; init; }
     public int? Max { get; init; }
-    
-    public int State { get; init; }
-    public IReadOnlyCollection<string> Tags { get; init; }
 }
 
-public record ProjectDetailsDTO : ProjectCreateDTO
-{
-    public int Id { get; init; }
-    public DateTime Created { get; init; }
-    public IReadOnlyCollection<UserDetailsDTO> Users { get; init; }
-}
+public record ProjectDetailsDTO(
+    int Id, 
+    string Name, 
+    string Description, 
+    int SupervisorId, 
+    State State,
+    DateTime Created, 
+    IReadOnlyCollection<string> Tags, 
+    IReadOnlyCollection<UserDetailsDTO> Users
+) : ProjectCreateDTO(Name, Description, SupervisorId, State, Tags);
 
 public record ProjectUpdateDTO
 {
@@ -25,7 +25,7 @@ public record ProjectUpdateDTO
     public string? Description { get; init; }
     public int? Min { get; init; }
     public int? Max { get; init; }
-    public string? State { get; init; }
+    public State? State { get; init; }
     public IReadOnlyCollection<string>? Tags { get; init; }
     public IReadOnlyCollection<string>? Users { get; init; }
 }

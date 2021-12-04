@@ -1,5 +1,4 @@
-﻿using CoProject.Infrastructure.DTOs;
-using CoProject.Infrastructure.Entities;
+﻿using CoProject.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Infrastructure.Repositories;
@@ -17,14 +16,14 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Where(u => u.Id == id)
-            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.NormalizedUserName, u.Email))
+            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email))
             .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<UserDetailsDTO>> ReadAll()
     {
         return await _context.Users
-            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.NormalizedUserName, u.Email))
+            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email))
             .ToListAsync();
     }
 
@@ -47,7 +46,7 @@ public class UserRepository : IUserRepository
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.UserName, u.NormalizedUserName, u.Email))
+                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email))
                         .ToList()
                 )
                 {
@@ -62,15 +61,16 @@ public class UserRepository : IUserRepository
         var user = new User
         {
             Id = create.Id,
+            UserName = create.Name,
             Email = create.Email,
-            Projects = create.Projects,
             Supervisor = create.Supervisor,
+            Projects = new List<Project>()
         };
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return new UserDetailsDTO(user.Id, user.UserName, user.NormalizedUserName, user.Email);
+        return new UserDetailsDTO(user.Id, user.UserName, user.Email);
     }
 
     public async Task<Status> Update(string id, UserUpdateDTO update)
