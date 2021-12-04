@@ -49,7 +49,5 @@ else
     protected override async Task OnInitializedAsync()
     {
         _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
-        Console.WriteLine("Done getting projects!");
     }
-
 }

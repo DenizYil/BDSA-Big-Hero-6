@@ -99,7 +99,7 @@
         var response = await _client.PostAsJsonAsync("api/projects", addItem);
         var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 
-        _navManager.NavigateTo($"/projects/{created.Id}");
+        _navManager.NavigateTo($"/project/{created.Id}");
     }
 
     private void SwitchItem(State state)
