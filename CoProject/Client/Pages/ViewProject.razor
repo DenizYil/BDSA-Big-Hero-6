@@ -1,0 +1,98 @@
+@page "/project/{Id}"
+@inject NavigationManager _navManager
+@layout AuthLayout
+@inject HttpClient _client
+@using CoProject.Shared;
+
+<PageTitle>View Project - CoProject</PageTitle>
+
+@if (_project == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <h1 id="ProjectName">@_project.Name</h1>
+    <h2 id="registered">Registered: @_project.Users.Count/@_project.Max</h2>
+
+    <hr/>
+
+    <div class="supervisorContainer">
+        <img class="imageOfSupervisor" alt="PICTURE OF SUPERVISOR" src="https://via.placeholder.com/150">
+        <p class="supervisorName">Project creator id :> @_project.SupervisorId</p>
+        <p class="createdBy">Created on @_project.Created</p>
+    </div>
+
+    <p class="projectDescription">
+        @_project.Description
+    </p>
+
+    <div class="tags">
+        @foreach (var t in _project.Tags)
+        {
+            <p class="tagName">@t</p>
+        }
+    </div>
+
+    <button id="editProject">
+        <a href="/editproject/@Id">Edit project</a>
+    </button>
+
+    <button id="delete" onclick=@Delete>Delete</button>
+    <hr/>
+
+    <p id="studentsRegistered">Students registered</p>
+
+    <div id="bagOfStudents">
+
+        @foreach (var u in _project.Users)
+        {
+            <div class="oneStudent">
+                <div class="studentLeft">
+                    <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student"/>
+                </div>
+                <div class="studentRight">
+                    <p class="student">@u.Name</p>
+                    <p class="email">
+                        @u.Email<img src="/images/copyIcon.svg" class="material-icons"/>
+                    </p>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private ProjectDetailsDTO? _project;
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (Id == null)
+        {
+            _navManager.NavigateTo("/projects");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _client.GetAsync($"api/projects/{Id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            _project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+        }
+        else
+        {
+            _navManager.NavigateTo("/projects");
+        }
+    }
+
+    private async void Delete()
+    {
+        await _client.DeleteAsync($"api/projects/{Id}");
+    }
+
+}

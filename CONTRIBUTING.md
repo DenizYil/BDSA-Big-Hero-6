@@ -36,7 +36,7 @@ dotnet tool install --global dotnet-ef (Remember to add to PATH for future use)
 
 docker run -d --name "CoProjectDB" -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=urpassword' -p 1433:1433 mcr.microsoft.com/azure-sql-edge
 
-dotnet user-secrets set "ConnectionStrings:CoProject" "Server=127.0.0.1;Database=CoProject;User Id=sa;Password=passwordforsa" --project BackEnd/CoProject.Server
+dotnet user-secrets set "ConnectionStrings:CoProject" "Server=127.0.0.1;Database=CoProject;User Id=sa;Password=passwordforsa" --project CoProject/Server
 
-dotnet ef database update --project BackEnd/CoProject.Infrastructure
+dotnet ef database update --project CoProject/Infrastructure
 ```

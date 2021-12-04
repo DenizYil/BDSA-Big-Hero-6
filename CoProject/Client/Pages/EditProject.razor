@@ -1,0 +1,169 @@
+﻿@page "/editproject/{id}"
+@inherits LayoutComponentBase
+@using CoProject.Client.Forms
+@using CoProject.Infrastructure.Entities
+@using Microsoft.AspNetCore.Components
+@inject HttpClient _client
+@using CoProject.Shared
+@inject NavigationManager _navManager
+
+@layout AuthLayout
+
+
+<style>
+    textarea {
+        width: 100%;
+        height: 150px;
+        padding: 12px 20px;
+        box-sizing: border-box;
+        border-radius: 10px;
+        resize: none;
+        border-color: black;
+        margin-top: 10px;
+        border: 1px solid gray;
+    }
+
+    input[type=text] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 10px;
+        border: 1px solid gray;
+    }
+
+    input[type=number] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border-radius: 10px;
+        border: 1px solid gray;
+    }
+
+    button[type="submit"] {
+        cursor: pointer;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        display: block;
+        background-color: #0b4f6c;
+        color: white;
+        font-size: 20px;
+        border: #707070;
+        border-radius: 5px;
+        height: 50px;
+        width: 300px;
+    }
+</style>
+
+<PageTitle>Edit project - CoProject</PageTitle>
+<div class="container">
+    <div class="center">
+        <h1>Edit Project</h1>
+        <hr/>
+        <h2>Edit the project by editing the inputs below</h2>
+    </div>
+
+    <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
+        <div class="form">
+            <label for="name" class="form-header">Project Name <span class="required">*</span></label>
+            <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
+                       @bind-Value="_form.Name"/>
+
+            <label for="description" class="form-header">Project Description <span class="required">*</span></label>
+            <InputTextArea @bind-Value="_form.Description" class="inputTextArea" id="description"
+                           placeholder="Write the description of the project"/>
+
+            <label for="min" class="form-header">Students</label>
+            <div class="min-max-container">
+                <InputNumber class="inputNumber" @bind-Value="_form.Min" type="number" id="min" name="name"
+                             placeholder="Minimum"/>
+                <div class="line"></div>
+                <InputNumber @bind-Value="_form.Max" class="inputNumber" type="number" id="max" name="name"
+                             placeholder="Maximum"/>
+            </div>
+
+            <label for="tags" class="form-header">Project Tags</label>
+            <InputText @bind-Value="_form.Tags" class="inputText" type="text" id="tags" name="name"
+                       placeholder="Write the tags seperated by comma"/>
+
+            <h3>Project State</h3>
+            <div class="switch-field center">
+                <p class="switch-item @(_form.State == State.Open ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Open)"
+                   data-status="OPEN">
+                    OPEN
+                </p>
+                <p class="switch-item @(_form.State == State.Closed ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Closed)"
+                   data-status="CLOSED">
+                    CLOSED
+                </p>
+                <p class="switch-item @(_form.State == State.Hidden ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Hidden)"
+                   data-status="HIDDEN">
+                    HIDDEN
+                </p>
+            </div>
+
+            <button type="submit">Save changes</button>
+        </div>
+    </EditForm>
+</div>
+
+
+@code {
+
+    [Parameter]
+    public string? Id { get; set; }
+
+    private ProjectForm _form = new();
+
+    protected override void OnInitialized()
+    {
+        if (Id == null)
+        {
+            _navManager.NavigateTo("/projects");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await _client.GetAsync($"api/projects/{Id}");
+
+        if (!response.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("/projects");
+            return;
+        }
+
+        var project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+
+        var tags = "";
+
+        foreach (var tag in project!.Tags)
+        {
+            tags += tag + ", ";
+        }
+
+        tags = tags.TrimEnd(',', ' ');
+
+        _form.Name = project!.Name;
+        _form.Description = project.Description;
+        _form.Max = project.Max;
+        _form.Min = project.Min;
+        _form.Tags = tags;
+        _form.State = project.State;
+    }
+
+    private void SwitchItem(State state)
+    {
+        _form.State = state;
+    }
+
+    private async void OnSubmit()
+    {
+        await _client.PutAsJsonAsync($"api/projects/{Id}", _form);
+        _navManager.NavigateTo($"/project/{Id}");
+    }
+
+}

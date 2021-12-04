@@ -1,0 +1,12 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<div class="navbar">
+    <NavBar/>
+</div>
+
+<div class="content">
+    @Body
+</div>

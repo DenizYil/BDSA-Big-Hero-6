@@ -1,0 +1,54 @@
+﻿@page "/myprojects"
+@using CoProject.Client.Shared;
+@using CoProject.Shared;
+
+@inject HttpClient _client
+
+
+<PageTitle>Projects - CoProject</PageTitle>
+<h1>My Projects</h1>
+<hr/>
+<h2>Below you can see a list of available projects.</h2>
+
+<div class="search">
+    <input id="search-bar" placeholder="Search..." name="searchinput">
+    <img class="searchIcon" src="/images/searchicon.svg" alt="Search icon">
+</div>
+
+@if (_projects == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @if (!_projects.Any())
+    {
+        <p>You somehow have no projects</p>
+    }
+    else
+    {
+        <div class="projects">
+
+            @foreach (var project in _projects)
+            {
+                <ProjectCard Project="@project"/>
+            }
+        </div>
+    }
+}
+
+<div class="createProject">
+    <a href="/createproject">
+        <button>Create new project</button>
+    </a>
+</div>
+
+@code {
+    private IEnumerable<ProjectDetailsDTO>? _projects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/user/projects");
+    }
+
+}
