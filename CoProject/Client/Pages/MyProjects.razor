@@ -48,6 +48,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>($"api/users/projects/");
+        _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/user/projects");
     }
 }

@@ -8,6 +8,6 @@ public class User
     public string UserName { get; set; }
     public string Email { get; set; }
     public bool Supervisor{ get; set; }
-    
-    public IReadOnlyCollection<Project> Projects { get; set; }
+
+    public IReadOnlyCollection<Project> Projects { get; set; } = new List<Project>();
 }
