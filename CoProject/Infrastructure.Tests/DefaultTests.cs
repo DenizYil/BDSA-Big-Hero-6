@@ -11,7 +11,7 @@ public class DefaultTests
     protected readonly DateTime now;
     protected readonly User user;
     protected readonly Project project;
-    
+
     protected DefaultTests()
     {
         var connection = new SqliteConnection("Filename=:memory:");
@@ -38,7 +38,7 @@ public class DefaultTests
         };
         _context.Users.Add(user);
         _context.SaveChanges();
-        
+
         project = new Project
         {
             Id = 1,
@@ -53,5 +53,4 @@ public class DefaultTests
         _context.Projects.Add(project);
         _context.SaveChanges();
     }
-    
 }

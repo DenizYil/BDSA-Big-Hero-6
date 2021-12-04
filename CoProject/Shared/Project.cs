@@ -2,20 +2,21 @@ using CoProject.Infrastructure.Entities;
 
 namespace CoProject.Shared;
 
-public record ProjectCreateDTO(string Name, string Description, int SupervisorId, State State, IReadOnlyCollection<string> Tags)
+public record ProjectCreateDTO(string Name, string Description, int SupervisorId, State State,
+    IReadOnlyCollection<string> Tags)
 {
     public int? Min { get; init; }
     public int? Max { get; init; }
 }
 
 public record ProjectDetailsDTO(
-    int Id, 
-    string Name, 
-    string Description, 
-    int SupervisorId, 
+    int Id,
+    string Name,
+    string Description,
+    int SupervisorId,
     State State,
-    DateTime Created, 
-    IReadOnlyCollection<string> Tags, 
+    DateTime Created,
+    IReadOnlyCollection<string> Tags,
     IReadOnlyCollection<UserDetailsDTO> Users
 ) : ProjectCreateDTO(Name, Description, SupervisorId, State, Tags);
 

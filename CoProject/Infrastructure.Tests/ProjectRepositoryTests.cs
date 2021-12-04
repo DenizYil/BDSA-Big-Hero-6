@@ -11,7 +11,7 @@ namespace CoProject.Infrastructure.Tests;
 public class ProjectRepositoryTests : DefaultTests
 {
     private readonly ProjectRepository _repo;
-    
+
     public ProjectRepositoryTests()
     {
         _repo = new ProjectRepository(_context);
@@ -21,21 +21,23 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Create_Project_Given_ProjectCreateDTO_Returns_ProjectDetailsDTO()
     {
         //Arrange
-        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden, new List<string>())
+        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden,
+            new List<string>())
         {
             Min = 1,
             Max = 4
         };
-        
+
         //Act
         var actual = await _repo.Create(createProject);
 
-        var expected = new ProjectDetailsDTO(2, "CoolProject", "Description for the Coolest Project", 5, State.Hidden, actual.Created, new List<string>(), new List<UserDetailsDTO>())
+        var expected = new ProjectDetailsDTO(2, "CoolProject", "Description for the Coolest Project", 5, State.Hidden,
+            actual.Created, new List<string>(), new List<UserDetailsDTO>())
         {
             Min = 1,
             Max = 4,
         };
-        
+
         //Assert
         expected.Should().BeEquivalentTo(actual);
     }
@@ -44,7 +46,8 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Create_Project_Saves_Project_To_Database()
     {
         //Arrange
-        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden, new List<string>())
+        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden,
+            new List<string>())
         {
             Min = 1,
             Max = 4
@@ -60,19 +63,20 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Create_Project_With_Tags_Saves_Tags_To_Database()
     {
         var expected = new List<string> {"AI", "Python"};
-        
-        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden, new List<string>{"AI", "Python"})
+
+        var createProject = new ProjectCreateDTO("CoolProject", "Description for the Coolest Project", 5, State.Hidden,
+            new List<string> {"AI", "Python"})
         {
             Min = 1,
             Max = 4
         };
-        
+
         var xd = await _repo.Create(createProject);
         var actual = _context.Tags.Select(t => t.Name).ToList();
-        
+
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
     public async void Read_Given_Non_existing_id_returns_null()
     {
@@ -83,11 +87,12 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Read_Given_Existing_Project_Returns_Project()
     {
         //Arrange
-        var expected = new ProjectDetailsDTO(1, "Karl", "yep hehe smiley", 1, State.Open, now, new List<string>(), new List<UserDetailsDTO>());
+        var expected = new ProjectDetailsDTO(1, "Karl", "yep hehe smiley", 1, State.Open, now, new List<string>(),
+            new List<UserDetailsDTO>());
 
         // Act
         var actual = await _repo.Read(1);
-        
+
         //Assert
         actual.Should().BeEquivalentTo(expected);
     }
@@ -95,11 +100,11 @@ public class ProjectRepositoryTests : DefaultTests
     [Fact]
     public async void ReadAll_Given_Multiple_existing_Projects_Returning_All_Projects()
     {
-
         var expected = new List<ProjectDetailsDTO>
         {
             new(1, "Karl", "yep hehe smiley", 1, State.Open, now, new List<string>(), new List<UserDetailsDTO>()),
-            new(2, "Phillip", "This is another cool description", 2, State.Open, now, new List<string>(), new List<UserDetailsDTO>())
+            new(2, "Phillip", "This is another cool description", 2, State.Open, now, new List<string>(),
+                new List<UserDetailsDTO>())
         };
 
         var newProject = project;
@@ -107,7 +112,7 @@ public class ProjectRepositoryTests : DefaultTests
         newProject.Name = "Phillip";
         newProject.Description = "This is another cool description";
         newProject.SupervisorId = 2;
-        
+
         await _context.Projects.AddAsync(newProject);
         await _context.SaveChangesAsync();
 
@@ -151,13 +156,13 @@ public class ProjectRepositoryTests : DefaultTests
 
         await _context.Projects.AddAsync(projectWithTags);
         await _context.SaveChangesAsync();
-        
+
         var update = new ProjectUpdateDTO
         {
             Name = "Deniz",
             Min = 3,
             Max = 7,
-            Tags = new List<string>{"C#"},
+            Tags = new List<string> {"C#"},
             Users = new List<string> {"1"},
             Description = "New description",
             State = State.Hidden
@@ -173,8 +178,9 @@ public class ProjectRepositoryTests : DefaultTests
             Description = "New description",
             Min = 3,
             Max = 7,
-            Tags = new List<Tag>{project.Tags.ElementAt(0)},
-            Users = new List<User> {
+            Tags = new List<Tag> {project.Tags.ElementAt(0)},
+            Users = new List<User>
+            {
                 _context.Users.First(user => user.Id.Equals("1"))
             },
             State = State.Hidden,

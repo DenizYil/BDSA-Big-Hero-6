@@ -1,7 +1,8 @@
 ﻿using CoProject.Shared;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CoProject.Server.Controllers;
-using Microsoft.AspNetCore.Authorization;
+
 
 [Authorize]
 [ApiController]
@@ -10,7 +11,7 @@ public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _projectRepository;
 
-    
+
     public ProjectController(IProjectRepository projectRepository)
     {
         _projectRepository = projectRepository;
@@ -24,11 +25,11 @@ public class ProjectController : ControllerBase
 
     [ProducesResponseType(404)]
     [ProducesResponseType(typeof(ProjectDetailsDTO), 200)]
-    [HttpGet("{id}",  Name = nameof(GetProject))]
+    [HttpGet("{id}", Name = nameof(GetProject))]
     public async Task<ActionResult<ProjectDetailsDTO>> GetProject(int id)
     {
         var project = await _projectRepository.Read(id);
-        
+
         if (project == null)
         {
             return NotFound();
@@ -42,7 +43,7 @@ public class ProjectController : ControllerBase
     public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
         var created = await _projectRepository.Create(project);
-        
+
         return CreatedAtRoute(nameof(GetProject), new {created.Id}, created);
     }
 
@@ -73,14 +74,14 @@ public class ProjectController : ControllerBase
         {
             return NotFound();
         }
-        
+
         var users = project.Users.Select(u => u.Id).ToList();
         users.Add(userId);
 
-        await _projectRepository.Update(projectId, new ProjectUpdateDTO{Users = users});
+        await _projectRepository.Update(projectId, new ProjectUpdateDTO {Users = users});
         return NoContent();
     }
-    
+
     [HttpDelete("{projectId}/{userId}")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
@@ -97,7 +98,7 @@ public class ProjectController : ControllerBase
 
         users.Remove(userId);
 
-        await _projectRepository.Update(projectId, new ProjectUpdateDTO(){Users = users});
+        await _projectRepository.Update(projectId, new ProjectUpdateDTO() {Users = users});
         return NoContent();
     }
 

@@ -8,12 +8,13 @@
 <h1>Logging you in...</h1>
 
 @code {
+
     protected override async void OnInitialized()
     {
-
         var response = await _client.PostAsJsonAsync("/api/user/signup", "");
         Console.WriteLine($"SIGNUP USER STATUS: {response.StatusCode}");
 
         _navManager.NavigateTo("/projects");
     }
+
 }

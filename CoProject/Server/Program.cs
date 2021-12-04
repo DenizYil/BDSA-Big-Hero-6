@@ -13,7 +13,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddControllers();
 
 // Database stuff
-builder.Services.AddDbContext<CoProjectContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("CoProject")));
+builder.Services.AddDbContext<CoProjectContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CoProject")));
 builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<ICoProjectContext, CoProjectContext>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -33,12 +34,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-                // disable cors
-    app.UseCors(x => x
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-        .SetIsOriginAllowed(origin => true)
-        .AllowCredentials());
+// disable cors
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true)
+    .AllowCredentials());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -7,7 +7,7 @@
 
 <PageTitle>Projects - CoProject</PageTitle>
 <h1>Projects</h1>
-<hr />
+<hr/>
 <h2>Below you can see a list of available projects.</h2>
 
 <div class="search">
@@ -29,9 +29,9 @@ else
     {
         <div class="projects">
 
-    @foreach (var project in _projects)
+            @foreach (var project in _projects)
             {
-                <ProjectCard Project="@project" />
+                <ProjectCard Project="@project"/>
             }
         </div>
     }
@@ -50,4 +50,5 @@ else
     {
         _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
     }
+
 }

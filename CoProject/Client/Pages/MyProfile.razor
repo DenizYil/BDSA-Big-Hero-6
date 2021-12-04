@@ -39,7 +39,7 @@
 <div class="container">
     <div class="center">
         <h1>My Profile</h1>
-        <hr />
+        <hr/>
         <h2>Update your information</h2>
     </div>
 
@@ -51,10 +51,10 @@
     {
         <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
             <label for="name" class="form-header"> Your name <span class="required">*</span></label>
-            <InputText type="text" id="name" name="name" placeholder="Enter your new name here" @bind-Value="_form.Name" />
+            <InputText type="text" id="name" name="name" placeholder="Enter your new name here" @bind-Value="_form.Name"/>
 
             <label for="email" class="form-header">Your email <span class="required">*</span></label>
-            <InputText type="text" id="email" placeholder="Enter your new e-mail address here" @bind-Value="_form.Email" />
+            <InputText type="text" id="email" placeholder="Enter your new e-mail address here" @bind-Value="_form.Email"/>
 
             <button type="submit">Update profile</button>
         </EditForm>
@@ -88,4 +88,5 @@
     {
         await _client.PutAsJsonAsync("api/user", _form);
     }
+
 }

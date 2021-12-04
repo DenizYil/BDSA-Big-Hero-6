@@ -9,8 +9,7 @@ public class ProjectForm
     [StringLength(100, ErrorMessage = "Name is too long")]
     public string Name { get; set; }
 
-    [Required]
-    public string Description { get; set; }
+    [Required] public string Description { get; set; }
 
     public int? Min { get; set; }
     public int? Max { get; set; }

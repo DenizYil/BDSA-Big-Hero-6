@@ -62,7 +62,7 @@
 <div class="container">
     <div class="center">
         <h1>Edit Project</h1>
-        <hr />
+        <hr/>
         <h2>Edit the project by editing the inputs below</h2>
     </div>
 
@@ -70,33 +70,39 @@
         <div class="form">
             <label for="name" class="form-header">Project Name <span class="required">*</span></label>
             <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
-                @bind-Value="_form.Name" />
+                       @bind-Value="_form.Name"/>
 
             <label for="description" class="form-header">Project Description <span class="required">*</span></label>
             <InputTextArea @bind-Value="_form.Description" class="inputTextArea" id="description"
-                placeholder="Write the description of the project" />
+                           placeholder="Write the description of the project"/>
 
             <label for="min" class="form-header">Students</label>
             <div class="min-max-container">
                 <InputNumber class="inputNumber" @bind-Value="_form.Min" type="number" id="min" name="name"
-                    placeholder="Minimum" />
+                             placeholder="Minimum"/>
                 <div class="line"></div>
                 <InputNumber @bind-Value="_form.Max" class="inputNumber" type="number" id="max" name="name"
-                    placeholder="Maximum" />
+                             placeholder="Maximum"/>
             </div>
 
             <label for="tags" class="form-header">Project Tags</label>
             <InputText @bind-Value="_form.Tags" class="inputText" type="text" id="tags" name="name"
-                placeholder="Write the tags seperated by comma" />
+                       placeholder="Write the tags seperated by comma"/>
 
             <h3>Project State</h3>
             <div class="switch-field center">
                 <p class="switch-item @(_form.State == State.Open ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Open)"
-                    data-status="OPEN">OPEN</p>
+                   data-status="OPEN">
+                    OPEN
+                </p>
                 <p class="switch-item @(_form.State == State.Closed ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Closed)"
-                    data-status="CLOSED">CLOSED</p>
+                   data-status="CLOSED">
+                    CLOSED
+                </p>
                 <p class="switch-item @(_form.State == State.Hidden ? "active-switch-item" : "")" @onclick="() => SwitchItem(State.Hidden)"
-                    data-status="HIDDEN">HIDDEN</p>
+                   data-status="HIDDEN">
+                    HIDDEN
+                </p>
             </div>
 
             <button type="submit">Save changes</button>
@@ -159,4 +165,5 @@
         await _client.PutAsJsonAsync($"api/projects/{Id}", _form);
         _navManager.NavigateTo($"/project/{Id}");
     }
+
 }

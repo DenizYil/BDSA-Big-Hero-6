@@ -1,7 +1,7 @@
-namespace CoProject.Server.Controllers;
-
-using Shared;
+using CoProject.Shared;
 using Microsoft.AspNetCore.Authorization;
+
+namespace CoProject.Server.Controllers;
 
 [Authorize]
 [ApiController]
@@ -9,12 +9,12 @@ using Microsoft.AspNetCore.Authorization;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
-
+    
     public UserController(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
-
+    
     [ProducesResponseType(404)]
     [ProducesResponseType(typeof(UserDetailsDTO), 200)]
     [HttpGet]
@@ -26,17 +26,17 @@ public class UserController : ControllerBase
         {
             return NotFound();
         }
-
+        
         var user = await _userRepository.Read(idFind.Value);
 
-        if (user == null)
+        if(user == null)
         {
             return NotFound();
         }
-
+        
         return user;
     }
-
+    
     [HttpGet("projects")]
     public async Task<IEnumerable<ProjectDetailsDTO>> GetProjectsByUser()
     {
@@ -46,7 +46,7 @@ public class UserController : ControllerBase
         {
             return await _userRepository.ReadAllByUser(idFind.Value);
         }
-
+        
         return new List<ProjectDetailsDTO>();
     }
 
@@ -70,7 +70,7 @@ public class UserController : ControllerBase
         {
             return NotFound();
         }
-
+        
         var name = nameFind.Value.Trim();
         var userId = idFind.Value.Trim();
         var email = emailFind.Value.Trim();
@@ -81,8 +81,9 @@ public class UserController : ControllerBase
         {
             await _userRepository.Create(new UserCreateDTO(userId, name, email, false));
         }
-
+            
         return NoContent();
+
     }
 
     [ProducesResponseType(404)]
@@ -96,7 +97,7 @@ public class UserController : ControllerBase
         {
             return NotFound();
         }
-
+        
         await _userRepository.Update(idFind.Value, updatedUser);
         return NoContent();
     }

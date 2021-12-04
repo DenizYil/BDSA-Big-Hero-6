@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace CoProject.Infrastructure;
+
 [ExcludeFromCodeCoverage]
 public class CoProjectContextFactory : IDesignTimeDbContextFactory<CoProjectContext>
 {

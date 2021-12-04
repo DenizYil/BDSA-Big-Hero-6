@@ -12,7 +12,7 @@ public static class Extensions
         Status.Deleted => new NoContentResult(),
         _ => throw new NotSupportedException($"{status} not yet supported")
     };
-    
+
     public static ActionResult<T> ToActionResult<T>(this Option<T> option) where T : class
         => option.IsSome ? option.Value : new NotFoundResult();
 }
