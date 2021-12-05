@@ -50,6 +50,7 @@
     else
     {
         <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
+            <DataAnnotationsValidator/>
             <label for="name" class="form-header"> Your name <span class="required">*</span></label>
             <InputText type="text" id="name" name="name" placeholder="Enter your new name here" @bind-Value="_form.Name"/>
 
@@ -62,9 +63,6 @@
 </div>
 
 @code {
-
-    private int Id { get; set; }
-
     private ProfileForm _form = new();
     private UserDetailsDTO? _user;
 

@@ -67,6 +67,7 @@
     </div>
 
     <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
+        <DataAnnotationsValidator/>
         <div class="form">
             <label for="name" class="form-header">Project Name <span class="required">*</span></label>
             <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
