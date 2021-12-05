@@ -79,10 +79,23 @@ button {
   background-color: #0b4f6c;
   padding: 10px;
   box-sizing: border-box;
-  width: 100%;
+  width: 90%;
   font-size: 20px;
   cursor: pointer;
 }
+#joinProject a {
+  text-decoration: none;
+  color: white;
+}
+#joinProject {
+  background-color: #0b4f6c;
+  padding: 10px;
+  box-sizing: border-box;
+  width: 90%;
+  font-size: 20px;
+  cursor: pointer;
+}
+
 #delete {
   background-color: #c14c36;
   width: 50%;
