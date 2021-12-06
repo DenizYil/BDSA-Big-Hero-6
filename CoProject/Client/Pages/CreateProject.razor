@@ -101,7 +101,7 @@
 
     private async void OnSubmit()
     {
-        var addItem = new ProjectCreateDTO(_form.Name, _form.Description, 123, State.Open, _form.Tags!.Split(","));
+        var addItem = new ProjectCreateDTO(_form.Name, _form.Description, State.Open, _form.Tags!.Split(","));
         var response = await _client.PostAsJsonAsync("api/projects", addItem);
         var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 

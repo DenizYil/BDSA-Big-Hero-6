@@ -16,14 +16,14 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Where(u => u.Id == id)
-            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email))
+            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email, u.Supervisor))
             .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<UserDetailsDTO>> ReadAll()
     {
         return await _context.Users
-            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email))
+            .Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email, u.Supervisor))
             .ToListAsync();
     }
 
@@ -42,11 +42,14 @@ public class UserRepository : IUserRepository
                     project.Id,
                     project.Name,
                     project.Description,
-                    project.SupervisorId,
+                    _context.Users
+                        .Where(supervisor => supervisor.Id == project.SupervisorId)
+                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.UserName, supervisor.Email, supervisor.Supervisor))
+                        .First(),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email))
+                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.UserName, u.Email, u.Supervisor))
                         .ToList()
                 )
                 {
@@ -70,7 +73,7 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return new UserDetailsDTO(user.Id, user.UserName, user.Email);
+        return new UserDetailsDTO(user.Id, user.UserName, user.Email, user.Supervisor);
     }
 
     public async Task<Status> Update(string id, UserUpdateDTO update)
