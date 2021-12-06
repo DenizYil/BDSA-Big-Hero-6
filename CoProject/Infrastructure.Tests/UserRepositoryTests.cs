@@ -86,7 +86,7 @@ public class UserRepositoryTests : DefaultTests
                 1,
                 "Karl",
                 "yep hehe smiley",
-                1,
+                new UserDetailsDTO("1", "Myself", "me@me.dk"),
                 State.Open,
                 now,
                 new List<string>(),

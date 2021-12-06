@@ -44,7 +44,7 @@ public class DefaultTests
             Id = 1,
             Name = "Karl",
             Description = "yep hehe smiley",
-            SupervisorId = 1,
+            SupervisorId = "1",
             Created = now,
             State = State.Open,
             Tags = new List<Tag>(),

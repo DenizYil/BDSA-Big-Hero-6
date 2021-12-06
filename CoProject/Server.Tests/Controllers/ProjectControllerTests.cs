@@ -15,8 +15,7 @@ public class ProjectControllerTests
     {
         _repository = new();
         _controller = new(_repository.Object);
-        _project = new(1, "Project Name", "Project Description", 1, State.Open, DateTime.Now, new List<string>(),
-            new List<UserDetailsDTO>());
+        _project = new(1, "Project Name", "Project Description", new UserDetailsDTO("1", "Supervisor", "supervisor@outlook.dk"), State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
     }
 
     [Fact]
@@ -88,7 +87,7 @@ public class ProjectControllerTests
     public async void CreateProject_creates_a_new_project()
     {
         // Arrange
-        var toCreate = new ProjectCreateDTO("Project Name", "Project Description", 1, State.Open, new List<string>());
+        var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
         _repository.Setup(m => m.Create(toCreate)).ReturnsAsync(_project);
 
         // Act

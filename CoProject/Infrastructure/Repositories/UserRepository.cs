@@ -42,7 +42,10 @@ public class UserRepository : IUserRepository
                     project.Id,
                     project.Name,
                     project.Description,
-                    project.SupervisorId,
+                    _context.Users
+                        .Where(supervisor => supervisor.Id == project.SupervisorId)
+                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.UserName, supervisor.Email))
+                        .First(),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),

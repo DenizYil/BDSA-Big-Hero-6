@@ -30,21 +30,22 @@ public class ProjectRepository : IProjectRepository
         await _context.Projects.AddAsync(project);
         await _context.SaveChangesAsync();
 
-        return
-            new ProjectDetailsDTO(
-                project.Id,
-                project.Name,
-                project.Description,
-                project.SupervisorId,
-                project.State,
-                project.Created,
-                project.Tags.Select(tag => tag.Name).ToList(),
-                new List<UserDetailsDTO>()
-            )
-            {
-                Min = project.Min,
-                Max = project.Max
-            };
+        var supervisor = await _context.Users.FirstAsync(user => user.Id == create.SupervisorId);
+
+        return new ProjectDetailsDTO(
+            project.Id,
+            project.Name,
+            project.Description,
+            new UserDetailsDTO(supervisor.Id, supervisor.UserName, supervisor.Email),
+            project.State,
+            project.Created,
+            project.Tags.Select(tag => tag.Name).ToList(),
+            new List<UserDetailsDTO>()
+        )
+        {
+            Min = project.Min,
+            Max = project.Max
+        };
     }
 
     public async Task<ProjectDetailsDTO?> Read(int id)
@@ -56,7 +57,10 @@ public class ProjectRepository : IProjectRepository
                     project.Id,
                     project.Name,
                     project.Description,
-                    project.SupervisorId,
+                    _context.Users
+                        .Where(user => user.Id == project.SupervisorId)
+                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.UserName, supervisor.Email))
+                        .First(),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
@@ -77,7 +81,10 @@ public class ProjectRepository : IProjectRepository
                     project.Id,
                     project.Name,
                     project.Description,
-                    project.SupervisorId,
+                    _context.Users
+                        .Where(user => user.Id == project.SupervisorId)
+                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.UserName, supervisor.Email))
+                        .First(),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),

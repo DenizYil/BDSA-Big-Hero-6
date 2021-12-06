@@ -2,9 +2,9 @@ using CoProject.Infrastructure.Entities;
 
 namespace CoProject.Shared;
 
-public record ProjectCreateDTO(string Name, string Description, int SupervisorId, State State,
-    IReadOnlyCollection<string> Tags)
+public record ProjectCreateDTO(string Name, string Description, State State, IReadOnlyCollection<string> Tags)
 {
+    public string SupervisorId { get; set; }
     public int? Min { get; init; }
     public int? Max { get; init; }
 }
@@ -13,12 +13,16 @@ public record ProjectDetailsDTO(
     int Id,
     string Name,
     string Description,
-    int SupervisorId,
+    UserDetailsDTO Supervisor,
     State State,
     DateTime Created,
     IReadOnlyCollection<string> Tags,
     IReadOnlyCollection<UserDetailsDTO> Users
-) : ProjectCreateDTO(Name, Description, SupervisorId, State, Tags);
+)
+{
+    public int? Min { get; init; }
+    public int? Max { get; init; }
+}
 
 public record ProjectUpdateDTO
 {

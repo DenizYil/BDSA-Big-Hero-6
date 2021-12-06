@@ -6,7 +6,7 @@ public class Project
     public string Name { get; set; } = null!;
     public string Description { get; set; } = null!;
     public DateTime Created { get; set; }
-    public int SupervisorId { get; set; }
+    public string SupervisorId { get; set; } = null!;
     public int? Min { get; set; }
     public int? Max { get; set; }
     public IReadOnlyCollection<Tag> Tags { get; set; } = null!;
