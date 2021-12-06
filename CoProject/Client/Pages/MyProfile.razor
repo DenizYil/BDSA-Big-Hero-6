@@ -74,7 +74,7 @@
 
         if (!resp.IsSuccessStatusCode)
         {
-            _navManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects?error=JsonResponseError");
             return;
         }
 
@@ -86,7 +86,12 @@
 
     private async void OnSubmit()
     {
-        await _client.PutAsJsonAsync("api/user", _form);
+        var response = await _client.PutAsJsonAsync("api/user", _form);
+
+        if (response.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("/profile?error=UpdateProfileError");
+        }
     }
 
 }

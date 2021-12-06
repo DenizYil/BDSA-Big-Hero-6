@@ -3,8 +3,7 @@
 @layout AuthLayout
 @inject HttpClient _client
 @using CoProject.Shared;
-@using Microsoft.Extensions.FileProviders
-@using System.Net
+@using Microsoft.AspNetCore.Authorization;
 
 <PageTitle>View Project - CoProject</PageTitle>
 
@@ -98,21 +97,21 @@ else
         }
         else
         {
-            _navManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects?error=JsonReturnError");
         }
     }
     
     private async void Join()
     {
         var response = await _client.PutAsJsonAsync($"api/projects/{_project.Id}/{_user.Id}", _project);
-
+        
         if (response.IsSuccessStatusCode)
         {
-            var uri = $"/myprojects";
+            var uri = "/myprojects";
             _navManager.NavigateTo(uri);
             return;
         }
-        _navManager.NavigateTo($"/project/{Id}?error=alreadyjoined");
+        _navManager.NavigateTo($"/project/{Id}?error=JoinProjectError");
     }
 
     private async void Delete()
@@ -120,7 +119,7 @@ else
         var response = await _client.DeleteAsync($"api/projects/{Id}");
 
         if (response.IsSuccessStatusCode) return;
-        var uri = $"/projects";
+        var uri = "/projects?error=DeleteProjectError";
         _navManager.NavigateTo(uri);
     }
 
