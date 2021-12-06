@@ -95,6 +95,12 @@ public class ProjectController : ControllerBase
         }
 
         var users = project.Users.Select(u => u.Id).ToList();
+        
+        if (users.Contains(userId))
+        {
+            return NotFound();
+        }
+        
         users.Add(userId);
 
         await _projectRepository.Update(projectId, new ProjectUpdateDTO {Users = users});

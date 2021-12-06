@@ -1,12 +1,52 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
 @using Microsoft.AspNetCore.Authorization
+@using System.Text.RegularExpressions
+@using System.Web
 @attribute [Authorize]
+
 
 <div class="navbar">
     <NavBar/>
 </div>
 
 <div class="content">
+    <div class="alert" style="visibility: @(ErrorBox() ? "visible" : "hidden")">
+          <span class="closebtn" onclick="@RemoveError">&times;</span>
+          <strong>Oops!</strong> Something seems to have gone wrong!
+    </div> 
     @Body
+    
 </div>
+
+
+
+@code
+{
+    private bool ErrorBox()
+    {
+        var uri = Navigation.Uri;
+        return uri.Contains("error=");
+    }
+
+    private void RemoveError()
+    {
+        var uri = RemoveQueryStringByKey(Navigation.Uri, "error");
+        Navigation.NavigateTo(uri);
+    }
+    
+    public static string RemoveQueryStringByKey(string url, string key)
+    {                   
+        var uri = new Uri(url);
+        
+        var newQueryString = HttpUtility.ParseQueryString(uri.Query);
+        
+        newQueryString.Remove(key);
+        
+        string pagePathWithoutQueryString = uri.GetLeftPart(UriPartial.Path);
+
+        return newQueryString.Count > 0
+            ? String.Format("{0}?{1}", pagePathWithoutQueryString, newQueryString)
+            : pagePathWithoutQueryString;
+    }
+}

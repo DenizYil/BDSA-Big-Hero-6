@@ -3,6 +3,7 @@
 @layout AuthLayout
 @inject HttpClient _client
 @using CoProject.Shared;
+@using Microsoft.AspNetCore.Authorization;
 
 <PageTitle>View Project - CoProject</PageTitle>
 
@@ -33,9 +34,13 @@ else
             <p class="tagName">@t</p>
         }
     </div>
-
+    
     <button id="editProject">
         <a href="/editproject/@Id">Edit project</a>
+    </button>
+    
+    <button id="joinProject">
+        <a href="/myprojects" onclick="@Join">Join project</a>
     </button>
 
     <button id="delete" onclick=@Delete>Delete</button>
@@ -64,9 +69,13 @@ else
 
 @code {
     private ProjectDetailsDTO? _project;
+    private UserDetailsDTO? _user;
 
     [Parameter]
     public string? Id { get; set; }
+    
+    [Parameter]
+    public string? UserId { get; set; }
 
     protected override void OnInitialized()
     {
@@ -78,21 +87,40 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await _client.GetAsync($"api/projects/{Id}");
+        var projectResponse = await _client.GetAsync($"api/projects/{Id}");
+        var userResponse = await _client.GetAsync($"api/user");
 
-        if (response.IsSuccessStatusCode)
+        if (projectResponse.IsSuccessStatusCode)
         {
-            _project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+            _project = await projectResponse.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+            _user = await userResponse.Content.ReadFromJsonAsync<UserDetailsDTO>();
         }
         else
         {
-            _navManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects?error=JsonReturnError");
         }
+    }
+    
+    private async void Join()
+    {
+        var response = await _client.PutAsJsonAsync($"api/projects/{_project.Id}/{_user.Id}", _project);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            var uri = "/myprojects";
+            _navManager.NavigateTo(uri);
+            return;
+        }
+        _navManager.NavigateTo($"/project/{Id}?error=JoinProjectError");
     }
 
     private async void Delete()
     {
-        await _client.DeleteAsync($"api/projects/{Id}");
+        var response = await _client.DeleteAsync($"api/projects/{Id}");
+
+        if (response.IsSuccessStatusCode) return;
+        var uri = "/projects?error=DeleteProjectError";
+        _navManager.NavigateTo(uri);
     }
 
 }

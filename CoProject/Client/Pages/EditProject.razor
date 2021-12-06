@@ -123,7 +123,7 @@
     {
         if (Id == null)
         {
-            _navManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects?error=ProjectNotFound");
         }
     }
 
@@ -133,7 +133,7 @@
 
         if (!response.IsSuccessStatusCode)
         {
-            _navManager.NavigateTo("/projects");
+            _navManager.NavigateTo("/projects?error=ProjectNotFound");
             return;
         }
 
