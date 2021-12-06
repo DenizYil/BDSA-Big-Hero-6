@@ -4,4 +4,4 @@ public record UserCreateDTO(string Id, string Name, string Email, bool Superviso
 
 public record UserUpdateDTO(string Name, string Email);
 
-public record UserDetailsDTO(string Id, string Name, string Email);
+public record UserDetailsDTO(string Id, string Name, string Email, bool Supervisor);

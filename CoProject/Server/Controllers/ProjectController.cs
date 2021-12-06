@@ -10,11 +10,12 @@ namespace CoProject.Server.Controllers;
 public class ProjectController : ControllerBase
 {
     private readonly IProjectRepository _projectRepository;
+    private readonly IUserRepository _userRepository;
 
-
-    public ProjectController(IProjectRepository projectRepository)
+    public ProjectController(IProjectRepository projectRepository, IUserRepository userRepository)
     {
         _projectRepository = projectRepository;
+        _userRepository = userRepository;
     }
 
     [HttpGet]
@@ -40,10 +41,28 @@ public class ProjectController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(ProjectDetailsDTO), 201)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
     public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
-        var created = await _projectRepository.Create(project);
+        var id = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
 
+        if (id == null)
+        {
+            return Unauthorized();
+        }
+        
+        // TODO: Tjek om det faktisk er en supervisor
+        var supervisor = await _userRepository.Read(id.Value);
+
+        if (supervisor == null || supervisor.Supervisor)
+        {
+            return Forbid();
+        }
+
+        project.SupervisorId = supervisor.Id;
+
+        var created = await _projectRepository.Create(project);
         return CreatedAtRoute(nameof(GetProject), new {created.Id}, created);
     }
 
