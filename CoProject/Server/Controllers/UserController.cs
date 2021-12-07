@@ -51,16 +51,8 @@ public class UserController : ControllerBase
     }
 
     [ProducesResponseType(201)]
-    [HttpPost]
-    public async Task<IActionResult> CreateUser(UserCreateDTO newUser)
-    {
-        var user = await _userRepository.Create(newUser);
-        return CreatedAtRoute(nameof(GetUser), new {user.Id}, user);
-    }
-
-    [ProducesResponseType(201)]
     [HttpPost("signup")]
-    public async Task<IActionResult> SignupUser()
+    public async Task<ActionResult<UserDetailsDTO?>> SignupUser()
     {
         var nameFind = User.FindFirst("name");
         var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
@@ -80,6 +72,7 @@ public class UserController : ControllerBase
         if (user == null)
         {
             await _userRepository.Create(new UserCreateDTO(userId, name, email, false));
+            return CreatedAtAction(nameof(user), user);
         }
             
         return NoContent();
@@ -89,7 +82,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(404)]
     [ProducesResponseType(204)]
     [HttpPut]
-    public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDTO updatedUser)
+    public async Task<ActionResult<Status>> UpdateUser([FromBody] UserUpdateDTO updatedUser)
     {
         var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
 
