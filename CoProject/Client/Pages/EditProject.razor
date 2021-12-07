@@ -1,13 +1,11 @@
 ﻿@page "/editproject/{id}"
-@inherits LayoutComponentBase
+@layout AuthLayout
 @using CoProject.Client.Forms
 @using CoProject.Infrastructure.Entities
 @using Microsoft.AspNetCore.Components
 @inject HttpClient _client
 @using CoProject.Shared
 @inject NavigationManager _navManager
-
-@layout AuthLayout
 
 
 <style>
@@ -62,33 +60,33 @@
 <div class="container">
     <div class="center">
         <h1>Edit Project</h1>
-        <hr/>
+        <hr />
         <h2>Edit the project by editing the inputs below</h2>
     </div>
 
     <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
-        <DataAnnotationsValidator/>
+        <DataAnnotationsValidator />
         <div class="form">
             <label for="name" class="form-header">Project Name <span class="required">*</span></label>
             <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
-                       @bind-Value="_form.Name"/>
+                       @bind-Value="_form.Name" />
 
             <label for="description" class="form-header">Project Description <span class="required">*</span></label>
             <InputTextArea @bind-Value="_form.Description" class="inputTextArea" id="description"
-                           placeholder="Write the description of the project"/>
+                           placeholder="Write the description of the project" />
 
             <label for="min" class="form-header">Students</label>
             <div class="min-max-container">
                 <InputNumber class="inputNumber" @bind-Value="_form.Min" type="number" id="min" name="name"
-                             placeholder="Minimum"/>
+                             placeholder="Minimum" />
                 <div class="line"></div>
                 <InputNumber @bind-Value="_form.Max" class="inputNumber" type="number" id="max" name="name"
-                             placeholder="Maximum"/>
+                             placeholder="Maximum" />
             </div>
 
             <label for="tags" class="form-header">Project Tags</label>
             <InputText @bind-Value="_form.Tags" class="inputText" type="text" id="tags" name="name"
-                       placeholder="Write the tags seperated by comma"/>
+                       placeholder="Write the tags seperated by comma" />
 
             <h3>Project State</h3>
             <div class="switch-field center">
@@ -118,6 +116,7 @@
     public string? Id { get; set; }
 
     private ProjectForm _form = new();
+    private ProjectDetailsDTO _project;
 
     protected override void OnInitialized()
     {
@@ -137,23 +136,23 @@
             return;
         }
 
-        var project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+        _project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 
         var tags = "";
 
-        foreach (var tag in project!.Tags)
+        foreach (var tag in _project!.Tags)
         {
             tags += tag + ", ";
         }
 
         tags = tags.TrimEnd(',', ' ');
 
-        _form.Name = project!.Name;
-        _form.Description = project.Description;
-        _form.Max = project.Max;
-        _form.Min = project.Min;
+        _form.Name = _project!.Name;
+        _form.Description = _project.Description;
+        _form.Max = _project.Max;
+        _form.Min = _project.Min;
         _form.Tags = tags;
-        _form.State = project.State;
+        _form.State = _project.State;
     }
 
     private void SwitchItem(State state)
@@ -163,8 +162,17 @@
 
     private async void OnSubmit()
     {
-        await _client.PutAsJsonAsync($"api/projects/{Id}", _form);
-        _navManager.NavigateTo($"/project/{Id}");
+        var updateProject = new ProjectUpdateDTO() { Name = _form.Name, Description = _form.Description, Max = _form.Max, Min = _form.Min, Tags = _form.Tags.Split(","), State = _form.State, Users = _project.Users.Select(e => e.Id).ToList() };
+        var response = await _client.PutAsJsonAsync($"api/projects/{Id}", updateProject);
+
+        if (response.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo($"/project/{Id}");
+        }else
+        {
+            _navManager.NavigateTo($"/project/{Id}?error=CouldNotUpdate");
+        }
+
     }
 
 }

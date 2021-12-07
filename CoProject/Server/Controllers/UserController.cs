@@ -1,5 +1,6 @@
 using CoProject.Shared;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web;
 
 namespace CoProject.Server.Controllers;
 
@@ -20,7 +21,7 @@ public class UserController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<UserDetailsDTO?>> GetUser()
     {
-        var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
+        var idFind = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
         if (idFind == null)
         {
@@ -40,7 +41,8 @@ public class UserController : ControllerBase
     [HttpGet("projects")]
     public async Task<IEnumerable<ProjectDetailsDTO>> GetProjectsByUser()
     {
-        var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
+        
+        var idFind = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
         if (idFind != null)
         {
@@ -55,7 +57,7 @@ public class UserController : ControllerBase
     public async Task<ActionResult<UserDetailsDTO?>> SignupUser()
     {
         var nameFind = User.FindFirst("name");
-        var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
+        var idFind = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
         var emailFind = User.FindFirst("emails");
 
         if (nameFind == null || idFind == null || emailFind == null)
@@ -84,7 +86,7 @@ public class UserController : ControllerBase
     [HttpPut]
     public async Task<ActionResult<Status>> UpdateUser([FromBody] UserUpdateDTO updatedUser)
     {
-        var idFind = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
+        var idFind = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
         if (idFind == null)
         {

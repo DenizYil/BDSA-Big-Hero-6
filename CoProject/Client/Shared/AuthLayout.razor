@@ -11,8 +11,8 @@
 </div>
 
 <div class="content">
-    <div class="alert" style="visibility: @(ErrorBox() ? "visible" : "hidden")">
-          <span class="closebtn" onclick="@RemoveError">&times;</span>
+    <div class="alert" style="display: @(ErrorBox() ? "block" : "none")">
+          <span class="closebtn" @onclick="RemoveError">&times;</span>
           <strong>Oops!</strong> Something seems to have gone wrong!
     </div> 
     @Body
@@ -25,8 +25,7 @@
 {
     private bool ErrorBox()
     {
-        var uri = Navigation.Uri;
-        return uri.Contains("error=");
+        return Navigation.Uri.Contains("error=");
     }
 
     private void RemoveError()
@@ -35,7 +34,7 @@
         Navigation.NavigateTo(uri);
     }
     
-    public static string RemoveQueryStringByKey(string url, string key)
+    private static string RemoveQueryStringByKey(string url, string key)
     {                   
         var uri = new Uri(url);
         

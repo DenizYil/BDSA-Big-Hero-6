@@ -1,5 +1,6 @@
 ﻿using CoProject.Shared;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Identity.Web;
 
 namespace CoProject.Server.Controllers;
 
@@ -45,25 +46,25 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> CreateProject(ProjectCreateDTO project)
     {
-        var id = User.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier");
+        var id = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
         if (id == null)
         {
             return Unauthorized();
         }
         
-        // TODO: Tjek om det faktisk er en supervisor
         var supervisor = await _userRepository.Read(id.Value);
 
-        if (supervisor == null || supervisor.Supervisor)
+        if(supervisor != null && supervisor.Supervisor == true)
         {
-            return Forbid();
+            project.SupervisorId = supervisor.Id;
+
+            var created = await _projectRepository.Create(project);
+            return CreatedAtRoute(nameof(GetProject), new { created.Id }, created);
         }
 
-        project.SupervisorId = supervisor.Id;
-
-        var created = await _projectRepository.Create(project);
-        return CreatedAtRoute(nameof(GetProject), new {created.Id}, created);
+        return Forbid();
+        
     }
 
 
@@ -72,20 +73,47 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO project)
     {
-        var response = await _projectRepository.Update(id, project);
+        var userId = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
-        if (response == Status.Updated)
+        if (userId == null)
         {
-            return NoContent();
+            return Unauthorized();
         }
 
+        var user = await _userRepository.Read(userId.Value);
+        var _project = await _projectRepository.Read(id);
+
+        if(user == null)
+        {
+            return NotFound();
+        }
+
+        if(_project == null)
+        {
+            return NotFound();
+        }
+
+        if(user.Supervisor == true && _project.Supervisor.Id.Equals(user.Id))
+        {
+            // The logged in user is supervisor and is creator of the project trying to be deleted
+            var response = await _projectRepository.Update(id, project);
+
+            if (response == Status.Updated)
+            {
+                return NoContent();
+            }
+
+            return NotFound();
+        }
         return NotFound();
+
+        
     }
 
-    [HttpPut("{projectId}/{userId}")]
+    [HttpPut("{projectId}/join")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult> AddUserToProject(int projectId, string userId)
+    public async Task<ActionResult> AddUserToProject(int projectId)
     {
         var project = await _projectRepository.Read(projectId);
 
@@ -94,23 +122,30 @@ public class ProjectController : ControllerBase
             return NotFound();
         }
 
+        var id = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
+
+        if (id == null)
+        {
+            return Unauthorized();
+        }
+
         var users = project.Users.Select(u => u.Id).ToList();
         
-        if (users.Contains(userId))
+        if (users.Contains(id.Value))
         {
             return NotFound();
         }
         
-        users.Add(userId);
+        users.Add(id.Value);
 
         await _projectRepository.Update(projectId, new ProjectUpdateDTO {Users = users});
         return NoContent();
     }
 
-    [HttpDelete("{projectId}/{userId}")]
+    [HttpDelete("{projectId}/leave")]
     [ProducesResponseType(204)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> RemoveUserFromProject(int projectId, string userId)
+    public async Task<IActionResult> RemoveUserFromProject(int projectId)
     {
         var project = await _projectRepository.Read(projectId);
 
@@ -119,12 +154,35 @@ public class ProjectController : ControllerBase
             return NotFound();
         }
 
+        var id = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
+
+        if (id == null)
+        {
+            return Unauthorized();
+        }
+
         var users = project.Users.Select(u => u.Id).ToList();
 
-        users.Remove(userId);
+        if (users.Contains(id.Value))
+        {
+            if (users.Remove(id.Value))
+            {
+                await _projectRepository.Update(projectId, new ProjectUpdateDTO() { Users = users });
+                return NoContent();
+            }else
+            {
+                return NotFound();
+            }
+            
+        }else
+        {
+            // The user is not in the project
+            return NotFound();
+        }
 
-        await _projectRepository.Update(projectId, new ProjectUpdateDTO() {Users = users});
-        return NoContent();
+
+
+        
     }
 
 
@@ -133,13 +191,31 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(404)]
     public async Task<IActionResult> DeleteProject(int id)
     {
-        var response = await _projectRepository.Delete(id);
+        var userId = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
-        if (response == Status.Deleted)
+        if (userId == null)
         {
-            return NoContent();
+            return Unauthorized();
         }
 
-        return NotFound();
+        var project = await _projectRepository.Read(id);
+        var user = await _userRepository.Read(userId.Value);
+
+        // Only delete if the user actually owns this project
+        if(user != null && user.Supervisor == true && project != null && project.Supervisor.Id.Equals(user.Id))
+        {
+            var response = await _projectRepository.Delete(id);
+
+            if (response == Status.Deleted)
+            {
+                return NoContent();
+            }
+
+            return NotFound();
+        }
+
+        return Unauthorized();
+
+        
     }
 }

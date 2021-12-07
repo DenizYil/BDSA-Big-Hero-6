@@ -29,12 +29,14 @@ public class UserRepository : IUserRepository
 
     public async Task<IEnumerable<ProjectDetailsDTO>> ReadAllByUser(string id)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+        var user = await _context.Users.FirstOrDefaultAsync(user => user.Id.Equals(id));
+
 
         if (user == null)
         {
             return new List<ProjectDetailsDTO>();
         }
+
 
         return user.Projects
             .Select(project =>
@@ -43,7 +45,7 @@ public class UserRepository : IUserRepository
                     project.Name,
                     project.Description,
                     _context.Users
-                        .Where(supervisor => supervisor.Id == project.SupervisorId)
+                        .Where(supervisor => supervisor.Id.Equals(project.SupervisorId))
                         .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.UserName, supervisor.Email, supervisor.Supervisor))
                         .First(),
                     project.State,

@@ -100,7 +100,7 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<Status> Update(int id, ProjectUpdateDTO update)
     {
-        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id.Equals(id));
 
         if (project == null)
         {

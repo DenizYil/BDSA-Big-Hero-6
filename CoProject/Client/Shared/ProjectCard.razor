@@ -6,7 +6,7 @@
         <p class="project-description">@Project.Description</p>
         <div class="supv">
             <img class="supv-img" src=@GetSupervisorImgSrc()/>
-            <p class="supv-name">Made by @Project.Supervisor.Id</p>
+            <p class="supv-name">Made by @Project.Supervisor.Name</p>
         </div>
         <div class="tags">
             @foreach (var tag in Project.Tags)

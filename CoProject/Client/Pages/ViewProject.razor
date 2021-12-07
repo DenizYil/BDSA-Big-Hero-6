@@ -4,6 +4,12 @@
 @inject HttpClient _client
 @using CoProject.Shared;
 @using Microsoft.AspNetCore.Authorization;
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+
+
 
 <PageTitle>View Project - CoProject</PageTitle>
 
@@ -14,13 +20,13 @@
 else
 {
     <h1 id="ProjectName">@_project.Name</h1>
-    <h2 id="registered">Registered: @_project.Users.Count/@_project.Max</h2>
+    <h2 id="registered">Registered: @_project.Users.Count @(_project.Max != null && _project.Max > 0 ? $"/{_project.Max}" : "")</h2>
 
-    <hr/>
+    <hr />
 
     <div class="supervisorContainer">
         <img class="imageOfSupervisor" alt="PICTURE OF SUPERVISOR" src="https://via.placeholder.com/150">
-        <p class="supervisorName">Project creator id :> @_project.Supervisor.Id</p>
+        <p class="supervisorName">@_project.Supervisor.Name</p>
         <p class="createdBy">Created on @_project.Created</p>
     </div>
 
@@ -34,17 +40,24 @@ else
             <p class="tagName">@t</p>
         }
     </div>
-    
+
     <button id="editProject">
         <a href="/editproject/@Id">Edit project</a>
     </button>
-    
     <button id="joinProject">
-        <a href="/myprojects" onclick="@Join">Join project</a>
+        @if (isUserJoined)
+        {
+            <a @onclick="Join">Join project</a>
+        }
+        else
+        {
+            <a @onclick="Leave">Leave project</a>
+        }
+
     </button>
 
-    <button id="delete" onclick=@Delete>Delete</button>
-    <hr/>
+    <button id="delete" @onclick=Delete>Delete</button>
+    <hr />
 
     <p id="studentsRegistered">Students registered</p>
 
@@ -54,12 +67,12 @@ else
         {
             <div class="oneStudent">
                 <div class="studentLeft">
-                    <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student"/>
+                    <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student" />
                 </div>
                 <div class="studentRight">
                     <p class="student">@u.Name</p>
                     <p class="email">
-                        @u.Email<img src="/images/copyIcon.svg" class="material-icons"/>
+                        @u.Email<img src="/images/copyIcon.svg" class="material-icons" />
                     </p>
                 </div>
             </div>
@@ -69,13 +82,10 @@ else
 
 @code {
     private ProjectDetailsDTO? _project;
-    private UserDetailsDTO? _user;
+    private bool isUserJoined = false;
 
     [Parameter]
     public string? Id { get; set; }
-    
-    [Parameter]
-    public string? UserId { get; set; }
 
     protected override void OnInitialized()
     {
@@ -88,39 +98,118 @@ else
     protected override async Task OnInitializedAsync()
     {
         var projectResponse = await _client.GetAsync($"api/projects/{Id}");
-        var userResponse = await _client.GetAsync($"api/user");
 
-        if (projectResponse.IsSuccessStatusCode)
+        if (projectResponse.IsSuccessStatusCode && projectResponse.Content != null)
         {
+
             _project = await projectResponse.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
-            _user = await userResponse.Content.ReadFromJsonAsync<UserDetailsDTO>();
+
+            if (_project != null)
+            {
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+
+                if (user != null)
+                {
+                    var userid = user.FindFirst("oid");
+
+                    if (userid != null)
+                    {
+                        if (_project.Users.FirstOrDefault(u => u.Id.Equals(userid)) != null)
+                        {
+                            isUserJoined = true;
+                        }
+
+                    }
+                    else
+                    {
+                        _navManager.NavigateTo("/");
+                    }
+                }
+                else
+                {
+                    _navManager.NavigateTo("/");
+                }
+            }
+            else
+            {
+                _navManager.NavigateTo("/projects?error=ProjectNotFound");
+            }
+
+
+
+
+
         }
         else
         {
             _navManager.NavigateTo("/projects?error=JsonReturnError");
         }
     }
-    
+
     private async void Join()
     {
-        var response = await _client.PutAsJsonAsync($"api/projects/{_project.Id}/{_user.Id}", _project);
-        
-        if (response.IsSuccessStatusCode)
+        if (_project != null)
         {
-            var uri = "/myprojects";
-            _navManager.NavigateTo(uri);
-            return;
+            var response = await _client.PutAsJsonAsync($"api/projects/{_project.Id}/join", "");
+
+            if (response.IsSuccessStatusCode)
+            {
+                _navManager.NavigateTo("/myprojects");
+            }
+            else
+            {
+                _navManager.NavigateTo($"/project/{Id}?error=JoinProjectError");
+            }
         }
-        _navManager.NavigateTo($"/project/{Id}?error=JoinProjectError");
+        else
+        {
+            _navManager.NavigateTo($"/project/{Id}?error=ProjectIsNull");
+        }
+    }
+
+    private async void Leave()
+    {
+        if (_project != null)
+        {
+            var response = await _client.DeleteAsync($"api/projects/{_project.Id}/leave");
+
+            if (response.IsSuccessStatusCode)
+            {
+                _navManager.NavigateTo("/myprojects");
+            }
+            else
+            {
+                _navManager.NavigateTo($"/project/{Id}?error=LeaveProjectError");
+            }
+        }
+        else
+        {
+            _navManager.NavigateTo($"/project/{Id}?error=ProjectIsNull");
+        }
     }
 
     private async void Delete()
     {
-        var response = await _client.DeleteAsync($"api/projects/{Id}");
+        if (_project != null)
+        {
+            var response = await _client.DeleteAsync($"api/projects/{_project.Id}");
 
-        if (response.IsSuccessStatusCode) return;
-        var uri = "/projects?error=DeleteProjectError";
-        _navManager.NavigateTo(uri);
+            if (response.IsSuccessStatusCode)
+            {
+                _navManager.NavigateTo("/projects");
+            }
+            else
+            {
+                _navManager.NavigateTo("/projects?error=DeleteProjectError");
+            }
+
+        }
+        else
+        {
+            _navManager.NavigateTo("/projects?error=ProjectNotFound");
+        }
+
     }
 
 }
