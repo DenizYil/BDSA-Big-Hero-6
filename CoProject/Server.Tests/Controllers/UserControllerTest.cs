@@ -56,7 +56,29 @@ public class UserControllerTest
     }
 
     [Fact]
-    public async void GetUser_returns_not_found()
+    public async void GetUser_returns_not_found_in_token()
+    {
+        // Arrange
+        _identity = new GenericIdentity(_user.Name, "");
+        var principal = new GenericPrincipal(_identity, roles: new string[] { });
+        var loggedInUser = new ClaimsPrincipal(principal);
+
+
+        _controller = new UserController(_repository.Object)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = loggedInUser } }
+        };
+
+        // act
+        var actual = await _controller.GetUser();
+
+        // assert
+        Assert.IsType<NotFoundResult>(actual.Result);
+
+    }
+
+    [Fact]
+    public async void GetUser_returns_not_found_in_database()
     {
         // Arrange
         _repository.Setup(m => m.Read(_user.Id)).ReturnsAsync(default(UserDetailsDTO));
@@ -88,13 +110,20 @@ public class UserControllerTest
     public async void getProjectsByUser_returns_empty()
     {
         // Arrange
-        var projects = new List<ProjectDetailsDTO>();
-        _repository.Setup(m => m.ReadAllByUser(_user.Id)).ReturnsAsync(projects);
+        _identity = new GenericIdentity(_user.Name, "");
+        var principal = new GenericPrincipal(_identity, roles: new string[] { });
+        var loggedInUser = new ClaimsPrincipal(principal);
+
+
+        _controller = new UserController(_repository.Object)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = loggedInUser } }
+        };
 
         // Act
         var actual = await _controller.GetProjectsByUser();
 
-        Assert.Equal(projects, actual);
+        Assert.Equal(new List<ProjectDetailsDTO>(), actual);
     }
 
     [Fact]
