@@ -29,7 +29,9 @@ public class UserRepository : IUserRepository
 
     public async Task<IEnumerable<ProjectDetailsDTO>> ReadAllByUser(string id)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(user => user.Id.Equals(id));
+        var user = await _context.Users
+            .Include(user => user.Projects)
+            .FirstOrDefaultAsync(user => user.Id == id);
 
         if (user == null)
         {
@@ -48,15 +50,16 @@ public class UserRepository : IUserRepository
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor))
-                        .ToList()
+                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor)).ToList()
                 )
                 {
                     Min = project.Min,
                     Max = project.Max
                 });
         }
-
+        
+        await _context.Entry(user).ReloadAsync();
+        
         return user.Projects
             .Select(project =>
                 new ProjectDetailsDTO(
@@ -64,14 +67,13 @@ public class UserRepository : IUserRepository
                     project.Name,
                     project.Description,
                     _context.Users
-                        .Where(supervisor => supervisor.Id.Equals(project.SupervisorId))
+                        .Where(supervisor => supervisor.Id == project.SupervisorId)
                         .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor))
                         .First(),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor))
-                        .ToList()
+                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor)).ToList()
                 )
                 {
                     Min = project.Min,

@@ -99,7 +99,7 @@ public class ProjectController : ControllerBase
             return NotFound("Project was not found");
         }
 
-        if (!user.Supervisor || !_project.Supervisor.Id.Equals(user.Id))
+        if (!user.Supervisor || _project.Supervisor.Id != user.Id)
         {
             return Forbid("You are not this project's supervisor");
         }
@@ -239,7 +239,7 @@ public class ProjectController : ControllerBase
             return NotFound("Project was not found");
         }
 
-        if (!project.Supervisor.Id.Equals(user.Id))
+        if (project.Supervisor.Id != user.Id)
         {
             return Forbid("You are not this project's supervisor");
         }

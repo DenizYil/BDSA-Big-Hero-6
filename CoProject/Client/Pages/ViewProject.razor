@@ -39,7 +39,7 @@ else
         }
     </div>
 
-    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor && UsedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
+    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor && UsedLayout.loggedInUser.Id == _project.Supervisor.Id)
     {
         <a href="/editproject/@Id">
         <button id="editProject">
@@ -63,7 +63,7 @@ else
         </button>
     }
 
-    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor == true && UsedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
+    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor == true && UsedLayout.loggedInUser.Id == _project.Supervisor.Id)
     {
         <button id="delete" @onclick=Delete>Delete</button>
     }
@@ -117,7 +117,7 @@ else
                     {
                         Console.WriteLine(user.Id);
                     }
-                    if (_project.Users.FirstOrDefault(u => u.Id.Equals(UsedLayout.loggedInUser.Id)) != null)
+                    if (_project.Users.FirstOrDefault(u => u.Id == UsedLayout.loggedInUser.Id) != null)
                     {
                         _userJoined = true;
                     }

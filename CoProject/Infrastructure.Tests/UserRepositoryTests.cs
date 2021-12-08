@@ -128,7 +128,7 @@ public class UserRepositoryTests : DefaultTests
         expected.Name = "YeehaaSelf";
         expected.Email = "you@you.dk";
 
-        var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id.Equals("1"));
+        var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id =="1");
 
         expected.Should().BeEquivalentTo(actual);
     }

@@ -139,7 +139,7 @@
             return;
         }
 
-        if (!usedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
+        if (usedLayout.loggedInUser.Id != _project.Supervisor.Id)
         {
             _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
             return;

@@ -100,7 +100,10 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<Status> Update(int id, ProjectUpdateDTO update)
     {
-        var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id.Equals(id));
+        var project = await _context.Projects
+            .Include(project => project.Tags)
+            .Include(project => project.Users)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
         {
@@ -131,16 +134,33 @@ public class ProjectRepository : IProjectRepository
         {
             project.State = update.State.Value;
         }
-
-        if (update.Tags != null && update.Tags.All(project.Tags.Select(tag => tag.Name).Contains))
+        
+        if (update.Tags != null && update.Tags.Except(project.Tags.Select(tag => tag.Name)).Any())
         {
-            project.Tags = await GetTagsFromNames(update.Tags);
+            foreach (var tag in project.Tags)
+            {
+                tag.Projects.Remove(project);
+            }
+            
+            await _context.SaveChangesAsync();
+
+            var tags = await GetTagsFromNames(update.Tags);
+            
+            project.Tags = tags;
         }
 
         if (update.Users != null)
         {
+            foreach (var user in project.Users)
+            {
+                user.Projects.Remove(project);
+            }
+            
+            await _context.SaveChangesAsync();
+
             project.Users = await _context.Users
-                .Where(user => update.Users.Contains(user.Id)).ToListAsync();
+                .Where(user => update.Users.Contains(user.Id))
+                .ToListAsync();
         }
 
         await _context.SaveChangesAsync();
