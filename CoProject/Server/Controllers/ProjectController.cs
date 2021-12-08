@@ -133,7 +133,7 @@ public class ProjectController : ControllerBase
         
         if (users.Contains(id.Value))
         {
-            return NotFound();
+            return Conflict();
         }
         
         users.Add(id.Value);
