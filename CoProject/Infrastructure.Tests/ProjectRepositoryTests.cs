@@ -184,16 +184,46 @@ public class ProjectRepositoryTests : DefaultTests
             Min = 3,
             Max = 7,
             Tags = new List<Tag> {project.Tags.ElementAt(0)},
-            Users = new List<User>
-            {
-                _context.Users.First(user => user.Id == "1")
-            },
+            Users = new List<User> {_context.Users.First(user => user.Id.Equals("1"))},
             State = State.Hidden,
             SupervisorId = "2",
             Created = now
         };
 
         expected.Should().BeEquivalentTo(actual);
+    }
+
+    [Fact]
+    public async void Update_adds_user_to_project()
+    {
+        var newUser = user;
+        newUser.Id = "2";
+        newUser.Email = "you@you.dk";
+        newUser.UserName = "Yourself";
+
+        await _context.Users.AddAsync(newUser);
+        await _context.SaveChangesAsync();
+
+        var users = await _context.Users.Select(u => u.Id).ToListAsync();
+        users.Add("2");
+
+        await _repo.Update(1, new ProjectUpdateDTO {Users = users});
+
+        var expected = new List<string> {"1", "2"};
+        var actual = (await _context.Projects.FirstAsync(p => p.Id == 1)).Users.Select(u => u.Id);
+        
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async void Update_removes_user_from_project()
+    {
+        await _repo.Update(1, new ProjectUpdateDTO {Users = new List<string>()});
+
+        var expected = new List<string>();
+        var actual = (await _context.Projects.FirstAsync()).Users.Select(u => u.Id);
+        
+        Assert.Equal(expected, actual);
     }
 
     [Fact]
