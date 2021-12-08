@@ -34,7 +34,7 @@ public class DefaultTests
             Email = "me@me.dk",
             Projects = new List<Project>(),
             Supervisor = true,
-            UserName = "Myself"
+            Name = "Myself"
         };
         _context.Users.Add(user);
         _context.SaveChanges();

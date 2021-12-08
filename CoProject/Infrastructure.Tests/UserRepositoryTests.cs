@@ -54,7 +54,7 @@ public class UserRepositoryTests : DefaultTests
         var newUser = user;
         newUser.Id = "2";
         newUser.Email = "you@you.dk";
-        newUser.UserName = "Yourself";
+        newUser.Name = "Yourself";
 
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
@@ -125,7 +125,7 @@ public class UserRepositoryTests : DefaultTests
         await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk"));
 
         var expected = user;
-        expected.UserName = "YeehaaSelf";
+        expected.Name = "YeehaaSelf";
         expected.Email = "you@you.dk";
 
         var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id.Equals("1"));

@@ -22,7 +22,7 @@ public class ProjectController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<ProjectDetailsDTO>> GetProjects()
     {
-        return await _projectRepository.ReadAll();
+        return (await _projectRepository.ReadAll()).Where(project => project.State == State.Open);
     }
 
     [ProducesResponseType(404)]
@@ -55,7 +55,7 @@ public class ProjectController : ControllerBase
         
         var supervisor = await _userRepository.Read(id.Value);
 
-        if(supervisor != null && supervisor.Supervisor == true)
+        if(supervisor != null && supervisor.Supervisor)
         {
             project.SupervisorId = supervisor.Id;
 
@@ -64,9 +64,7 @@ public class ProjectController : ControllerBase
         }
 
         return Forbid();
-        
     }
-
 
     [HttpPut("{id}")]
     [ProducesResponseType(204)]
@@ -93,7 +91,7 @@ public class ProjectController : ControllerBase
             return NotFound();
         }
 
-        if(user.Supervisor == true && _project.Supervisor.Id.Equals(user.Id))
+        if(user.Supervisor && _project.Supervisor.Id.Equals(user.Id))
         {
             // The logged in user is supervisor and is creator of the project trying to be deleted
             var response = await _projectRepository.Update(id, project);

@@ -10,4 +10,5 @@ public interface ICoProjectContext : IDisposable
     DbSet<User> Users { get; set; }
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    
 }

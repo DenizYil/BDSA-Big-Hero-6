@@ -12,7 +12,7 @@
 
 
 <div class="navbar">
-    <NavBar />
+    <NavBar/>
 </div>
 
 <CascadingValue Value="this">
@@ -21,11 +21,17 @@
             <span class="closebtn" @onclick="RemoveError">&times;</span>
             <strong>Oops!</strong> Something seems to have gone wrong!
         </div>
-        @Body
+        
+        <div class="success" style="display: @(SuccessBox() ? "block" : "none")">
+            <span class="closebtn" @onclick="RemoveSuccess">&times;</span>
+            <strong>Success!</strong> Everything perfect!
+        </div>
+
+        @Body   
+        
 
     </div>
 </CascadingValue>
-
 
 
 @code
@@ -35,38 +41,68 @@
 
     protected override async void OnInitialized()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
 
-        if (user != null)
+        try
         {
-            var userid = user.FindFirst("oid");
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
 
-            if (userid != null)
+            if (user != null)
             {
-                var response = await _client.GetAsync("/api/user");
-                if (response.IsSuccessStatusCode)
-                {
-                    var userFind = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
+                var userid = user.FindFirst("oid");
 
-                    if(userFind != null)
+                if (userid != null)
+                {
+                    var response = await _client.GetAsync("/api/user");
+                    if (response.IsSuccessStatusCode)
                     {
-                        loggedInUser = userFind;
+                        var userFind = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
+
+                        if (userFind != null)
+                        {
+                            loggedInUser = userFind;
+                            ShouldRender();
+                            base.OnInitialized();
+                        }
                     }
                 }
-
+                else
+                {
+                    Navigation.NavigateTo("/");
+                }
+            } 
+            else
+            {
+                Navigation.NavigateTo("/");
             }
         }
+        catch (Exception e)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
     }
+    
 
     private bool ErrorBox()
     {
         return Navigation.Uri.Contains("error=");
     }
+    
+    private bool SuccessBox()
+    {
+        return Navigation.Uri.Contains("success=");
+    }
 
     private void RemoveError()
     {
         var uri = RemoveQueryStringByKey(Navigation.Uri, "error");
+        Navigation.NavigateTo(uri);
+    }
+    
+    private void RemoveSuccess()
+    {
+        var uri = RemoveQueryStringByKey(Navigation.Uri, "success");
         Navigation.NavigateTo(uri);
     }
 

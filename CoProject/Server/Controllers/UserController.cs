@@ -46,7 +46,7 @@ public class UserController : ControllerBase
 
         if (idFind != null)
         {
-            return await _userRepository.ReadAllByUser(idFind.Value);
+            return (await _userRepository.ReadAllByUser(idFind.Value)).Where(project => project.State != State.Deleted);
         }
         
         return new List<ProjectDetailsDTO>();
@@ -74,7 +74,7 @@ public class UserController : ControllerBase
         if (user == null)
         {
             await _userRepository.Create(new UserCreateDTO(userId, name, email, false));
-            return CreatedAtAction(nameof(user), user);
+            return CreatedAtAction(nameof(GetUser), user);
         }
             
         return NoContent();

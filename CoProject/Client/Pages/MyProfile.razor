@@ -85,10 +85,12 @@
     {
         var response = await _client.PutAsJsonAsync("api/user", _form);
 
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
             _navManager.NavigateTo("/profile?error=UpdateProfileError");
         }
+        
+        _navManager.NavigateTo("/profile?success=ProfileUpdated");
     }
 
 }

@@ -101,7 +101,12 @@
 
     private async void OnSubmit()
     {
-        var addItem = new ProjectCreateDTO(_form.Name, _form.Description, _form.State, _form.Tags!.Split(","));
+        var addItem = new ProjectCreateDTO(_form.Name, _form.Description, _form.State, _form.Tags!.Split(","))
+        {
+            Min = _form.Min,
+            Max = _form.Max
+        };
+        
         var response = await _client.PostAsJsonAsync("api/projects", addItem);
 
         if(response.IsSuccessStatusCode)
