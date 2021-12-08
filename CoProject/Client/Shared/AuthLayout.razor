@@ -19,12 +19,12 @@
     <div class="content">
         <div class="alert" style="display: @(ErrorBox() ? "block" : "none")">
             <span class="closebtn" @onclick="RemoveError">&times;</span>
-            <strong>Oops!</strong> Something seems to have gone wrong!
+            <strong>Oops!</strong> @ErrorMessage
         </div>
         
         <div class="success" style="display: @(SuccessBox() ? "block" : "none")">
             <span class="closebtn" @onclick="RemoveSuccess">&times;</span>
-            <strong>Success!</strong> Everything perfect!
+            <strong>Success!</strong> @SuccessMessage
         </div>
 
         @Body   
@@ -39,8 +39,14 @@
 
     public UserDetailsDTO? loggedInUser = null;
 
+    public string? SuccessMessage = "";
+    public string? ErrorMessage = "";
+    
     protected override async void OnInitialized()
     {
+
+        SuccessMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["success"];
+        ErrorMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["error"];
 
         try
         {
@@ -111,6 +117,7 @@
         var uri = new Uri(url);
 
         var newQueryString = HttpUtility.ParseQueryString(uri.Query);
+        
 
         newQueryString.Remove(key);
 

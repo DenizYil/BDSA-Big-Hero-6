@@ -39,7 +39,7 @@ else
         }
     </div>
 
-    @if (usedLayout != null && usedLayout.loggedInUser != null && usedLayout.loggedInUser.Supervisor && usedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
+    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor && UsedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
     {
         <a href="/editproject/@Id">
         <button id="editProject">
@@ -47,11 +47,11 @@ else
         </button>
         </a>
     }
-    @if (!usedLayout.loggedInUser.Supervisor)
+    @if (!UsedLayout.loggedInUser.Supervisor)
     {
         <button id="joinProject">
 
-            @if (!isUserJoined)
+            @if (!_userJoined)
             {
                 <a @onclick="Join">Join project</a>
             }
@@ -63,7 +63,7 @@ else
         </button>
     }
 
-    @if (usedLayout != null && usedLayout.loggedInUser != null && usedLayout.loggedInUser.Supervisor == true && usedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
+    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor == true && UsedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
     {
         <button id="delete" @onclick=Delete>Delete</button>
     }
@@ -93,21 +93,13 @@ else
 
 @code {
     private ProjectDetailsDTO? _project;
-    private bool isUserJoined = false;
+    private bool _userJoined;
 
     [CascadingParameter]
-    public AuthLayout? usedLayout { get; set; }
+    public AuthLayout? UsedLayout { get; set; }
 
     [Parameter]
     public string? Id { get; set; }
-
-    protected override void OnInitialized()
-    {
-        if (Id == null)
-        {
-            _navManager.NavigateTo("/projects");
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,15 +111,15 @@ else
 
             if (_project != null)
             {
-                if (usedLayout != null && usedLayout.loggedInUser != null)
+                if (UsedLayout != null && UsedLayout.loggedInUser != null)
                 {
                     foreach (var user in _project.Users)
                     {
                         Console.WriteLine(user.Id);
                     }
-                    if (_project.Users.FirstOrDefault(u => u.Id.Equals(usedLayout.loggedInUser.Id)) != null)
+                    if (_project.Users.FirstOrDefault(u => u.Id.Equals(UsedLayout.loggedInUser.Id)) != null)
                     {
-                        isUserJoined = true;
+                        _userJoined = true;
                     }
                 }
                 else
@@ -137,12 +129,12 @@ else
             }
             else
             {
-                _navManager.NavigateTo("/projects?error=ProjectNotFound");
+                _navManager.NavigateTo("/projects?error=" + projectResponse.Content);
             }
         }
         else
         {
-            _navManager.NavigateTo("/projects?error=JsonReturnError");
+            _navManager.NavigateTo("/projects?error=" + projectResponse.Content);
         }
     }
 
@@ -152,18 +144,11 @@ else
         {
             var response = await _client.PutAsJsonAsync($"api/projects/{_project.Id}/join", "");
 
-            if (response.IsSuccessStatusCode)
-            {
-                _navManager.NavigateTo("/myprojects");
-            }
-            else
-            {
-                _navManager.NavigateTo($"/project/{Id}?error=JoinProjectError");
-            }
+            _navManager.NavigateTo(response.IsSuccessStatusCode ? $"/myprojects?success={await response.Content.ReadAsStringAsync()}" : $"/project/{Id}?error={await response.Content.ReadAsStringAsync()}");
         }
         else
         {
-            _navManager.NavigateTo($"/project/{Id}?error=ProjectIsNull");
+            _navManager.NavigateTo($"/project/{Id}?error=Project could not be found");
         }
     }
 
@@ -172,19 +157,12 @@ else
         if (_project != null)
         {
             var response = await _client.DeleteAsync($"api/projects/{_project.Id}/leave");
-
-            if (response.IsSuccessStatusCode)
-            {
-                _navManager.NavigateTo("/myprojects");
-            }
-            else
-            {
-                _navManager.NavigateTo($"/project/{Id}?error=LeaveProjectError");
-            }
+            
+            _navManager.NavigateTo(response.IsSuccessStatusCode ? $"/myprojects?success={await response.Content.ReadAsStringAsync()}" : $"/project/{Id}?error={await response.Content.ReadAsStringAsync()}");
         }
         else
         {
-            _navManager.NavigateTo($"/project/{Id}?error=ProjectIsNull");
+            _navManager.NavigateTo($"/project/{Id}?error=Project could not be found");
         }
     }
 
@@ -194,18 +172,11 @@ else
         {
             var response = await _client.DeleteAsync($"api/projects/{_project.Id}");
 
-            if (response.IsSuccessStatusCode)
-            {
-                _navManager.NavigateTo("/projects");
-            }
-            else
-            {
-                _navManager.NavigateTo("/projects?error=DeleteProjectError");
-            }
+            _navManager.NavigateTo(response.IsSuccessStatusCode ? $"/projects?success={await response.Content.ReadAsStringAsync()}" : $"/projects?error={await response.Content.ReadAsStringAsync()}");
         }
         else
         {
-            _navManager.NavigateTo("/projects?error=ProjectNotFound");
+            _navManager.NavigateTo($"/project/{Id}?error=Project could not be found");
         }
     }
 

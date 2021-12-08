@@ -4,7 +4,6 @@ using Microsoft.Identity.Web;
 
 namespace CoProject.Server.Controllers;
 
-
 [Authorize]
 [ApiController]
 [Route("api/projects")]
@@ -34,7 +33,7 @@ public class ProjectController : ControllerBase
 
         if (project == null)
         {
-            return NotFound();
+            return NotFound("Project could not be found");
         }
 
         return project;
@@ -50,24 +49,32 @@ public class ProjectController : ControllerBase
 
         if (id == null)
         {
-            return Unauthorized();
+            return Unauthorized("You are not logged in");
         }
-        
+
         var supervisor = await _userRepository.Read(id.Value);
 
-        if(supervisor != null && supervisor.Supervisor)
+        if (supervisor == null)
         {
-            project.SupervisorId = supervisor.Id;
-
-            var created = await _projectRepository.Create(project);
-            return CreatedAtRoute(nameof(GetProject), new { created.Id }, created);
+            return Unauthorized("You are not logged in");
         }
 
-        return Forbid();
+        if (!supervisor.Supervisor)
+        {
+            return Forbid("You are not a supervisor");
+        }
+
+        project.SupervisorId = supervisor.Id;
+
+        var created = await _projectRepository.Create(project);
+        return CreatedAtRoute(nameof(GetProject), new {created.Id}, created);
     }
 
     [HttpPut("{id}")]
-    [ProducesResponseType(204)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
     [ProducesResponseType(404)]
     public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO project)
     {
@@ -75,124 +82,135 @@ public class ProjectController : ControllerBase
 
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized("You are not logged in");
         }
 
         var user = await _userRepository.Read(userId.Value);
+
+        if (user == null)
+        {
+            return NotFound("You are not logged in");
+        }
+
         var _project = await _projectRepository.Read(id);
 
-        if(user == null)
+        if (_project == null)
         {
-            return NotFound();
+            return NotFound("Project was not found");
         }
 
-        if(_project == null)
+        if (!user.Supervisor || !_project.Supervisor.Id.Equals(user.Id))
         {
-            return NotFound();
+            return Forbid("You are not this project's supervisor");
         }
 
-        if(user.Supervisor && _project.Supervisor.Id.Equals(user.Id))
+        // The logged in user is supervisor and is creator of the project trying to be deleted
+        var response = await _projectRepository.Update(id, project);
+
+        if (response == Status.Updated)
         {
-            // The logged in user is supervisor and is creator of the project trying to be deleted
-            var response = await _projectRepository.Update(id, project);
-
-            if (response == Status.Updated)
-            {
-                return NoContent();
-            }
-
-            return NotFound();
+            return Ok("Project has been successfully updated!");
         }
-        return NotFound();
 
-        
+        // Should never hit this
+        return BadRequest("Project could not be updated");
     }
 
     [HttpPut("{projectId}/join")]
-    [ProducesResponseType(204)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
     [ProducesResponseType(404)]
+    [ProducesResponseType(409)]
     public async Task<ActionResult> AddUserToProject(int projectId)
     {
         var project = await _projectRepository.Read(projectId);
 
         if (project == null)
         {
-            return NotFound();
+            return NotFound("Project was not found");
+        }
+
+        if (project.State != State.Open)
+        {
+            return Forbid("The project is not open");
+        }
+
+        if (project.Users.Count >= project.Max)
+        {
+            return Forbid("The project is full");
         }
 
         var id = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
         if (id == null)
         {
-            return Unauthorized();
+            return Unauthorized("You are not logged in");
         }
 
         var users = project.Users.Select(u => u.Id).ToList();
-        
+
         if (users.Contains(id.Value))
         {
-            return Conflict();
+            return Conflict("You have already joined this project");
         }
-        
+
         users.Add(id.Value);
 
-        await _projectRepository.Update(projectId, new ProjectUpdateDTO {Users = users});
-        return NoContent();
+        var updatedStatus = await _projectRepository.Update(projectId, new ProjectUpdateDTO {Users = users});
+
+        if (updatedStatus == Status.Updated)
+        {
+            return Ok("You have joined the project");
+        }
+
+        return BadRequest("You could not join the project");
     }
 
     [HttpDelete("{projectId}/leave")]
-    [ProducesResponseType(204)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
     [ProducesResponseType(404)]
+    [ProducesResponseType(409)]
     public async Task<IActionResult> RemoveUserFromProject(int projectId)
     {
         var project = await _projectRepository.Read(projectId);
 
-        if (project == null)
+        if (project == null || project.State == State.Deleted)
         {
-            return NotFound();
+            return NotFound("Project was not found");
         }
 
         var id = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
         if (id == null)
         {
-            return Unauthorized();
+            return Unauthorized("You are not logged in");
         }
 
         var users = project.Users.Select(u => u.Id).ToList();
 
-        if (users.Contains(id.Value))
+        if (!users.Remove(id.Value))
         {
-            if (users.Remove(id.Value))
-            {
-                var updatedStatus = await _projectRepository.Update(projectId, new ProjectUpdateDTO() { Users = users });
-                if(updatedStatus == Status.Updated)
-                {
-                    return NoContent();
-                }else
-                {
-                    return NotFound();
-                }
-                
-            }else
-            {
-                return NotFound();
-            }
-            
-        }else
-        {
-            // The user is not in the project
-            return NotFound();
+            return Conflict("You are not apart of the project");
         }
 
+        var updatedStatus = await _projectRepository.Update(projectId, new ProjectUpdateDTO {Users = users});
 
+        if (updatedStatus == Status.Updated)
+        {
+            return Ok("You have left the project");
+        }
 
-        
+        return BadRequest("You could not leave the project");
     }
 
-
     [HttpDelete("{id}")]
-    [ProducesResponseType(204)]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(401)]
+    [ProducesResponseType(403)]
     [ProducesResponseType(404)]
     public async Task<IActionResult> DeleteProject(int id)
     {
@@ -200,27 +218,39 @@ public class ProjectController : ControllerBase
 
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized("You are not logged in");
         }
 
         var project = await _projectRepository.Read(id);
         var user = await _userRepository.Read(userId.Value);
 
-        // Only delete if the user actually owns this project
-        if(user != null && user.Supervisor == true && project != null && project.Supervisor.Id.Equals(user.Id))
+        if (user == null)
         {
-            var response = await _projectRepository.Delete(id);
-
-            if (response == Status.Deleted)
-            {
-                return NoContent();
-            }
-
-            return NotFound();
+            return Unauthorized("You are not logged in");
         }
 
-        return Unauthorized();
+        if (!user.Supervisor)
+        {
+            return Forbid("You are not a supervisor");
+        }
 
-        
+        if (project == null)
+        {
+            return NotFound("Project was not found");
+        }
+
+        if (!project.Supervisor.Id.Equals(user.Id))
+        {
+            return Forbid("You are not this project's supervisor");
+        }
+
+        var response = await _projectRepository.Delete(id);
+
+        if (response == Status.Deleted)
+        {
+            return Ok("Project was deleted");
+        }
+
+        return BadRequest("Project could not be deleted");
     }
 }

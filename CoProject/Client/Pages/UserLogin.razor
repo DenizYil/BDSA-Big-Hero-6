@@ -11,17 +11,14 @@
 
     protected override async void OnInitialized()
     {
-        var response = await _client.PostAsJsonAsync("/api/user/signup", "");
+        var response = await _client.PostAsJsonAsync("/api/user", "");
 
         if (response.IsSuccessStatusCode)
         {
             _navManager.NavigateTo("/projects");
         }else
         {
-            _navManager.NavigateTo("/?error=CouldNotSignupUser");
+            _navManager.NavigateTo("/?error=" + response.Content);
         }
-
-
     }
-
 }

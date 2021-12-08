@@ -60,33 +60,33 @@
 <div class="container">
     <div class="center">
         <h1>Edit Project</h1>
-        <hr />
+        <hr/>
         <h2>Edit the project by editing the inputs below</h2>
     </div>
 
     <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
-        <DataAnnotationsValidator />
+        <DataAnnotationsValidator/>
         <div class="form">
             <label for="name" class="form-header">Project Name <span class="required">*</span></label>
             <InputText class="inputText" type="text" id="name" name="name" placeholder="Project name"
-                       @bind-Value="_form.Name" />
+                       @bind-Value="_form.Name"/>
 
             <label for="description" class="form-header">Project Description <span class="required">*</span></label>
             <InputTextArea @bind-Value="_form.Description" class="inputTextArea" id="description"
-                           placeholder="Write the description of the project" />
+                           placeholder="Write the description of the project"/>
 
             <label for="min" class="form-header">Students</label>
             <div class="min-max-container">
                 <InputNumber class="inputNumber" @bind-Value="_form.Min" type="number" id="min" name="name"
-                             placeholder="Minimum" />
+                             placeholder="Minimum"/>
                 <div class="line"></div>
                 <InputNumber @bind-Value="_form.Max" class="inputNumber" type="number" id="max" name="name"
-                             placeholder="Maximum" />
+                             placeholder="Maximum"/>
             </div>
 
             <label for="tags" class="form-header">Project Tags</label>
             <InputText @bind-Value="_form.Tags" class="inputText" type="text" id="tags" name="name"
-                       placeholder="Write the tags seperated by comma" />
+                       placeholder="Write the tags seperated by comma"/>
 
             <h3>Project State</h3>
             <div class="switch-field center">
@@ -121,35 +121,27 @@
     private ProjectForm _form = new();
     private ProjectDetailsDTO _project;
 
-    protected override void OnInitialized()
-    {
-        if (Id == null)
-        {
-            _navManager.NavigateTo("/projects?error=ProjectNotFound");
-        }
-    }
-
     protected override async Task OnInitializedAsync()
     {
         var response = await _client.GetAsync($"api/projects/{Id}");
 
         if (!response.IsSuccessStatusCode)
         {
-            _navManager.NavigateTo("/projects?error=ProjectNotFound");
+            _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
             return;
         }
 
         _project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 
-        if(_project == null)
+        if (_project == null)
         {
-            _navManager.NavigateTo("/projects?error=ProjectNotFound");
+            _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
             return;
         }
 
         if (!usedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
         {
-            _navManager.NavigateTo("/projects?error=YouAreNotOwnerOfProject");
+            _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
             return;
         }
 
@@ -177,17 +169,19 @@
 
     private async void OnSubmit()
     {
-        var updateProject = new ProjectUpdateDTO() { Name = _form.Name, Description = _form.Description, Max = _form.Max, Min = _form.Min, Tags = _form.Tags.Split(","), State = _form.State, Users = _project.Users.Select(e => e.Id).ToList() };
+        var updateProject = new ProjectUpdateDTO
+        {
+            Name = _form.Name,
+            Description = _form.Description,
+            Max = _form.Max,
+            Min = _form.Min,
+            Tags = _form.Tags.Split(","),
+            State = _form.State,
+            Users = _project.Users.Select(e => e.Id).ToList()
+        };
         var response = await _client.PutAsJsonAsync($"api/projects/{Id}", updateProject);
 
-        if (response.IsSuccessStatusCode)
-        {
-            _navManager.NavigateTo($"/project/{Id}");
-        }else
-        {
-            _navManager.NavigateTo($"/project/{Id}?error=CouldNotUpdate");
-        }
-
+        _navManager.NavigateTo(response.IsSuccessStatusCode ? $"/project/{Id}?success={await response.Content.ReadAsStringAsync()}" : $"/project/{Id}?error={await response.Content.ReadAsStringAsync()}");
     }
 
 }
