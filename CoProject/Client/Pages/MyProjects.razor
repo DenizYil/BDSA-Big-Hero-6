@@ -8,7 +8,7 @@
 
 <PageTitle>Projects - CoProject</PageTitle>
 <h1>My Projects</h1>
-<hr/>
+<hr />
 <h2>Below you can see a list of available projects.</h2>
 
 <div class="search">
@@ -32,20 +32,28 @@ else
 
             @foreach (var project in _projects)
             {
-                <ProjectCard Project="@project"/>
+                <ProjectCard Project="@project" />
             }
         </div>
     }
 }
 
-<div class="createProject">
-    <a href="/createproject">
-        <button>Create new project</button>
-    </a>
-</div>
+@if (usedLayout != null && usedLayout.loggedInUser != null && usedLayout.loggedInUser.Supervisor == true)
+
+{
+    <div class="createProject">
+        <a href="/createproject">
+            <button type="button">Create new project</button>
+        </a>
+    </div>
+}
+
 
 @code {
     private IEnumerable<ProjectDetailsDTO>? _projects;
+
+    [CascadingParameter]
+    public AuthLayout? usedLayout { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

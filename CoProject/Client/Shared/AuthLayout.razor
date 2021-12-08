@@ -1,28 +1,64 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager Navigation
+@inject HttpClient _client
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
 @using System.Text.RegularExpressions
 @using System.Web
+@using CoProject.Shared
 @attribute [Authorize]
 
 
 <div class="navbar">
-    <NavBar/>
+    <NavBar />
 </div>
 
-<div class="content">
-    <div class="alert" style="display: @(ErrorBox() ? "block" : "none")">
-          <span class="closebtn" @onclick="RemoveError">&times;</span>
-          <strong>Oops!</strong> Something seems to have gone wrong!
-    </div> 
-    @Body
-    
-</div>
+<CascadingValue Value="this">
+    <div class="content">
+        <div class="alert" style="display: @(ErrorBox() ? "block" : "none")">
+            <span class="closebtn" @onclick="RemoveError">&times;</span>
+            <strong>Oops!</strong> Something seems to have gone wrong!
+        </div>
+        @Body
+
+    </div>
+</CascadingValue>
 
 
 
 @code
 {
+
+    public UserDetailsDTO? loggedInUser = null;
+
+    protected override async void OnInitialized()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user != null)
+        {
+            var userid = user.FindFirst("oid");
+
+            if (userid != null)
+            {
+                var response = await _client.GetAsync("/api/user");
+                if (response.IsSuccessStatusCode)
+                {
+                    var userFind = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
+
+                    if(userFind != null)
+                    {
+                        loggedInUser = userFind;
+                    }
+                }
+
+            }
+        }
+    }
+
     private bool ErrorBox()
     {
         return Navigation.Uri.Contains("error=");
@@ -33,15 +69,15 @@
         var uri = RemoveQueryStringByKey(Navigation.Uri, "error");
         Navigation.NavigateTo(uri);
     }
-    
+
     private static string RemoveQueryStringByKey(string url, string key)
-    {                   
+    {
         var uri = new Uri(url);
-        
+
         var newQueryString = HttpUtility.ParseQueryString(uri.Query);
-        
+
         newQueryString.Remove(key);
-        
+
         string pagePathWithoutQueryString = uri.GetLeftPart(UriPartial.Path);
 
         return newQueryString.Count > 0

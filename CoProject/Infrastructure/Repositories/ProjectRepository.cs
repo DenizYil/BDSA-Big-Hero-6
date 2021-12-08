@@ -140,8 +140,7 @@ public class ProjectRepository : IProjectRepository
         if (update.Users != null)
         {
             project.Users = await _context.Users
-                .Where(user => update.Users.Contains(user.Id))
-                .ToListAsync();
+                .Where(user => update.Users.Contains(user.Id)).ToListAsync();
         }
 
         await _context.SaveChangesAsync();

@@ -115,6 +115,9 @@
     [Parameter]
     public string? Id { get; set; }
 
+    [CascadingParameter]
+    public AuthLayout? usedLayout { get; set; }
+
     private ProjectForm _form = new();
     private ProjectDetailsDTO _project;
 
@@ -137,6 +140,18 @@
         }
 
         _project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+
+        if(_project == null)
+        {
+            _navManager.NavigateTo("/projects?error=ProjectNotFound");
+            return;
+        }
+
+        if (!usedLayout.loggedInUser.Id.Equals(_project.Supervisor.Id))
+        {
+            _navManager.NavigateTo("/projects?error=YouAreNotOwnerOfProject");
+            return;
+        }
 
         var tags = "";
 

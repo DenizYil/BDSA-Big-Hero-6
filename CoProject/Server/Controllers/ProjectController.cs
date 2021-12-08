@@ -167,8 +167,15 @@ public class ProjectController : ControllerBase
         {
             if (users.Remove(id.Value))
             {
-                await _projectRepository.Update(projectId, new ProjectUpdateDTO() { Users = users });
-                return NoContent();
+                var updatedStatus = await _projectRepository.Update(projectId, new ProjectUpdateDTO() { Users = users });
+                if(updatedStatus == Status.Updated)
+                {
+                    return NoContent();
+                }else
+                {
+                    return NotFound();
+                }
+                
             }else
             {
                 return NotFound();
