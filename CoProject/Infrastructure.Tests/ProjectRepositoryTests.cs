@@ -107,7 +107,7 @@ public class ProjectRepositoryTests : DefaultTests
         var newUser = user;
         newUser.Id = "2";
         newUser.Email = "you@you.dk";
-        newUser.UserName = "Yourself";
+        newUser.Name = "Yourself";
 
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
@@ -186,7 +186,7 @@ public class ProjectRepositoryTests : DefaultTests
             Tags = new List<Tag> {project.Tags.ElementAt(0)},
             Users = new List<User>
             {
-                _context.Users.First(user => user.Id.Equals("1"))
+                _context.Users.First(user => user.Id == "1")
             },
             State = State.Hidden,
             SupervisorId = "2",

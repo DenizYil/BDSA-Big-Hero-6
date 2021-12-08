@@ -136,7 +136,7 @@ public class ProjectControllerTests
         _projectRepository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
 
         // Act
-        var response = await _controller.AddUserToProject(1, "1");
+        var response = await _controller.AddUserToProject(1);
 
         // Assert
         Assert.IsType<NoContentResult>(response);
@@ -150,7 +150,7 @@ public class ProjectControllerTests
         _projectRepository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.NotFound);
 
         // Act
-        var response = await _controller.AddUserToProject(1, "1");
+        var response = await _controller.AddUserToProject(1);
 
         // Assert
         Assert.IsType<NotFoundResult>(response);
@@ -164,7 +164,7 @@ public class ProjectControllerTests
         _projectRepository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
 
         // Act
-        var response = await _controller.RemoveUserFromProject(1, "1");
+        var response = await _controller.RemoveUserFromProject(1);
 
         // Assert
         Assert.IsType<NoContentResult>(response);
@@ -178,7 +178,7 @@ public class ProjectControllerTests
         _projectRepository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.NotFound);
 
         // Act
-        var response = await _controller.RemoveUserFromProject(1, "1");
+        var response = await _controller.RemoveUserFromProject(1);
 
         // Assert
         Assert.IsType<NotFoundResult>(response);

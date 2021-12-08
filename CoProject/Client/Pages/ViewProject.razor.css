@@ -19,6 +19,7 @@ button {
   color: white;
   border: #707070;
   border-radius: 5px;
+  text-decoration: none;
 }
 
 .supervisorContainer {
@@ -106,7 +107,7 @@ button {
 
 .tags {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   flex-wrap: wrap;
   align-items: center;
   opacity: 0.5;

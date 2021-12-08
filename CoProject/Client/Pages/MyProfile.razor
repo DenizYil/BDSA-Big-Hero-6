@@ -1,9 +1,8 @@
 ﻿@page "/profile"
-@inherits LayoutComponentBase
+@layout AuthLayout
 @using CoProject.Client.Forms
 @using Microsoft.AspNetCore.Components
 @using CoProject.Shared
-@layout AuthLayout
 @inject HttpClient _client
 @inject NavigationManager _navManager
 
@@ -68,15 +67,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var resp = await _client.GetAsync("api/user");
+        var response = await _client.GetAsync("api/user");
 
-        if (!resp.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
-            _navManager.NavigateTo("/projects?error=JsonResponseError");
+            _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
             return;
         }
 
-        _user = await resp.Content.ReadFromJsonAsync<UserDetailsDTO>();
+        _user = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
 
         _form.Name = _user!.Name;
         _form.Email = _user!.Email;
@@ -86,10 +85,12 @@
     {
         var response = await _client.PutAsJsonAsync("api/user", _form);
 
-        if (response.IsSuccessStatusCode)
+        if (!response.IsSuccessStatusCode)
         {
-            _navManager.NavigateTo("/profile?error=UpdateProfileError");
+            _navManager.NavigateTo($"/profile?error={await response.Content.ReadAsStringAsync()}");
         }
+
+        _navManager.NavigateTo($"/profile?success={await response.Content.ReadAsStringAsync()}");
     }
 
 }

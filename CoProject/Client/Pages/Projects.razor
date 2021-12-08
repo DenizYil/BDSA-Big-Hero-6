@@ -1,4 +1,5 @@
 ﻿@page "/projects"
+@layout AuthLayout
 @using CoProject.Client.Shared
 @using CoProject.Shared
 
@@ -7,7 +8,7 @@
 
 <PageTitle>Projects - CoProject</PageTitle>
 <h1>Projects</h1>
-<hr/>
+<hr />
 <h2>Below you can see a list of available projects.</h2>
 
 <div class="search">
@@ -17,38 +18,37 @@
 
 @if (_projects == null)
 {
-    <p>Loading...</p>
-}
-else
-{
-    @if (!_projects.Any())
-    {
-        <p>There is somehow no projects</p>
-    }
-    else
-    {
-        <div class="projects">
-
-            @foreach (var project in _projects)
+<p>Loading...</p> }
+            else
             {
-                <ProjectCard Project="@project"/>
-            }
-        </div>
-    }
-}
+@if (!_projects.Any())
+{
+<p>There is somehow no projects</p> }
+                else
+                {
+<div class="projects">
 
-<div class="createProject">
-    <a href="/createproject">
-        <button>Create new project</button>
-    </a>
-</div>
-
-@code {
-    private IEnumerable<ProjectDetailsDTO>? _projects;
-
-    protected override async Task OnInitializedAsync()
+    @foreach (var project in _projects)
     {
-        _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
-    }
+<ProjectCard Project="@project" />}
+</div>}}
 
+@if (usedLayout != null && usedLayout.loggedInUser != null && usedLayout.loggedInUser.Supervisor == true)
+{
+    <div class="createProject">
+        <a href="/createproject">
+            <button type="button">Create new project</button>
+        </a>
+    </div>
 }
+
+
+@code { private IEnumerable<ProjectDetailsDTO>? _projects;
+
+            [CascadingParameter]
+            public AuthLayout? usedLayout { get; set; }
+
+            protected override async Task OnInitializedAsync()
+            {
+                _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
+            } }
