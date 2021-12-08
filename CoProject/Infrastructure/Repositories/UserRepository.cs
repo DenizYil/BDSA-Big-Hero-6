@@ -58,8 +58,6 @@ public class UserRepository : IUserRepository
                 });
         }
         
-        await _context.Entry(user).ReloadAsync();
-        
         return user.Projects
             .Select(project =>
                 new ProjectDetailsDTO(
