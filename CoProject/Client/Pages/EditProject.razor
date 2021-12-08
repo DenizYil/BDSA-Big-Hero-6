@@ -1,13 +1,11 @@
 ﻿@page "/editproject/{id}"
-@inherits LayoutComponentBase
+@layout AuthLayout
 @using CoProject.Client.Forms
 @using CoProject.Infrastructure.Entities
 @using Microsoft.AspNetCore.Components
 @inject HttpClient _client
 @using CoProject.Shared
 @inject NavigationManager _navManager
-
-@layout AuthLayout
 
 
 <style>
@@ -117,15 +115,11 @@
     [Parameter]
     public string? Id { get; set; }
 
-    private ProjectForm _form = new();
+    [CascadingParameter]
+    public AuthLayout? usedLayout { get; set; }
 
-    protected override void OnInitialized()
-    {
-        if (Id == null)
-        {
-            _navManager.NavigateTo("/projects?error=ProjectNotFound");
-        }
-    }
+    private ProjectForm _form = new();
+    private ProjectDetailsDTO _project;
 
     protected override async Task OnInitializedAsync()
     {
@@ -133,27 +127,39 @@
 
         if (!response.IsSuccessStatusCode)
         {
-            _navManager.NavigateTo("/projects?error=ProjectNotFound");
+            _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
             return;
         }
 
-        var project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+        _project = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+
+        if (_project == null)
+        {
+            _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
+            return;
+        }
+
+        if (usedLayout.loggedInUser.Id != _project.Supervisor.Id)
+        {
+            _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
+            return;
+        }
 
         var tags = "";
 
-        foreach (var tag in project!.Tags)
+        foreach (var tag in _project!.Tags)
         {
             tags += tag + ", ";
         }
 
         tags = tags.TrimEnd(',', ' ');
 
-        _form.Name = project!.Name;
-        _form.Description = project.Description;
-        _form.Max = project.Max;
-        _form.Min = project.Min;
+        _form.Name = _project!.Name;
+        _form.Description = _project.Description;
+        _form.Max = _project.Max;
+        _form.Min = _project.Min;
         _form.Tags = tags;
-        _form.State = project.State;
+        _form.State = _project.State;
     }
 
     private void SwitchItem(State state)
@@ -163,8 +169,19 @@
 
     private async void OnSubmit()
     {
-        await _client.PutAsJsonAsync($"api/projects/{Id}", _form);
-        _navManager.NavigateTo($"/project/{Id}");
+        var updateProject = new ProjectUpdateDTO
+        {
+            Name = _form.Name,
+            Description = _form.Description,
+            Max = _form.Max,
+            Min = _form.Min,
+            Tags = _form.Tags.Split(","),
+            State = _form.State,
+            Users = _project.Users.Select(e => e.Id).ToList()
+        };
+        var response = await _client.PutAsJsonAsync($"api/projects/{Id}", updateProject);
+
+        _navManager.NavigateTo(response.IsSuccessStatusCode ? $"/project/{Id}?success={await response.Content.ReadAsStringAsync()}" : $"/project/{Id}?error={await response.Content.ReadAsStringAsync()}");
     }
 
 }

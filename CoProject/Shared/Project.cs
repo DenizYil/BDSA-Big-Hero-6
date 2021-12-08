@@ -4,7 +4,7 @@ namespace CoProject.Shared;
 
 public record ProjectCreateDTO(string Name, string Description, State State, IReadOnlyCollection<string> Tags)
 {
-    public string SupervisorId { get; set; }
+    public string? SupervisorId { get; set; }
     public int? Min { get; init; }
     public int? Max { get; init; }
 }

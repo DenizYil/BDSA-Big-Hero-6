@@ -4,6 +4,10 @@
 @inject HttpClient _client
 @using CoProject.Shared;
 @using Microsoft.AspNetCore.Authorization;
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 <PageTitle>View Project - CoProject</PageTitle>
 
@@ -14,13 +18,13 @@
 else
 {
     <h1 id="ProjectName">@_project.Name</h1>
-    <h2 id="registered">Registered: @_project.Users.Count/@_project.Max</h2>
+    <h2 id="registered">Registered: @_project.Users.Count@(_project.Max != null && _project.Max > 0 ? $"/{_project.Max}" : "")</h2>
 
     <hr/>
 
     <div class="supervisorContainer">
         <img class="imageOfSupervisor" alt="PICTURE OF SUPERVISOR" src="https://via.placeholder.com/150">
-        <p class="supervisorName">Project creator id :> @_project.Supervisor.Id</p>
+        <p class="supervisorName">@_project.Supervisor.Name</p>
         <p class="createdBy">Created on @_project.Created</p>
     </div>
 
@@ -34,16 +38,36 @@ else
             <p class="tagName">@t</p>
         }
     </div>
-    
-    <button id="editProject">
-        <a href="/editproject/@Id">Edit project</a>
-    </button>
-    
-    <button id="joinProject">
-        <a href="/myprojects" onclick="@Join">Join project</a>
-    </button>
 
-    <button id="delete" onclick=@Delete>Delete</button>
+    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor && UsedLayout.loggedInUser.Id == _project.Supervisor.Id)
+    {
+        <a href="/editproject/@Id">
+        <button id="editProject">
+            Edit Project
+        </button>
+        </a>
+    }
+    @if (!UsedLayout.loggedInUser.Supervisor)
+    {
+        <button id="joinProject">
+
+            @if (!_userJoined)
+            {
+                <a @onclick="Join">Join project</a>
+            }
+            else
+            {
+                <a @onclick="Leave">Leave project</a>
+            }
+
+        </button>
+    }
+
+    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor == true && UsedLayout.loggedInUser.Id == _project.Supervisor.Id)
+    {
+        <button id="delete" @onclick=Delete>Delete</button>
+    }
+
     <hr/>
 
     <p id="studentsRegistered">Students registered</p>
@@ -69,58 +93,91 @@ else
 
 @code {
     private ProjectDetailsDTO? _project;
-    private UserDetailsDTO? _user;
+    private bool _userJoined;
+
+    [CascadingParameter]
+    public AuthLayout? UsedLayout { get; set; }
 
     [Parameter]
     public string? Id { get; set; }
-    
-    [Parameter]
-    public string? UserId { get; set; }
-
-    protected override void OnInitialized()
-    {
-        if (Id == null)
-        {
-            _navManager.NavigateTo("/projects");
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
         var projectResponse = await _client.GetAsync($"api/projects/{Id}");
-        var userResponse = await _client.GetAsync($"api/user");
 
-        if (projectResponse.IsSuccessStatusCode)
+        if (projectResponse.IsSuccessStatusCode && projectResponse.Content != null)
         {
             _project = await projectResponse.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
-            _user = await userResponse.Content.ReadFromJsonAsync<UserDetailsDTO>();
+
+            if (_project != null)
+            {
+                if (UsedLayout != null && UsedLayout.loggedInUser != null)
+                {
+                    foreach (var user in _project.Users)
+                    {
+                        Console.WriteLine(user.Id);
+                    }
+                    if (_project.Users.FirstOrDefault(u => u.Id == UsedLayout.loggedInUser.Id) != null)
+                    {
+                        _userJoined = true;
+                    }
+                }
+                else
+                {
+                    _navManager.NavigateTo("/");
+                }
+            }
+            else
+            {
+                _navManager.NavigateTo("/projects?error=" + projectResponse.Content);
+            }
         }
         else
         {
-            _navManager.NavigateTo("/projects?error=JsonReturnError");
+            _navManager.NavigateTo("/projects?error=" + projectResponse.Content);
         }
     }
-    
+
     private async void Join()
     {
-        var response = await _client.PutAsJsonAsync($"api/projects/{_project.Id}/{_user.Id}", _project);
-        
-        if (response.IsSuccessStatusCode)
+        if (_project != null)
         {
-            var uri = "/myprojects";
-            _navManager.NavigateTo(uri);
-            return;
+            var response = await _client.PutAsJsonAsync($"api/projects/{_project.Id}/join", "");
+
+            _navManager.NavigateTo(response.IsSuccessStatusCode ? $"/myprojects?success={await response.Content.ReadAsStringAsync()}" : $"/project/{Id}?error={await response.Content.ReadAsStringAsync()}");
         }
-        _navManager.NavigateTo($"/project/{Id}?error=JoinProjectError");
+        else
+        {
+            _navManager.NavigateTo($"/project/{Id}?error=Project could not be found");
+        }
+    }
+
+    private async void Leave()
+    {
+        if (_project != null)
+        {
+            var response = await _client.DeleteAsync($"api/projects/{_project.Id}/leave");
+            
+            _navManager.NavigateTo(response.IsSuccessStatusCode ? $"/myprojects?success={await response.Content.ReadAsStringAsync()}" : $"/project/{Id}?error={await response.Content.ReadAsStringAsync()}");
+        }
+        else
+        {
+            _navManager.NavigateTo($"/project/{Id}?error=Project could not be found");
+        }
     }
 
     private async void Delete()
     {
-        var response = await _client.DeleteAsync($"api/projects/{Id}");
+        if (_project != null)
+        {
+            var response = await _client.DeleteAsync($"api/projects/{_project.Id}");
 
-        if (response.IsSuccessStatusCode) return;
-        var uri = "/projects?error=DeleteProjectError";
-        _navManager.NavigateTo(uri);
+            _navManager.NavigateTo(response.IsSuccessStatusCode ? $"/projects?success={await response.Content.ReadAsStringAsync()}" : $"/projects?error={await response.Content.ReadAsStringAsync()}");
+        }
+        else
+        {
+            _navManager.NavigateTo($"/project/{Id}?error=Project could not be found");
+        }
     }
 
 }

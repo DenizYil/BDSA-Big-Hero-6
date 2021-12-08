@@ -1,5 +1,5 @@
 ﻿@page "/createproject"
-@inherits LayoutComponentBase
+@layout AuthLayout
 @using CoProject.Shared
 @using Client.Forms
 @using CoProject.Infrastructure.Entities
@@ -101,15 +101,29 @@
 
     private async void OnSubmit()
     {
-        var addItem = new ProjectCreateDTO(_form.Name, _form.Description, State.Open, _form.Tags!.Split(","));
-        var response = await _client.PostAsJsonAsync("api/projects", addItem);
-        var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+        var addItem = new ProjectCreateDTO(_form.Name, _form.Description, _form.State, _form.Tags == null ? new List<string>() : _form.Tags.Split(","))
+        {
+            Min = _form.Min,
+            Max = _form.Max
+        };
 
-        _navManager.NavigateTo($"/project/{created.Id}");
+        var response = await _client.PostAsJsonAsync("api/projects", addItem);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+            _navManager.NavigateTo($"/project/{created.Id}?success=You have successfully created the project");
+        }
+        else
+        {
+            Console.WriteLine(response.StatusCode);
+            _navManager.NavigateTo($"/projects?error={response.StatusCode}");
+        }
     }
 
     private void SwitchItem(State state)
     {
         _form.State = state;
     }
+
 }
