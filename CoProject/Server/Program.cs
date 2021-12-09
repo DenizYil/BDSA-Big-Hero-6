@@ -1,6 +1,5 @@
-using Microsoft.AspNetCore.Authentication;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 
@@ -70,3 +69,6 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+[ExcludeFromCodeCoverage]
+public partial class Program { }
