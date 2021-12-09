@@ -1,24 +1,39 @@
 ﻿@page "/userlogin"
 @inject NavigationManager _navManager
-@layout AuthLayout
+@layout EmptyLayout
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject HttpClient _client
 @using CoProject.Shared;
 
 <PageTitle>Login - CoProject</PageTitle>
-<h1>Logging you in...</h1>
+
+<LoadingComponent></LoadingComponent>
 
 @code {
 
     protected override async void OnInitialized()
     {
-        var response = await _client.PostAsJsonAsync("/api/user", "");
 
-        if (response.IsSuccessStatusCode)
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if(user != null)
         {
-            _navManager.NavigateTo("/projects");
+            var response = await _client.PostAsJsonAsync("/api/user", "");
+
+            if (response.IsSuccessStatusCode)
+            {
+                _navManager.NavigateTo("/projects");
+            }
+            else
+            {
+                _navManager.NavigateTo("/?error=" + response.Content);
+            }
         }else
         {
-            _navManager.NavigateTo("/?error=" + response.Content);
+            _navManager.NavigateTo("/?error=Not Logged In!");
         }
+
+
     }
 }

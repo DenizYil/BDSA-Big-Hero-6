@@ -1,7 +1,10 @@
 ﻿<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(EmptyLayout)">
+                <Authorizing>
+                    <LoadingComponent></LoadingComponent>
+                </Authorizing>
                 <NotAuthorized>
                     @if (context.User.Identity?.IsAuthenticated != true)
                     {
@@ -17,8 +20,13 @@
         </Found>
         <NotFound>
             <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <p role="alert">Sorry, there's nothing at this address.</p>
+            <LayoutView Layout="@typeof(EmptyLayout)">
+                <div style="height: 100vh; width: 100vw; display: flex; justify-content: center; align-content: center; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <h1 style="margin: 0px; padding: 0px; margin-left: auto; margin-right: auto; display: block; font-size: 80px; text-align:center; margin-bottom: 15px; color: red;">404</h1>
+                        <h3 style="margin: 0px; padding: 0px; margin-left: auto; margin-right: auto; display: block; font-size: 25px; text-align: center;">Sorry, there is nothing at this address. ;(</h3>
+                    </div>
+                </div>
             </LayoutView>
         </NotFound>
     </Router>
