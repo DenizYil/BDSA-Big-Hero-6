@@ -18,7 +18,7 @@ public class ProjectControllerTests
         _projectRepository = new();
         _userRepository = new ();
         _controller = new(_projectRepository.Object, _userRepository.Object);
-        _project = new(1, "Project Name", "Project Description", new UserDetailsDTO("1", "Supervisor", "supervisor@outlook.dk", true), State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
+        _project = new(1, "Project Name", "Project Description", new UserDetailsDTO("1", "Supervisor", "supervisor@outlook.dk", true, "/images/noimage.jpeg"), State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
     }
 
     [Fact]
