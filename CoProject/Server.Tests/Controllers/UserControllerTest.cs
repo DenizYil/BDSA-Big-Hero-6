@@ -41,7 +41,7 @@ public class UserControllerTest
     }
 
 
-    [Fact]
+    [Fact]z
     public async void GetUser_returns_logged_in_user()
     {
         // Arrange
