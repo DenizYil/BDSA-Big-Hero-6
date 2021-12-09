@@ -2,10 +2,8 @@
 @inject NavigationManager _navManager
 @layout AuthLayout
 @inject HttpClient _client
+@inject IJSRuntime JSRuntime
 @using CoProject.Shared;
-@using Microsoft.AspNetCore.Authorization;
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 
@@ -13,14 +11,14 @@
 
 @if (_project == null)
 {
-        <LoadingComponent></LoadingComponent>
+    <LoadingComponent></LoadingComponent>
 }
 else
 {
     <h1 id="ProjectName">@_project.Name</h1>
     <h2 id="registered">Registered: @_project.Users.Count@(_project.Max != null && _project.Max > 0 ? $"/{_project.Max}" : "")</h2>
 
-    <hr />
+    <hr/>
 
     <div class="supervisorContainer">
         <img class="imageOfSupervisor" alt="PICTURE OF SUPERVISOR" src="https://via.placeholder.com/150">
@@ -57,24 +55,19 @@ else
 
     @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor && UsedLayout.loggedInUser.Id == _project.Supervisor.Id)
     {
+        <div class="supervisorbuttons">
+            <div class="supervisorsinglebutton">
+                <a href="/editproject/@Id">
+                    <button type="button" id="editProject">Edit Project</button>
+                </a>
+            </div>
 
-<div class="supervisorbuttons">
-    <div class="supervisorsinglebutton">
-        <a href="/editproject/@Id">
-            <button type="button" id="editProject">Edit Project</button>
-        </a>
-    </div>
-
-    <div class="supervisorsinglebutton">
-        <button id="delete" @onclick=Delete>Delete</button>
-    </div>
-    
-</div>
-
-
+            <div class="supervisorsinglebutton">
+                <button id="delete" @onclick=Delete>Delete</button>
+            </div>
+        </div>
     }
-
-    <hr />
+    <hr/>
 
     <p id="studentsRegistered">Students registered</p>
 
@@ -84,13 +77,17 @@ else
         {
             <div class="oneStudent">
                 <div class="studentLeft">
-                    <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student" />
+                    <img class="studentImg" src="https://via.placeholder.com/150?text=student" alt="Image Of Student"/>
                 </div>
                 <div class="studentRight">
                     <p class="student">@u.Name</p>
-                    <p class="email">
-                        @u.Email<img src="/images/copyIcon.svg" class="material-icons" />
-                    </p>
+                    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor)
+                    {
+                        <p class="email" @onclick="() => CopyToClickBoard(u.Email)">
+                            @u.Email
+                            <img src="/images/copyIcon.svg" class="material-icons"/>
+                        </p>
+                    }
                 </div>
             </div>
         }
@@ -106,6 +103,12 @@ else
 
     [Parameter]
     public string? Id { get; set; }
+
+    private async Task CopyToClickBoard(string text)
+    {
+        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        await JSRuntime.InvokeVoidAsync("alert", $"Copied {text} to the clipboard");
+    }
 
     protected override async Task OnInitializedAsync()
     {
