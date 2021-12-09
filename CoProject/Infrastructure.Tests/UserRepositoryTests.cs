@@ -18,7 +18,7 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Create_Given_UserCreateDTO_Returns_UserDetailsDTO()
     {
-        var expected = new UserDetailsDTO("2", "Wee", "wee@gmail.com", true);
+        var expected = new UserDetailsDTO("2", "Wee", "wee@gmail.com", true, "/images/noimage.jpeg");
 
         var actual = await _repo.Create(new UserCreateDTO("2", "Wee", "wee@gmail.com", true));
 
@@ -44,7 +44,7 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Read_Given_Existing_User()
     {
-        var expected = new UserDetailsDTO("1", "Myself", "me@me.dk", true);
+        var expected = new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg");
         Assert.Equal(expected, await _repo.Read("1"));
     }
 
@@ -61,8 +61,8 @@ public class UserRepositoryTests : DefaultTests
 
         var expected = new List<UserDetailsDTO>
         {
-            new("1", "Myself", "me@me.dk", true),
-            new("2", "Yourself", "you@you.dk", true)
+            new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
+            new("2", "Yourself", "you@you.dk", true, "/images/noimage.jpeg")
         };
 
         Assert.Equal(expected, await _repo.ReadAll());
@@ -86,11 +86,11 @@ public class UserRepositoryTests : DefaultTests
                 1,
                 "Karl",
                 "yep hehe smiley",
-                new UserDetailsDTO("1", "Myself", "me@me.dk", true),
+                new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
                 State.Open,
                 now,
                 new List<string>(),
-                new List<UserDetailsDTO> {new("1", "Myself", "me@me.dk", true)}
+                new List<UserDetailsDTO> {new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg") }
             )
         };
 

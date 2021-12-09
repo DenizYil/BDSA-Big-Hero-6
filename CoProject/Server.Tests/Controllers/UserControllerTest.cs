@@ -21,7 +21,7 @@ public class UserControllerTest
     {
         _repository = new();
 
-        _user = new UserDetailsDTO("12345", "Mikkel", "milb@itu.dk", false);
+        _user = new UserDetailsDTO("12345", "Mikkel", "milb@itu.dk", false, "/images/noimage.jpeg");
 
         _identity = new GenericIdentity(_user.Name, "");
         _identity.AddClaim(new Claim(ClaimConstants.Name, _user.Name));

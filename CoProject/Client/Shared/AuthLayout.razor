@@ -46,11 +46,15 @@
     public string? SuccessMessage = "";
     public string? ErrorMessage = "";
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnParametersSetAsync()
     {
-
         SuccessMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["success"];
         ErrorMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["error"];
+        return base.OnParametersSetAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
 
         try
         {

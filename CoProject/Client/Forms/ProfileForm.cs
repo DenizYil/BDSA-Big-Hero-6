@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CoProject.Shared;
 
 namespace CoProject.Client.Forms;
 
