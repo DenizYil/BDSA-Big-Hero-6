@@ -38,7 +38,6 @@ public class UserControllerTest
         _identity = new GenericIdentity(_user.Name, "");
         _identity.AddClaim(new Claim(ClaimConstants.Name, _user.Name));
         _identity.AddClaim(new Claim("emails", _user.Email));
-
         _identity.AddClaim(new Claim(ClaimConstants.ObjectId, _user.Id));
 
 
@@ -56,14 +55,11 @@ public class UserControllerTest
     {
         // Arrange
         // There is no token
-        _identity = new GenericIdentity(_user.Name, "");
-        var principal = new GenericPrincipal(_identity, roles: new string[] { });
-        var loggedInUser = new ClaimsPrincipal(principal);
 
 
         _controller = new UserController(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = loggedInUser } }
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User =  new ClaimsPrincipal() } }
         };
 
         // act
@@ -121,14 +117,11 @@ public class UserControllerTest
     public async void getProjectsByUser_returns_empty()
     {
         // Arrange
-        _identity = new GenericIdentity(_user.Name, "");
-        var principal = new GenericPrincipal(_identity, roles: new string[] { });
-        var loggedInUser = new ClaimsPrincipal(principal);
 
 
         _controller = new UserController(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = loggedInUser } }
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() } }
         };
 
         // Act
@@ -141,18 +134,9 @@ public class UserControllerTest
     public async void SignupUser_returns_unauthorized_given_no_token()
     {
         // Arrange
-        _identity = new GenericIdentity(_user.Name, "");
-
-        _identity.AddClaim(new Claim(ClaimConstants.ObjectId, _user.Id));
-
-
-        var principal = new GenericPrincipal(_identity, roles: new string[] { });
-        var loggedInUser = new ClaimsPrincipal(principal);
-
-
         _controller = new UserController(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = loggedInUser } }
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() } }
         };
 
         // act
@@ -205,16 +189,11 @@ public class UserControllerTest
     public async void UpdateUser_returns_unauthorized_given_no_token()
     {
         // Arrange
-        _identity = new GenericIdentity(_user.Name, "");
-
-
-        var principal = new GenericPrincipal(_identity, roles: new string[] { });
-        var loggedInUser = new ClaimsPrincipal(principal);
 
 
         _controller = new UserController(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = loggedInUser } }
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() } }
         };
         var updateBody = new UpdateUserBody();
 
