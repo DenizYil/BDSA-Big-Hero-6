@@ -137,7 +137,7 @@ public class UserRepositoryTests : DefaultTests
     public async void Update_Given_Non_Existing_UserUpdateDTO_Returning_Status_NotFound()
     {
         var expected = Status.NotFound;
-        var actual = await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk"));
+        var actual = await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
 
         Assert.Equal(expected, actual);
     }
@@ -146,7 +146,7 @@ public class UserRepositoryTests : DefaultTests
     public async void Update_Given_Existing_UserUpdateDTO_Returning_Status_Updated()
     {
         var expected = Status.Updated;
-        var actual = await _repo.Update("1", new UserUpdateDTO("YeehaaSelf", "you@you.dk"));
+        var actual = await _repo.Update("1", new UserUpdateDTO("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
 
         Assert.Equal(expected, actual);
     }
@@ -154,10 +154,7 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Update_actually_updates_User_with_specified_changes()
     {
-        await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk")
-        {
-            Image = "images/newimage.jpg"
-        });
+        await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
 
         var expected = user;
         expected.Name = "YeehaaSelf";
