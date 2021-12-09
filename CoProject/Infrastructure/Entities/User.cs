@@ -10,7 +10,7 @@ public class User
     public string Name { get; set; }
     public string Email { get; set; }
     public bool Supervisor { get; set; }
-    public string Image { get; set; } = "/images/noimage.jpg";
+    public string Image { get; set; } = "/images/noimage.jpeg";
 
     public ICollection<Project> Projects { get; set; } = new List<Project>();
 }

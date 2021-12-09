@@ -71,8 +71,8 @@ public class ProjectControllerTests
         Assert.Equal(_project, actual.Value);
     }
 
-    
-    
+
+
     [Fact]
     public async Task GetProject_returns_NotFoundObject_given_nonexistent_id()
     {

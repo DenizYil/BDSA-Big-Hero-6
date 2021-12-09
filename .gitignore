@@ -10,6 +10,8 @@
 
 CoProject/Server/wwwroot/userimages/**/*
 !CoProject/Server/wwwroot/userimages/.gitkeep
+CoProject/Server.Tests/userimages/**/*
+!CoProject/Server.Tests/userimages/.gitkeep
 
 # User-specific files
 *.rsuser

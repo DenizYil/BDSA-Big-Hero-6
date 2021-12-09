@@ -1,8 +1,7 @@
 using CoProject.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web;
-using System.IO;
-using System;
+using file = System.IO.File;
 
 namespace CoProject.Server.Controllers;
 
@@ -66,7 +65,7 @@ public class UserController : ControllerBase
 
         if (nameFind == null || idFind == null || emailFind == null)
         {
-            return BadRequest("Your credentials were invalid");
+            return Unauthorized("Your credentials were invalid");
         }
 
         var name = nameFind.Value.Trim();
@@ -111,15 +110,15 @@ public class UserController : ControllerBase
             }
 
             var previousImagePath = $"{_env.WebRootPath}{currentUser.Image}";
-            if ( currentUser.Image != null && System.IO.File.Exists(previousImagePath))
+            if (file.Exists(previousImagePath))
             {
                 // delete it
-                System.IO.File.Delete(previousImagePath);
+                file.Delete(previousImagePath);
             }
 
             var userImagePath = $"/userimages/{idFind.Value}_{Guid.NewGuid()}.jpg";
             var path = $"{_env.WebRootPath}{userImagePath}";
-            var fs = System.IO.File.Create(path);
+            var fs = file.Create(path);
             fs.Write(body.file.FileContent, 0, body.file.FileContent.Length);
             fs.Close();
 
