@@ -1,11 +1,3 @@
-using System.Linq;
-using System.Runtime.Serialization;
-using CoProject.Infrastructure.Entities;
-using CoProject.Infrastructure.Repositories;
-using CoProject.Shared;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-
 namespace CoProject.Infrastructure.Tests;
 
 public class ProjectRepositoryTests : DefaultTests

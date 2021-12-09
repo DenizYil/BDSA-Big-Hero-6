@@ -1,7 +1,3 @@
-using CoProject.Infrastructure.Entities;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-
 namespace CoProject.Infrastructure.Tests;
 
 public class DefaultTests
