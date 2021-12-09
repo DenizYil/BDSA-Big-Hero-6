@@ -21,15 +21,19 @@
             <span class="closebtn" @onclick="RemoveError">&times;</span>
             <strong>Oops!</strong> @ErrorMessage
         </div>
-        
+
         <div class="success" style="display: @(SuccessBox() ? "block" : "none")">
             <span class="closebtn" @onclick="RemoveSuccess">&times;</span>
             <strong>Success!</strong> @SuccessMessage
         </div>
 
-        @Body   
-        
-
+        @if (loggedInUser != null)
+        {
+            @Body
+        } else
+                {
+                <LoadingComponent></LoadingComponent>
+                }
     </div>
 </CascadingValue>
 
@@ -41,8 +45,8 @@
 
     public string? SuccessMessage = "";
     public string? ErrorMessage = "";
-    
-    protected override async void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
 
         SuccessMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["success"];
@@ -67,8 +71,6 @@
                         if (userFind != null)
                         {
                             loggedInUser = userFind;
-                            ShouldRender();
-                            base.OnInitialized();
                         }
                     }
                 }
@@ -76,7 +78,7 @@
                 {
                     Navigation.NavigateTo("/");
                 }
-            } 
+            }
             else
             {
                 Navigation.NavigateTo("/");
@@ -85,16 +87,15 @@
         catch (Exception e)
         {
             Navigation.NavigateTo("/");
-            return;
         }
     }
-    
+
 
     private bool ErrorBox()
     {
         return Navigation.Uri.Contains("error=");
     }
-    
+
     private bool SuccessBox()
     {
         return Navigation.Uri.Contains("success=");
@@ -105,7 +106,7 @@
         var uri = RemoveQueryStringByKey(Navigation.Uri, "error");
         Navigation.NavigateTo(uri);
     }
-    
+
     private void RemoveSuccess()
     {
         var uri = RemoveQueryStringByKey(Navigation.Uri, "success");
@@ -117,7 +118,7 @@
         var uri = new Uri(url);
 
         var newQueryString = HttpUtility.ParseQueryString(uri.Query);
-        
+
 
         newQueryString.Remove(key);
 
