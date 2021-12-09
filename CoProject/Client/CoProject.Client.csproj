@@ -20,4 +20,10 @@
     <ProjectReference Include="..\Shared\CoProject.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="wwwroot\userimages\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\userimages\" />
+  </ItemGroup>
 </Project>

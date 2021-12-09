@@ -32,6 +32,17 @@
         height: 50px;
         width: 90%;
     }
+
+    input[type="file"] {
+        text-align: center;
+        border: 1px solid grey;
+        width: 50%;
+        padding: 10px;
+        box-sizing: border-box;
+        border-radius: 6px;
+        margin-top: 10px;
+        display: block;
+    }
 </style>
 
 
@@ -49,6 +60,13 @@
     else
     {
         <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
+            <div class="profileImageContainer">
+                <div class="innerProfileImage">
+                    <img alt="profile image of user" src="@_user.Image" />
+                    <InputFile OnChange="OnInputFileChange" />
+                </div>
+            </div>
+
             <DataAnnotationsValidator/>
             <label for="name" class="form-header"> Your name <span class="required">*</span></label>
             <InputText type="text" id="name" name="name" placeholder="Enter your new name here" @bind-Value="_form.Name"/>
@@ -64,26 +82,51 @@
 @code {
     private ProfileForm _form = new();
     private UserDetailsDTO? _user;
+    private IBrowserFile? selectedFile;
+
+    [CascadingParameter]
+    public AuthLayout? usedLayout { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var response = await _client.GetAsync("api/user");
 
-        if (!response.IsSuccessStatusCode)
+        if(usedLayout != null && usedLayout.loggedInUser != null)
         {
-            _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
-            return;
+            _user = usedLayout.loggedInUser;
+            _form.Name = _user!.Name;
+            _form.Email = _user!.Email;
         }
+    }
 
-        _user = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
-
-        _form.Name = _user!.Name;
-        _form.Email = _user!.Email;
+    private void OnInputFileChange (InputFileChangeEventArgs e)
+    {
+        selectedFile = e.GetMultipleFiles()[0];
+        this.StateHasChanged();
     }
 
     private async void OnSubmit()
     {
-        var response = await _client.PutAsJsonAsync("api/user", _form);
+        var updateBody = new UpdateUserBody();
+        if (selectedFile != null)
+        {
+            Stream stream = selectedFile.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            UploadedFile fileUploaded = new UploadedFile();
+            fileUploaded.FileName = selectedFile.Name;
+            fileUploaded.FileContent = ms.ToArray();
+
+
+            updateBody.file = fileUploaded;
+
+            ms.Close();
+        }
+
+        updateBody.updatedUser = new UserUpdateDTO(_form.Name, _form.Email);
+
+        var response = await _client.PutAsJsonAsync("api/user", updateBody);
 
         if (!response.IsSuccessStatusCode)
         {

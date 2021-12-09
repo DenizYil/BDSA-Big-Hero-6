@@ -10,10 +10,12 @@ namespace CoProject.Server.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
+    private readonly IWebHostEnvironment _env;
 
-    public UserController(IUserRepository userRepository)
+    public UserController(IUserRepository userRepository, IWebHostEnvironment env)
     {
         _userRepository = userRepository;
+        _env = env;
     }
 
     [HttpGet]
@@ -82,7 +84,7 @@ public class UserController : ControllerBase
     [HttpPut]
     [ProducesResponseType(404)]
     [ProducesResponseType(204)]
-    public async Task<ActionResult<Status>> UpdateUser([FromBody] UserUpdateDTO updatedUser)
+    public async Task<ActionResult<Status>> UpdateUser([FromBody] UpdateUserBody body)
     {
         var idFind = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
@@ -91,7 +93,22 @@ public class UserController : ControllerBase
             return Unauthorized("You are not logged in");
         }
 
-        var status = await _userRepository.Update(idFind.Value, updatedUser);
+        if(body.file != null)
+        {
+            var path = $"{_env.WebRootPath}/userimages/{idFind.Value}.jpg";
+            var fs = System.IO.File.Create(path);
+            fs.Write(body.file.FileContent, 0, body.file.FileContent.Length);
+            fs.Close();
+
+            Console.WriteLine("PATH PATH: " + path);
+        }
+
+
+        // WE NEED TO SET THE USER IMAGE TO /userimages/idFind.Value.jpg
+
+        
+
+        var status = await _userRepository.Update(idFind.Value, body.updatedUser);
 
         if (status == Status.Updated)
         {

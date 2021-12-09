@@ -27,6 +27,31 @@ h2 {
   text-align: center;
 }
 
+.profileImageContainer {
+    display:block;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.innerProfileImage {
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+}
+
+    .innerProfileImage img {
+        border-style: none;
+        width: 125px;
+        height: 100%;
+        border-radius: 100%;
+        display: block;
+    }
+
 .container {
   width: 95%;
   margin-left: auto;

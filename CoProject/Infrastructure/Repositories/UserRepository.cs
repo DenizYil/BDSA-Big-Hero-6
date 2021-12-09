@@ -16,14 +16,14 @@ public class UserRepository : IUserRepository
     {
         return await _context.Users
             .Where(u => u.Id == id)
-            .Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor))
+            .Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image))
             .FirstOrDefaultAsync();
     }
 
     public async Task<IEnumerable<UserDetailsDTO>> ReadAll()
     {
         return await _context.Users
-            .Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor))
+            .Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image))
             .ToListAsync();
     }
 
@@ -46,11 +46,11 @@ public class UserRepository : IUserRepository
                     project.Id,
                     project.Name,
                     project.Description,
-                    new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor),
+                    new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor, user.Image),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor)).ToList()
+                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image)).ToList()
                 )
                 {
                     Min = project.Min,
@@ -66,12 +66,12 @@ public class UserRepository : IUserRepository
                     project.Description,
                     _context.Users
                         .Where(supervisor => supervisor.Id == project.SupervisorId)
-                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor))
+                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor, supervisor.Image))
                         .First(),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor)).ToList()
+                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image)).ToList()
                 )
                 {
                     Min = project.Min,
@@ -94,7 +94,7 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor);
+        return new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor, user.Image);
     }
 
     public async Task<Status> Update(string id, UserUpdateDTO update)

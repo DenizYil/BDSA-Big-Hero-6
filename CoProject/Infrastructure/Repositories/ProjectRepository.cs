@@ -37,7 +37,7 @@ public class ProjectRepository : IProjectRepository
             project.Id,
             project.Name,
             project.Description,
-            new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor),
+            new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor, supervisor.Image),
             project.State,
             project.Created,
             project.Tags.Select(tag => tag.Name).ToList(),
@@ -60,12 +60,12 @@ public class ProjectRepository : IProjectRepository
                     project.Description,
                     _context.Users
                         .Where(user => user.Id == project.SupervisorId)
-                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor))
+                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor, supervisor.Image))
                         .First(),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(user => new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor)).ToList()
+                    project.Users.Select(user => new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor, user.Image)).ToList()
                 )
                 {
                     Min = project.Min,
@@ -84,12 +84,12 @@ public class ProjectRepository : IProjectRepository
                     project.Description,
                     _context.Users
                         .Where(user => user.Id == project.SupervisorId)
-                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor))
+                        .Select(supervisor => new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor, supervisor.Image))
                         .First(),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(user => new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor)).ToList()
+                    project.Users.Select(user => new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor, user.Image)).ToList()
                 )
                 {
                     Min = project.Min,

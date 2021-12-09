@@ -5,7 +5,7 @@
         <h1 class="project-name">@Project.Name</h1>
         <p class="project-description">@Project.Description</p>
         <div class="supv">
-            <img class="supv-img" src=@GetSupervisorImgSrc()/>
+            <img class="supv-img" src="@Project.Supervisor.Image"/>
             <p class="supv-name">Made by @Project.Supervisor.Name</p>
         </div>
         <div class="tags">
@@ -21,11 +21,5 @@
 
     [Parameter]
     public ProjectDetailsDTO Project { get; set; }
-
-    public string GetSupervisorImgSrc()
-    {
-    //return userrepo.Read(Project.SupervisorId).Img;
-        return "https://www.w3schools.com/images/picture.jpg";
-    }
 
 }
