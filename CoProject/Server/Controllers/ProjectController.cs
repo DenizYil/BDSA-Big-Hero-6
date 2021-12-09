@@ -89,7 +89,7 @@ public class ProjectController : ControllerBase
 
         if (user == null)
         {
-            return NotFound("You are not logged in");
+            return Unauthorized("You are not logged in");
         }
 
         var _project = await _projectRepository.Read(id);
