@@ -1,5 +1,8 @@
 ﻿global using Xunit;
 global using System;
+global using CoProject.Shared;
+global using System.Linq;
+global using FluentAssertions;
 global using System.Collections.Generic;
 global using CoProject.Infrastructure.Entities;
 global using CoProject.Infrastructure.Repositories;
