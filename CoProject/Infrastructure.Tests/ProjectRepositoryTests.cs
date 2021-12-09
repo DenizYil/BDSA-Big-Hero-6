@@ -142,6 +142,12 @@ public class ProjectRepositoryTests : DefaultTests
     [Fact]
     public async void Update_actually_updates_object_with_specified_changes()
     {
+        var otherUser = user;
+        otherUser.Id = "3";
+        
+        await _context.Users.AddAsync(otherUser);
+        await _context.SaveChangesAsync();
+        
         var projectWithTags = project;
         projectWithTags.Id = 2;
         projectWithTags.Tags = new List<Tag>
@@ -150,6 +156,7 @@ public class ProjectRepositoryTests : DefaultTests
             new() {Id = 3, Name = "F#", Projects = new List<Project>()}
         };
         projectWithTags.SupervisorId = "2";
+        projectWithTags.Users = new List<User> {user, otherUser};
 
         await _context.Projects.AddAsync(projectWithTags);
         await _context.SaveChangesAsync();
