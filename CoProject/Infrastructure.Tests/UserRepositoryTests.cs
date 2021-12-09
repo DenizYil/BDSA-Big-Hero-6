@@ -90,8 +90,46 @@ public class UserRepositoryTests : DefaultTests
 
         project.Users = new List<User> {user};
         await _context.SaveChangesAsync();
+        
         var actual = await _repo.ReadAllByUser("1");
 
+        expected.Should().BeEquivalentTo(actual);
+    }
+
+    [Fact]
+    public async void ReadAllByUser_given_not_supervisor_returns_users_projects()
+    {
+        var user = new User
+        {
+            Id = "2",
+            Name = "YeehaaSelf",
+            Email = "you@you.dk",
+            Supervisor = false,
+            Image = "/images/noimage.jpg" 
+        };
+
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+        
+        project.Users.Add(user);
+        await _context.SaveChangesAsync();
+        
+        var expected = new List<ProjectDetailsDTO>
+        {
+            new(
+                1,
+                "Karl",
+                "yep hehe smiley",
+                new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
+                State.Open,
+                now,
+                new List<string>(),
+                new List<UserDetailsDTO> {new("2", "YeehaaSelf", "you@you.dk", false, "/images/noimage.jpg") }
+            )
+        };
+        
+        var actual = await _repo.ReadAllByUser("2");
+        
         expected.Should().BeEquivalentTo(actual);
     }
 
@@ -116,11 +154,15 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Update_actually_updates_User_with_specified_changes()
     {
-        await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk"));
+        await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk")
+        {
+            Image = "images/newimage.jpg"
+        });
 
         var expected = user;
         expected.Name = "YeehaaSelf";
         expected.Email = "you@you.dk";
+        expected.Image = "images/newimage.jpg";
 
         var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id =="1");
 
