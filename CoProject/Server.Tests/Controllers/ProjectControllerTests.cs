@@ -142,12 +142,13 @@ public class ProjectControllerTests
         // Arrange
         _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
         _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(default(ProjectDetailsDTO));
-
+        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+        
         // Act
         var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
 
         // Assert
-        Assert.IsType<UnauthorizedObjectResult>(result);
+        Assert.IsType<NotFoundObjectResult>(result);
     }
     
     [Fact]
@@ -298,6 +299,77 @@ public class ProjectControllerTests
 
         // Assert
         Assert.IsType<NotFoundObjectResult>(response);
+    }
+    
+    [Fact]
+    public async void AddUserToProject_returns_Forbid_if_given_closed_project()
+    {
+        // Arrange
+        var closedProject = new ProjectDetailsDTO(1, "Project Name", "Project Description", _supervisor, State.Closed, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
+        _projectRepository
+            .Setup(m => m.Read(1))
+            .ReturnsAsync(closedProject);
+
+        // Act
+        var response = await _controller.AddUserToProject(1);
+
+        // Assert
+        Assert.IsType<ForbidResult>(response);
+    }
+    
+    [Fact]
+    public async void AddUserToProject_returns_Forbid_if_usercount_is_bigger_than_max()
+    {
+        // Arrange
+        var project = new ProjectDetailsDTO(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>(){_user, _supervisor})
+        {
+            Max = 1
+        };
+        
+        _projectRepository
+            .Setup(m => m.Read(1))
+            .ReturnsAsync(project);
+
+        // Act
+        var response = await _controller.AddUserToProject(1);
+
+        // Assert
+        Assert.IsType<ForbidResult>(response);
+    }
+    
+    [Fact]
+    public async void AddUserToProject_returns_Unauthorized_if_User_is_not_logged_in()
+    {
+        // Arrange
+        _controller = new(_projectRepository.Object, _userRepository.Object)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User =  new ClaimsPrincipal() } }
+        };
+        _projectRepository
+            .Setup(m => m.Read(1))
+            .ReturnsAsync(_project);
+
+        // Act
+        var response = await _controller.AddUserToProject(1);
+
+        // Assert
+        Assert.IsType<UnauthorizedObjectResult>(response);
+    }
+    
+    [Fact]
+    public async void AddUserToProject_returns_Conflict_if_User_is_already_registered()
+    {
+        // Arrange
+        var project = new ProjectDetailsDTO(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>(){_user});
+        _projectRepository
+            .Setup(m => m.Read(1))
+            .ReturnsAsync(project);
+
+        // Act
+        var response = await _controller.AddUserToProject(1);
+
+        // Assert
+        Assert.IsType<ConflictObjectResult>(response);
     }
 
     [Fact]
