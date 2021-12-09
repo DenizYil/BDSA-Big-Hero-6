@@ -15,7 +15,7 @@ public class MiscTests : DefaultTests
                        $"Tags={string.Join(", ", project.Tags.Select(tag => tag.Name).ToList())} \n" +
                        $"Users={string.Join(", ", project.Users.Select(user => user.Email).ToList())} \n" +
                        $"State={project.State} \n";
-
-        expected.Should().BeEquivalentTo(project.ToString());
+        
+        Assert.Equal(expected, project.ToString());
     }
 }
