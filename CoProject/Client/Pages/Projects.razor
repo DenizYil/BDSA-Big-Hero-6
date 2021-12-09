@@ -12,7 +12,7 @@
 <h2>Below you can see a list of available projects.</h2>
 
 <div class="search">
-    <input id="search-bar" placeholder="Search..." name="searchinput">
+    <input @oninput="@((i) => search = i.Value.ToString().ToLower().Trim())" id="search-bar" placeholder="Search..." name="searchinput">
     <img class="searchIcon" src="/images/searchicon.svg" alt="Search icon">
 </div>
 
@@ -28,9 +28,10 @@
                 {
 <div class="projects">
 
-    @foreach (var project in _projects)
+    @foreach (var project in (search.Length > 0 && search != null ? _projects.Where(p => p.Name.ToLower().Trim().Contains(search.ToLower().Trim()) || p.Tags.Select(t => t.ToLower().Trim()).Contains(search.ToLower().Trim())) : _projects))
     {
-<ProjectCard Project="@project" />}
+        <ProjectCard Project="@project" />
+    }
 </div>}}
 
 @if (usedLayout != null && usedLayout.loggedInUser != null && usedLayout.loggedInUser.Supervisor == true)
@@ -45,10 +46,12 @@
 
 @code { private IEnumerable<ProjectDetailsDTO>? _projects;
 
-            [CascadingParameter]
-            public AuthLayout? usedLayout { get; set; }
+    private string search = "";
 
-            protected override async Task OnInitializedAsync()
-            {
-                _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
-            } }
+    [CascadingParameter]
+    public AuthLayout? usedLayout { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
+    } }
