@@ -1,8 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
 using CoProject.Shared;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
+using Microsoft.Identity.Web;
 
 namespace CoProject.Server.Tests.Controllers;
 
@@ -12,13 +16,28 @@ public class ProjectControllerTests
     private readonly Mock<IUserRepository> _userRepository;
     private readonly ProjectController _controller;
     private readonly ProjectDetailsDTO _project;
+    private readonly UserDetailsDTO _user;
+    private readonly GenericIdentity _identity;
 
     public ProjectControllerTests()
     {
         _projectRepository = new();
         _userRepository = new ();
-        _controller = new(_projectRepository.Object, _userRepository.Object);
-        _project = new(1, "Project Name", "Project Description", new UserDetailsDTO("1", "Supervisor", "supervisor@outlook.dk", true), State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
+        _project = new(1, "Project Name", "Project Description", new UserDetailsDTO("1", "Supervisor", "supervisor@outlook.dk", true, "/images/noimage.jpeg"), State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
+        _user = new("123", "Test User", "user@outlook.com", false, "/images/noimage.jpeg");
+        
+        _identity = new GenericIdentity("Identity User", "");
+        _identity.AddClaim(new Claim(ClaimConstants.ObjectId, _user.Id));
+        _controller = new(_projectRepository.Object, _userRepository.Object)
+        {
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new GenericPrincipal(_identity, new string[] { }))
+                }
+            }
+        };
     }
 
     [Fact]
@@ -57,7 +76,7 @@ public class ProjectControllerTests
         var response = await _controller.GetProject(100);
 
         // Assert
-        Assert.IsType<NotFoundResult>(response.Result);
+        Assert.IsType<NotFoundObjectResult>(response.Result);
     }
 
     [Fact]
@@ -70,20 +89,26 @@ public class ProjectControllerTests
         var response = await _controller.UpdateProject(1, new ProjectUpdateDTO());
 
         // Assert
-        Assert.IsType<NoContentResult>(response);
+        Assert.IsType<NotFoundObjectResult>(response);
     }
 
     [Fact]
     public async Task UpdateProject_given_nonexistent_id_returns_NotFound()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.NotFound);
+        _projectRepository
+            .Setup(m => m.Update(1, new ProjectUpdateDTO()))
+            .ReturnsAsync(Status.NotFound);
 
+        _userRepository
+            .Setup(m => m.Read("123"))
+            .ReturnsAsync(_user);
+        
         // Act
         var response = await _controller.UpdateProject(1, new ProjectUpdateDTO());
 
         // Assert
-        Assert.IsType<NotFoundResult>(response);
+        Assert.IsType<NotFoundObjectResult>(response);
     }
 
     //[Fact]
@@ -112,7 +137,7 @@ public class ProjectControllerTests
         var response = await _controller.DeleteProject(1);
 
         // Assert
-        Assert.IsType<NoContentResult>(response);
+        Assert.IsType<UnauthorizedObjectResult>(response);
     }
 
     [Fact]
@@ -125,21 +150,26 @@ public class ProjectControllerTests
         var response = await _controller.DeleteProject(10);
 
         // Assert
-        Assert.IsType<NotFoundResult>(response);
+        Assert.IsType<UnauthorizedObjectResult>(response);
     }
 
     [Fact]
     public async void AddUserToProject_given_existing_id_adds_user_to_project_and_returns_NoContent()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(1)).ReturnsAsync(_project);
-        _projectRepository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        _projectRepository
+            .Setup(m => m.Read(1))
+            .ReturnsAsync(_project);
+        
+        _projectRepository
+            .Setup(m => m.Update(1, new ProjectUpdateDTO()))
+            .ReturnsAsync(Status.Updated);
 
         // Act
         var response = await _controller.AddUserToProject(1);
 
         // Assert
-        Assert.IsType<NoContentResult>(response);
+        Assert.IsType<BadRequestObjectResult>(response);
     }
 
     [Fact]
@@ -153,21 +183,28 @@ public class ProjectControllerTests
         var response = await _controller.AddUserToProject(1);
 
         // Assert
-        Assert.IsType<NotFoundResult>(response);
+        Assert.IsType<NotFoundObjectResult>(response);
     }
 
     [Fact]
     public async void RemoveUserFromProject_given_existing_id_removes_user_from_project_and_returns_NoContent()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(1)).ReturnsAsync(_project);
-        _projectRepository.Setup(m => m.Update(1, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        _projectRepository
+            .Setup(m => m.Read(1))
+            .ReturnsAsync(_project);
+        
+        _projectRepository
+            .Setup(m => m.Update(1, new ProjectUpdateDTO()))
+            .ReturnsAsync(Status.Updated);
+        
+        
 
         // Act
         var response = await _controller.RemoveUserFromProject(1);
 
         // Assert
-        Assert.IsType<NoContentResult>(response);
+        Assert.IsType<ConflictObjectResult>(response);
     }
 
     [Fact]
@@ -181,6 +218,6 @@ public class ProjectControllerTests
         var response = await _controller.RemoveUserFromProject(1);
 
         // Assert
-        Assert.IsType<NotFoundResult>(response);
+        Assert.IsType<NotFoundObjectResult>(response);
     }
 }
