@@ -105,7 +105,7 @@ public class ProjectControllerTests
     
     
     [Fact]
-    public async Task UpdateProject_given_nonexistent_id_returns_NotFound()
+    public async Task UpdateProject_returns_unauthorized_given_user_not_found_in_db()
     {
         // Arrange
         _projectRepository
@@ -116,7 +116,7 @@ public class ProjectControllerTests
         var response = await _controller.UpdateProject(1, new ProjectUpdateDTO());
 
         // Assert
-        Assert.IsType<NotFoundObjectResult>(response);
+        Assert.IsType<UnauthorizedObjectResult>(response);
     }
 
     
