@@ -5,6 +5,10 @@
   margin-right: auto;
 }
 
+a {
+    text-decoration: none !important;
+}
+
 .alert {
   margin-top: 5px;
   padding: 20px;
@@ -37,4 +41,19 @@
 
 .closebtn:hover {
   color: black;
-} 
+}
+
+@media only screen and (min-width: 1024px) {
+
+    .content {
+        width: 65%;
+    }
+}
+
+
+@media only screen and (min-width: 1440px) {
+
+    .content {
+        width: 55%;
+    }
+}

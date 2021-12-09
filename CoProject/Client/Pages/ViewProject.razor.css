@@ -3,6 +3,13 @@ h1 {
   color: #0b4f6c;
   text-align: center;
   margin-bottom: 0px;
+  margin-left:auto;
+  margin-right:auto;
+  display:block;
+}
+
+a {
+    text-decoration: none !important;
 }
 
 h2 {
@@ -14,12 +21,19 @@ h2 {
 }
 
 button {
-  margin: 20px auto;
-  display: block;
-  color: white;
-  border: #707070;
-  border-radius: 5px;
-  text-decoration: none;
+    margin-bottom: 10px;
+    display: block;
+    color: white;
+    border: #707070;
+    border-radius: 5px;
+    text-decoration: none;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 90%;
+    font-size: 20px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .supervisorContainer {
@@ -78,11 +92,6 @@ button {
 }
 #editProject {
   background-color: #0b4f6c;
-  padding: 10px;
-  box-sizing: border-box;
-  width: 90%;
-  font-size: 20px;
-  cursor: pointer;
 }
 #joinProject a {
   text-decoration: none;
@@ -90,19 +99,10 @@ button {
 }
 #joinProject {
   background-color: #0b4f6c;
-  padding: 10px;
-  box-sizing: border-box;
-  width: 90%;
-  font-size: 20px;
-  cursor: pointer;
 }
 
 #delete {
   background-color: #c14c36;
-  width: 50%;
-  padding: 10px;
-  box-sizing: border-box;
-  font-size: 20px;
 }
 
 .tags {
@@ -111,6 +111,7 @@ button {
   flex-wrap: wrap;
   align-items: center;
   opacity: 0.5;
+  margin-bottom: 20px;
 }
 
 .tagName {
@@ -122,11 +123,15 @@ button {
   padding: 3px;
 }
 
+.material-icons {
+    margin-left: 5px;
+}
+
 #bagOfStudents {
-  flex-wrap: wrap;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
 }
 
 .oneStudent {
@@ -140,6 +145,7 @@ button {
   padding: 5px;
   box-sizing: border-box;
   width: 48%;
+  margin-bottom: 15px;
 }
 .email {
   margin-top: 2px;
@@ -160,4 +166,42 @@ button {
   width: 35px;
   height: 35px;
   border-radius: 100%;
+}
+
+.supervisorbuttons {
+    display:flex;
+    justify-content:center;
+    align-content: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.supervisorsinglebutton {
+    width: 100%;
+}
+
+@media only screen and (min-width: 1024px) {
+
+    button {
+
+        width: 100%;
+    }
+
+    .oneStudent {
+        width: 32%;
+    }
+
+    .supervisorbuttons {
+        flex-direction: row;
+        justify-content: space-between;
+
+    }
+
+
+    .supervisorsinglebutton {
+        width: 48%;
+        box-sizing: border-box;
+    }
+
 }

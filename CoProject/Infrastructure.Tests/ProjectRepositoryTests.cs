@@ -199,7 +199,7 @@ public class ProjectRepositoryTests : DefaultTests
         var newUser = user;
         newUser.Id = "2";
         newUser.Email = "you@you.dk";
-        newUser.UserName = "Yourself";
+        newUser.Name = "Yourself";
 
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();

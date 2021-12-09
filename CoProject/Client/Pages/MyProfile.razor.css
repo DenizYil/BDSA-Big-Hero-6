@@ -43,3 +43,12 @@ form {
   margin-top: 10px;
   display: block;
 }
+
+
+
+@media only screen and (min-width: 1024px) {
+
+    button[type='submit'] {
+        width: 35%;
+    }
+}
