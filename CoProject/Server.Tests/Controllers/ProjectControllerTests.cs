@@ -86,22 +86,6 @@ public class ProjectControllerTests
         Assert.IsType<NotFoundResult>(response);
     }
 
-    //[Fact]
-    public async void CreateProject_creates_a_new_project()
-    {
-        // Arrange
-        var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
-        _projectRepository.Setup(m => m.Create(toCreate)).ReturnsAsync(_project);
-
-        // Act
-        var result = await _controller.CreateProject(toCreate) as CreatedAtRouteResult;
-
-        // Assert
-        Assert.Equal(_project, result?.Value);
-        Assert.Equal("GetProject", result?.RouteName);
-        Assert.Equal(KeyValuePair.Create("Id", (object?) 1), result?.RouteValues?.Single());
-    }
-
     [Fact]
     public async void DeleteProject_deletes_a_projects_given_id_and_returns_NoContent()
     {
