@@ -14,7 +14,7 @@ public class ProjectControllerTests
 {
     private readonly Mock<IProjectRepository> _projectRepository;
     private readonly Mock<IUserRepository> _userRepository;
-    private readonly ProjectController _controller;
+    private ProjectController _controller;
     private readonly ProjectDetailsDTO _project;
     private readonly UserDetailsDTO _user;
     private readonly UserDetailsDTO _supervisor;
@@ -38,7 +38,7 @@ public class ProjectControllerTests
         var principal = new GenericPrincipal(_identity, roles: new string[] { });
         var loggedInUser = new ClaimsPrincipal(principal);
         
-        _controller = new(_projectRepository.Object, _userRepository.Object)
+        _controller = new ProjectController(_projectRepository.Object, _userRepository.Object)
         {
             ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = loggedInUser } }
         };
@@ -87,7 +87,6 @@ public class ProjectControllerTests
     }
     
     
-    //TODO: Make it able to "read" and pass all if statements in UpdateProject()
     [Fact]
     public async Task UpdateProject_given_existing_id_updates_project_and_returns_NoContent()
     {
@@ -120,7 +119,67 @@ public class ProjectControllerTests
     }
 
     
-    //TODO: make test pass all if statements in CreateProject()
+    [Fact]
+    public async void UpdateProject_returns_unauthorized_if_userid_is_null()
+    {
+        // Arrange
+        _controller = new(_projectRepository.Object, _userRepository.Object)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User =  new ClaimsPrincipal() } }
+        };
+        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+
+        // Act
+        var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+
+        // Assert
+        Assert.IsType<UnauthorizedObjectResult>(result);
+    }
+    
+    [Fact]
+    public async void UpdateProject_returns_NotFound_if_project_is_null()
+    {
+        // Arrange
+        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(default(ProjectDetailsDTO));
+
+        // Act
+        var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+
+        // Assert
+        Assert.IsType<UnauthorizedObjectResult>(result);
+    }
+    
+    [Fact]
+    public async void UpdateProject_returns_Forbid_if_user_is_not_supervisor()
+    {
+        // Arrange
+        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
+        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+
+        // Act
+        var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+
+        // Assert
+        Assert.IsType<ForbidResult>(result);
+    }
+    
+    [Fact]
+    public async void UpdateProject_returns_BadRequest_if_project_is_not_updated_properly()
+    {
+        // Arrange
+        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.BadRequest);
+        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
+        _userRepository.Setup(m => m.Read(_supervisor.Id)).ReturnsAsync(_supervisor);
+
+        // Act
+        var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+
+        // Assert
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+    
     [Fact]
     public async void CreateProject_creates_a_new_project()
     {
@@ -134,6 +193,52 @@ public class ProjectControllerTests
 
         // Assert
         Assert.IsType<CreatedAtRouteResult>(result);
+    }
+    
+    
+    [Fact]
+    public async void CreateProject_returns_unauthorized_if_userid_is_null()
+    {
+        // Arrange
+        _controller = new(_projectRepository.Object, _userRepository.Object)
+        {
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User =  new ClaimsPrincipal() } }
+        };
+        var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
+
+        // Act
+        var result = await _controller.CreateProject(toCreate);
+
+        // Assert
+        Assert.IsType<UnauthorizedObjectResult>(result);
+    }
+    
+    [Fact]
+    public async void CreateProject_returns_unauthorized_if_no_one_logged_in()
+    {
+        // Arrange
+        var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
+        _userRepository.Setup(m => m.Read(_supervisor.Id)).ReturnsAsync(default(UserDetailsDTO));
+        
+        // Act
+        var result = await _controller.CreateProject(toCreate);
+
+        // Assert
+        Assert.IsType<UnauthorizedObjectResult>(result);
+    }
+    
+    [Fact]
+    public async void CreateProject_returns_forbid_if_user_is_not_supervisor()
+    {
+        // Arrange
+        var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
+        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+        
+        // Act
+        var result = await _controller.CreateProject(toCreate);
+
+        // Assert
+        Assert.IsType<ForbidResult>(result);
     }
 
     [Fact]
