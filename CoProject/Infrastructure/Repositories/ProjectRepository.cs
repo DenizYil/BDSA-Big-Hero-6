@@ -135,7 +135,7 @@ public class ProjectRepository : IProjectRepository
             project.State = update.State.Value;
         }
         
-        if (update.Tags != null && update.Tags.Except(project.Tags.Select(tag => tag.Name)).Any())
+        if (update.Tags != null)
         {
             foreach (var tag in project.Tags)
             {
