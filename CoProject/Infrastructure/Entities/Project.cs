@@ -1,5 +1,3 @@
-using Microsoft.VisualBasic;
-
 namespace CoProject.Infrastructure.Entities;
 
 public class Project
@@ -24,8 +22,8 @@ public class Project
                $"SupervisorId={SupervisorId} \n" +
                $"Min={Min} \n" +
                $"Max={Max} \n" +
-               $"Tags={String.Join(", ", Tags.Select(tag => tag.Name).ToList())} \n" +
-               $"Users={String.Join(", ", Users.Select(user => user.Email).ToList())} \n" +
+               $"Tags={string.Join(", ", Tags.Select(tag => tag.Name).ToList())} \n" +
+               $"Users={string.Join(", ", Users.Select(user => user.Email).ToList())} \n" +
                $"State={State} \n";
     }
 }

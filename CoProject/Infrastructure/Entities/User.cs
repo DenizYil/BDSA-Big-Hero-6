@@ -1,8 +1,4 @@
-﻿using System.Collections;
-
-namespace CoProject.Infrastructure.Entities;
-
-#pragma warning disable CS8618
+﻿namespace CoProject.Infrastructure.Entities;
 
 public class User
 {

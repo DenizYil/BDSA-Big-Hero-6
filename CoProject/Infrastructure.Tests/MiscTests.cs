@@ -12,8 +12,8 @@ public class MiscTests : DefaultTests
                        $"SupervisorId={project.SupervisorId} \n" +
                        $"Min={project.Min} \n" +
                        $"Max={project.Max} \n" +
-                       $"Tags={String.Join(", ", project.Tags.Select(tag => tag.Name).ToList())} \n" +
-                       $"Users={String.Join(", ", project.Users.Select(user => user.Email).ToList())} \n" +
+                       $"Tags={string.Join(", ", project.Tags.Select(tag => tag.Name).ToList())} \n" +
+                       $"Users={string.Join(", ", project.Users.Select(user => user.Email).ToList())} \n" +
                        $"State={project.State} \n";
 
         expected.Should().BeEquivalentTo(project.ToString());
