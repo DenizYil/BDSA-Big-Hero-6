@@ -31,7 +31,7 @@ public class ProjectRepositoryTests : DefaultTests
         //Act
         var actual = await _repo.Create(createProject);
 
-        var expected = new ProjectDetailsDTO(2, "CoolProject", "Description for the Coolest Project", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimages.jpeg"), State.Hidden, actual.Created, new List<string>(), new List<UserDetailsDTO>())
+        var expected = new ProjectDetailsDTO(2, "CoolProject", "Description for the Coolest Project", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Hidden, actual.Created, new List<string>(), new List<UserDetailsDTO>())
         {
             Min = 1,
             Max = 4,
@@ -85,7 +85,7 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Read_Given_Existing_Project_Returns_Project()
     {
         //Arrange
-        var expected = new ProjectDetailsDTO(1, "Karl", "yep hehe smiley", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimages.jpeg"), State.Open, now, new List<string>(), new List<UserDetailsDTO>());
+        var expected = new ProjectDetailsDTO(1, "Karl", "yep hehe smiley", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(), new List<UserDetailsDTO>());
 
         // Act
         var actual = await _repo.Read(1);
@@ -99,8 +99,8 @@ public class ProjectRepositoryTests : DefaultTests
     {
         var expected = new List<ProjectDetailsDTO>
         {
-            new(1, "Karl", "yep hehe smiley", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimages.jpeg"), State.Open, now, new List<string>(), new List<UserDetailsDTO>()),
-            new(2, "Phillip", "This is another cool description", new UserDetailsDTO("2", "Yourself", "you@you.dk", true, "/images/noimages.jpeg"), State.Open, now, new List<string>(),
+            new(1, "Karl", "yep hehe smiley", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(), new List<UserDetailsDTO>()),
+            new(2, "Phillip", "This is another cool description", new UserDetailsDTO("2", "Yourself", "you@you.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(),
                 new List<UserDetailsDTO>())
         };
         
