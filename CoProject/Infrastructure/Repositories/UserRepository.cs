@@ -116,6 +116,11 @@ public class UserRepository : IUserRepository
             user.Email = update.Email;
         }
 
+        if(update.Image != null)
+        {
+            user.Image = update.Image;
+        }
+
         await _context.SaveChangesAsync();
         return Status.Updated;
     }

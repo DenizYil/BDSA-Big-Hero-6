@@ -1,6 +1,8 @@
 using CoProject.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web;
+using System.IO;
+using System;
 
 namespace CoProject.Server.Controllers;
 
@@ -95,16 +97,35 @@ public class UserController : ControllerBase
 
         if(body.file != null)
         {
-            var path = $"{_env.WebRootPath}/userimages/{idFind.Value}.jpg";
+
+            if(!body.file.FileName.EndsWith(".jpg") && !body.file.FileName.EndsWith(".png"))
+            {
+                return BadRequest("You must only upload .jpg or .png images");
+            }
+
+            var currentUser = await _userRepository.Read(idFind.Value);
+
+            if(currentUser == null)
+            {
+                return Unauthorized("You are not logged in");
+            }
+
+            var previousImagePath = $"{_env.WebRootPath}{currentUser.Image}";
+            if ( currentUser.Image != null && System.IO.File.Exists(previousImagePath))
+            {
+                // delete it
+                System.IO.File.Delete(previousImagePath);
+            }
+
+            var userImagePath = $"/userimages/{idFind.Value}_{Guid.NewGuid()}.jpg";
+            var path = $"{_env.WebRootPath}{userImagePath}";
             var fs = System.IO.File.Create(path);
             fs.Write(body.file.FileContent, 0, body.file.FileContent.Length);
             fs.Close();
 
             Console.WriteLine("PATH PATH: " + path);
+            body.updatedUser.Image = userImagePath;
         }
-
-
-        // WE NEED TO SET THE USER IMAGE TO /userimages/idFind.Value.jpg
 
         
 

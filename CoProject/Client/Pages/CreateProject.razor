@@ -113,12 +113,10 @@
         {
             var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
             _navManager.NavigateTo($"/project/{created.Id}?success=You have successfully created the project");
+            return;
         }
-        else
-        {
-            Console.WriteLine(response.StatusCode);
-            _navManager.NavigateTo($"/projects?error={response.StatusCode}");
-        }
+        Console.WriteLine(response.StatusCode);
+        _navManager.NavigateTo($"/projects?error={response.StatusCode}");
     }
 
     private void SwitchItem(State state)
