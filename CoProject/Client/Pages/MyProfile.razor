@@ -3,8 +3,11 @@
 @using CoProject.Client.Forms
 @using Microsoft.AspNetCore.Components
 @using CoProject.Shared
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @inject HttpClient _client
 @inject NavigationManager _navManager
+@inject SignOutSessionStateManager SignOutManager
+
 
 <PageTitle>My Profile - CoProject</PageTitle>
 
@@ -75,6 +78,7 @@
             <InputText type="text" id="email" placeholder="Enter your new e-mail address here" @bind-Value="_form.Email"/>
 
             <button type="submit">Update profile</button>
+            <button class="logoutbutton" type="button" @onclick="BeginLogout">Log out</button>
         </EditForm>
     }
 </div>
@@ -87,6 +91,12 @@
 
     [CascadingParameter]
     public AuthLayout? usedLayout { get; set; }
+
+    private async Task BeginLogout(MouseEventArgs args)
+    {
+        await SignOutManager.SetSignOutState();
+        _navManager.NavigateTo("authentication/logout");
+    }
 
     protected override async Task OnInitializedAsync()
     {

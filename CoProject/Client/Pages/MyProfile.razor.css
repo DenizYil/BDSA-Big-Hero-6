@@ -69,6 +69,21 @@ form {
   display: block;
 }
 
+.logoutbutton {
+margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        display: block;
+        background-color: #0b4f6c;
+        color: white;
+        font-size: 20px;
+        border: #707070;
+        padding: 10px;
+        border-radius: 10px;
+        width: 50%;
+}
+
 
 
 @media only screen and (min-width: 1024px) {
