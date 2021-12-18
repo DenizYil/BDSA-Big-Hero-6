@@ -2,9 +2,9 @@
 @inject NavigationManager _navManager
 @layout AuthLayout
 @inject HttpClient _client
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime _jsRuntime
 @using CoProject.Shared;
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateProvider _authenticationStateProvider
 
 
 <PageTitle>View Project - CoProject</PageTitle>
@@ -107,8 +107,8 @@ else
 
     private async Task CopyToClickBoard(string text)
     {
-        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
-        await JSRuntime.InvokeVoidAsync("alert", $"Copied {text} to the clipboard");
+        await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        await _jsRuntime.InvokeVoidAsync("alert", $"Copied {text} to the clipboard");
     }
 
     protected override async Task OnInitializedAsync()

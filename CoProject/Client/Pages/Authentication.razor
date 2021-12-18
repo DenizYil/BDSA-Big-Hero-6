@@ -1,6 +1,6 @@
 ﻿@page "/authentication/{action}"
 @inject NavigationManager _navManager
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateProvider _authenticationStateProvider
 @inject HttpClient _client
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 <RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded="@OnLogoutSuccess" OnLogInSucceeded="@OnLoginSuccess"/>
@@ -19,7 +19,7 @@
     private async void OnLoginSuccess()
     {
         Console.WriteLine("LOGGED IN SUCCESSFULLY!");
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if(user != null)

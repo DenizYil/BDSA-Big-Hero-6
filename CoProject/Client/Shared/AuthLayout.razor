@@ -1,11 +1,8 @@
 ﻿@inherits LayoutComponentBase
-@inject NavigationManager Navigation
+@inject NavigationManager _navManager
 @inject HttpClient _client
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateProvider _authenticationStateProvider
 @using Microsoft.AspNetCore.Authorization
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
-@using System.Text.RegularExpressions
 @using System.Web
 @using CoProject.Shared
 @attribute [Authorize]
@@ -49,8 +46,8 @@
 
     protected override Task OnParametersSetAsync()
     {
-        SuccessMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["success"];
-        ErrorMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["error"];
+        SuccessMessage = HttpUtility.ParseQueryString(new Uri(_navManager.Uri).Query)["success"];
+        ErrorMessage = HttpUtility.ParseQueryString(new Uri(_navManager.Uri).Query)["error"];
         return base.OnParametersSetAsync();
     }
 
@@ -58,7 +55,7 @@
     {
         try
         {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = authState.User;
 
             if (user != null)
@@ -80,41 +77,41 @@
                 }
                 else
                 {
-                    Navigation.NavigateTo("/");
+                    _navManager.NavigateTo("/");
                 }
             }
             else
             {
-                Navigation.NavigateTo("/");
+                _navManager.NavigateTo("/");
             }
         }
         catch (Exception e)
         {
-            Navigation.NavigateTo("/");
+            _navManager.NavigateTo("/");
         }
     }
 
 
     private bool ErrorBox()
     {
-        return Navigation.Uri.Contains("error=");
+        return _navManager.Uri.Contains("error=");
     }
 
     private bool SuccessBox()
     {
-        return Navigation.Uri.Contains("success=");
+        return _navManager.Uri.Contains("success=");
     }
 
     private void RemoveError()
     {
-        var uri = RemoveQueryStringByKey(Navigation.Uri, "error");
-        Navigation.NavigateTo(uri);
+        var uri = RemoveQueryStringByKey(_navManager.Uri, "error");
+        _navManager.NavigateTo(uri);
     }
 
     private void RemoveSuccess()
     {
-        var uri = RemoveQueryStringByKey(Navigation.Uri, "success");
-        Navigation.NavigateTo(uri);
+        var uri = RemoveQueryStringByKey(_navManager.Uri, "success");
+        _navManager.NavigateTo(uri);
     }
 
     private static string RemoveQueryStringByKey(string url, string key)
