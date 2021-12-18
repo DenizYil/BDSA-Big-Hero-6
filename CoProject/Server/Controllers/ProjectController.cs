@@ -1,8 +1,4 @@
-﻿using CoProject.Shared;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web;
-
-namespace CoProject.Server.Controllers;
+﻿namespace CoProject.Server.Controllers;
 
 [Authorize]
 [ApiController]
@@ -26,7 +22,7 @@ public class ProjectController : ControllerBase
 
     [ProducesResponseType(404)]
     [ProducesResponseType(typeof(ProjectDetailsDTO), 200)]
-    [HttpGet("{id}", Name = nameof(GetProject))]
+    [HttpGet("{id:int}", Name = nameof(GetProject))]
     public async Task<ActionResult<ProjectDetailsDTO>> GetProject(int id)
     {
         var project = await _projectRepository.Read(id);
@@ -70,13 +66,13 @@ public class ProjectController : ControllerBase
         return CreatedAtRoute(nameof(GetProject), new {created.Id}, created);
     }
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
     [ProducesResponseType(403)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO project)
+    public async Task<IActionResult> UpdateProject(int id, [FromBody] ProjectUpdateDTO update)
     {
         var userId = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
@@ -92,20 +88,20 @@ public class ProjectController : ControllerBase
             return Unauthorized("You are not logged in");
         }
 
-        var _project = await _projectRepository.Read(id);
+        var project = await _projectRepository.Read(id);
 
-        if (_project == null)
+        if (project == null)
         {
             return NotFound("Project was not found");
         }
 
-        if (!user.Supervisor || _project.Supervisor.Id != user.Id)
+        if (!user.Supervisor || project.Supervisor.Id != user.Id)
         {
             return Forbid("You are not this project's supervisor");
         }
 
         // The logged in user is supervisor and is creator of the project trying to be deleted
-        var response = await _projectRepository.Update(id, project);
+        var response = await _projectRepository.Update(id, update);
 
         if (response == Status.Updated)
         {
@@ -116,7 +112,7 @@ public class ProjectController : ControllerBase
         return BadRequest("Project could not be updated");
     }
 
-    [HttpPut("{projectId}/join")]
+    [HttpPut("{projectId:int}/join")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
@@ -167,7 +163,7 @@ public class ProjectController : ControllerBase
         return BadRequest("You could not join the project");
     }
 
-    [HttpDelete("{projectId}/leave")]
+    [HttpDelete("{projectId:int}/leave")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
@@ -206,7 +202,7 @@ public class ProjectController : ControllerBase
         return BadRequest("You could not leave the project");
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]

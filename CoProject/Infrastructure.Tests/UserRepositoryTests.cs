@@ -6,7 +6,7 @@ public class UserRepositoryTests : DefaultTests
 
     public UserRepositoryTests()
     {
-        _repo = new(_context);
+        _repo = new(Context);
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class UserRepositoryTests : DefaultTests
     {
         var userDetails = await _repo.Create(new("2", "Wee", "wee@gmail.com", false));
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userDetails.Id);
+        var user = await Context.Users.FirstOrDefaultAsync(u => u.Id == userDetails.Id);
 
         Assert.NotNull(user);
     }
@@ -45,13 +45,13 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void ReadAll_given_2_existing_Users_returning_List_of_2_UserDetailsDTO()
     {
-        var newUser = user;
+        var newUser = User;
         newUser.Id = "2";
         newUser.Email = "you@you.dk";
         newUser.Name = "Yourself";
 
-        await _context.Users.AddAsync(newUser);
-        await _context.SaveChangesAsync();
+        await Context.Users.AddAsync(newUser);
+        await Context.SaveChangesAsync();
 
         var expected = new List<UserDetailsDTO>
         {
@@ -78,18 +78,21 @@ public class UserRepositoryTests : DefaultTests
         {
             new(
                 1,
-                "Karl",
-                "yep hehe smiley",
+                "Default Project",
+                "Default project description for tests",
                 new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
                 State.Open,
-                now,
+                Now,
                 new List<string>(),
-                new List<UserDetailsDTO> {new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg")}
+                new List<UserDetailsDTO>
+                {
+                    new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg")
+                }
             )
         };
 
-        project.Users = new List<User> {user};
-        await _context.SaveChangesAsync();
+        Project.Users = new List<User> {User};
+        await Context.SaveChangesAsync();
 
         var actual = await _repo.ReadAllByUser("1");
 
@@ -108,23 +111,26 @@ public class UserRepositoryTests : DefaultTests
             Image = "/images/noimage.jpg"
         };
 
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await Context.Users.AddAsync(user);
+        await Context.SaveChangesAsync();
 
-        project.Users.Add(user);
-        await _context.SaveChangesAsync();
+        Project.Users.Add(user);
+        await Context.SaveChangesAsync();
 
         var expected = new List<ProjectDetailsDTO>
         {
             new(
                 1,
-                "Karl",
-                "yep hehe smiley",
+                "Default Project",
+                "Default project description for tests",
                 new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
                 State.Open,
-                now,
+                Now,
                 new List<string>(),
-                new List<UserDetailsDTO> {new("2", "YeehaaSelf", "you@you.dk", false, "/images/noimage.jpg")}
+                new List<UserDetailsDTO>
+                {
+                    new("2", "YeehaaSelf", "you@you.dk", false, "/images/noimage.jpg")
+                }
             )
         };
 
@@ -156,12 +162,12 @@ public class UserRepositoryTests : DefaultTests
     {
         await _repo.Update("2", new("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
 
-        var expected = user;
+        var expected = User;
         expected.Name = "YeehaaSelf";
         expected.Email = "you@you.dk";
         expected.Image = "images/newimage.jpg";
 
-        var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id == "1");
+        var actual = await Context.Users.FirstOrDefaultAsync(u => u.Id == "1");
 
         expected.Should().BeEquivalentTo(actual);
     }

@@ -1,20 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Security.Principal;
-using CoProject.Shared;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Web;
+﻿namespace CoProject.Server.Tests.Controllers;
 
-namespace CoProject.Server.Tests.Controllers;
-
-public class ProjectControllerTests
+public class ProjectControllerTests : DefaultTests
 {
-    private readonly GenericIdentity _identity;
     private readonly ProjectDetailsDTO _project;
     private readonly Mock<IProjectRepository> _projectRepository;
     private readonly UserDetailsDTO _supervisor;
-    private readonly UserDetailsDTO _user;
     private readonly Mock<IUserRepository> _userRepository;
     private ProjectController _controller;
 
@@ -25,19 +15,10 @@ public class ProjectControllerTests
         _userRepository = new();
         _supervisor = new("123", "Test User", "user@outlook.com", true, "/images/noimage.jpeg");
         _project = new(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
-        _user = new("123", "Test User", "user@outlook.com", false, "/images/noimage.jpeg");
-
-        _identity = new(_user.Name, "");
-        _identity.AddClaim(new(ClaimConstants.Name, _user.Name));
-        _identity.AddClaim(new("emails", _user.Email));
-        _identity.AddClaim(new(ClaimConstants.ObjectId, _user.Id));
-
-        var principal = new GenericPrincipal(_identity, new string[] { });
-        var loggedInUser = new ClaimsPrincipal(principal);
-
+        
         _controller = new(_projectRepository.Object, _userRepository.Object)
         {
-            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = loggedInUser}}
+            ControllerContext = ControllerContext
         };
     }
 
@@ -138,7 +119,7 @@ public class ProjectControllerTests
         // Arrange
         _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
         _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(default(ProjectDetailsDTO));
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
 
         // Act
         var result = await _controller.UpdateProject(_project.Id, new());
@@ -153,7 +134,7 @@ public class ProjectControllerTests
         // Arrange
         _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
         _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
 
         // Act
         var result = await _controller.UpdateProject(_project.Id, new());
@@ -229,7 +210,7 @@ public class ProjectControllerTests
     {
         // Arrange
         var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
 
         // Act
         var result = await _controller.CreateProject(toCreate);
@@ -317,7 +298,7 @@ public class ProjectControllerTests
     public async void AddUserToProject_returns_Forbid_if_usercount_is_bigger_than_max()
     {
         // Arrange
-        var project = new ProjectDetailsDTO(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO> {_user, _supervisor})
+        var project = new ProjectDetailsDTO(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO> {User, _supervisor})
         {
             Max = 1
         };
@@ -356,7 +337,7 @@ public class ProjectControllerTests
     public async void AddUserToProject_returns_Conflict_if_User_is_already_registered()
     {
         // Arrange
-        var project = new ProjectDetailsDTO(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO> {_user});
+        var project = new ProjectDetailsDTO(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO> {User});
         _projectRepository
             .Setup(m => m.Read(1))
             .ReturnsAsync(project);

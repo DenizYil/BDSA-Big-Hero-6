@@ -19,7 +19,7 @@ public class ProjectRepository : IProjectRepository
             Name = create.Name,
             Description = create.Description,
             Created = DateTime.Now,
-            SupervisorId = create.SupervisorId,
+            SupervisorId = create.SupervisorId!,
             Min = create.Min,
             Max = create.Max,
             Tags = await GetTagsFromNames(create.Tags),

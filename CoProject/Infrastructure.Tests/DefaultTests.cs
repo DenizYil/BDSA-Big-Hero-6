@@ -2,11 +2,11 @@ namespace CoProject.Infrastructure.Tests;
 
 public class DefaultTests
 {
-    protected readonly ICoProjectContext _context;
+    protected readonly ICoProjectContext Context;
 
-    protected readonly DateTime now;
-    protected readonly Project project;
-    protected readonly User user;
+    protected readonly DateTime Now;
+    protected readonly Project Project;
+    protected readonly User User;
 
     protected DefaultTests()
     {
@@ -21,10 +21,10 @@ public class DefaultTests
         context.Database.EnsureCreated();
         context.SaveChanges();
 
-        now = DateTime.Now;
+        Now = DateTime.Now;
 
-        _context = context;
-        user = new()
+        Context = context;
+        User = new()
         {
             Id = "1",
             Email = "me@me.dk",
@@ -32,21 +32,21 @@ public class DefaultTests
             Supervisor = true,
             Name = "Myself"
         };
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        Context.Users.Add(User);
+        Context.SaveChanges();
 
-        project = new()
+        Project = new()
         {
             Id = 1,
-            Name = "Karl",
-            Description = "yep hehe smiley",
+            Name = "Default Project",
+            Description = "Default project description for tests",
             SupervisorId = "1",
-            Created = now,
+            Created = Now,
             State = State.Open,
             Tags = new List<Tag>(),
             Users = new List<User>()
         };
-        _context.Projects.Add(project);
-        _context.SaveChanges();
+        Context.Projects.Add(Project);
+        Context.SaveChanges();
     }
 }

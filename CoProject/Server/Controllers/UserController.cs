@@ -1,6 +1,3 @@
-using CoProject.Shared;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Identity.Web;
 using file = System.IO.File;
 
 namespace CoProject.Server.Controllers;
@@ -109,9 +106,9 @@ public class UserController : ControllerBase
             }
 
             var previousImagePath = $"{_env.WebRootPath}{currentUser.Image}";
+            
             if (file.Exists(previousImagePath))
             {
-                // delete it
                 file.Delete(previousImagePath);
             }
 
@@ -124,7 +121,6 @@ public class UserController : ControllerBase
             Console.WriteLine("PATH PATH: " + path);
             body.updatedUser.Image = userImagePath;
         }
-
 
         var status = await _userRepository.Update(idFind.Value, body.updatedUser);
 
