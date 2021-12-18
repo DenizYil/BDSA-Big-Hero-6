@@ -6,7 +6,7 @@ public class UserRepositoryTests : DefaultTests
 
     public UserRepositoryTests()
     {
-        _repo = new UserRepository(_context);
+        _repo = new(_context);
     }
 
     [Fact]
@@ -14,7 +14,7 @@ public class UserRepositoryTests : DefaultTests
     {
         var expected = new UserDetailsDTO("2", "Wee", "wee@gmail.com", true, "/images/noimage.jpeg");
 
-        var actual = await _repo.Create(new UserCreateDTO("2", "Wee", "wee@gmail.com", true));
+        var actual = await _repo.Create(new("2", "Wee", "wee@gmail.com", true));
 
         Assert.Equal(expected, actual);
     }
@@ -22,7 +22,7 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Create_User_Saves_User_To_The_DB()
     {
-        var userDetails = await _repo.Create(new UserCreateDTO("2", "Wee", "wee@gmail.com", false));
+        var userDetails = await _repo.Create(new("2", "Wee", "wee@gmail.com", false));
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userDetails.Id);
 
@@ -80,17 +80,17 @@ public class UserRepositoryTests : DefaultTests
                 1,
                 "Karl",
                 "yep hehe smiley",
-                new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
+                new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
                 State.Open,
                 now,
                 new List<string>(),
-                new List<UserDetailsDTO> {new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg") }
+                new List<UserDetailsDTO> {new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg")}
             )
         };
 
         project.Users = new List<User> {user};
         await _context.SaveChangesAsync();
-        
+
         var actual = await _repo.ReadAllByUser("1");
 
         expected.Should().BeEquivalentTo(actual);
@@ -105,31 +105,31 @@ public class UserRepositoryTests : DefaultTests
             Name = "YeehaaSelf",
             Email = "you@you.dk",
             Supervisor = false,
-            Image = "/images/noimage.jpg" 
+            Image = "/images/noimage.jpg"
         };
 
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
-        
+
         project.Users.Add(user);
         await _context.SaveChangesAsync();
-        
+
         var expected = new List<ProjectDetailsDTO>
         {
             new(
                 1,
                 "Karl",
                 "yep hehe smiley",
-                new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
+                new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"),
                 State.Open,
                 now,
                 new List<string>(),
-                new List<UserDetailsDTO> {new("2", "YeehaaSelf", "you@you.dk", false, "/images/noimage.jpg") }
+                new List<UserDetailsDTO> {new("2", "YeehaaSelf", "you@you.dk", false, "/images/noimage.jpg")}
             )
         };
-        
+
         var actual = await _repo.ReadAllByUser("2");
-        
+
         expected.Should().BeEquivalentTo(actual);
     }
 
@@ -137,7 +137,7 @@ public class UserRepositoryTests : DefaultTests
     public async void Update_Given_Non_Existing_UserUpdateDTO_Returning_Status_NotFound()
     {
         var expected = Status.NotFound;
-        var actual = await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
+        var actual = await _repo.Update("2", new("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
 
         Assert.Equal(expected, actual);
     }
@@ -146,7 +146,7 @@ public class UserRepositoryTests : DefaultTests
     public async void Update_Given_Existing_UserUpdateDTO_Returning_Status_Updated()
     {
         var expected = Status.Updated;
-        var actual = await _repo.Update("1", new UserUpdateDTO("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
+        var actual = await _repo.Update("1", new("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
 
         Assert.Equal(expected, actual);
     }
@@ -154,14 +154,14 @@ public class UserRepositoryTests : DefaultTests
     [Fact]
     public async void Update_actually_updates_User_with_specified_changes()
     {
-        await _repo.Update("2", new UserUpdateDTO("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
+        await _repo.Update("2", new("YeehaaSelf", "you@you.dk") {Image = "images/newimage.jpg"});
 
         var expected = user;
         expected.Name = "YeehaaSelf";
         expected.Email = "you@you.dk";
         expected.Image = "images/newimage.jpg";
 
-        var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id =="1");
+        var actual = await _context.Users.FirstOrDefaultAsync(u => u.Id == "1");
 
         expected.Should().BeEquivalentTo(actual);
     }

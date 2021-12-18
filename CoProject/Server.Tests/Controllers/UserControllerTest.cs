@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using CoProject.Shared;
@@ -14,18 +13,16 @@ namespace CoProject.Server.Tests.Controllers;
 
 public class UserControllerTest
 {
-
-    private readonly Mock<IUserRepository> _repository;
-    private UserController _controller;
-    private readonly UserDetailsDTO _user;
-    private GenericIdentity _identity;
     private readonly Mock<IWebHostEnvironment> _env;
     private readonly Mock<FileStream> _file;
-    private readonly Mock<System.IO.Abstractions.FileBase> _fileWriter;
+    private readonly Mock<FileBase> _fileWriter;
+    private readonly GenericIdentity _identity;
+    private readonly Mock<IUserRepository> _repository;
+    private readonly UserDetailsDTO _user;
+    private UserController _controller;
 
     public UserControllerTest()
     {
-        
         // SETUP
         _env = new();
         _fileWriter = new();
@@ -33,23 +30,24 @@ public class UserControllerTest
         _env.Setup(m => m.WebRootPath).Returns("../../../");
         _repository = new();
 
-        _user = new UserDetailsDTO("12345", "Mikkel", "milb@itu.dk", false, "/images/noimage.jpeg");
+        _user = new("12345", "Mikkel", "milb@itu.dk", false, "/images/noimage.jpeg");
 
-        _identity = new GenericIdentity(_user.Name, "");
-        _identity.AddClaim(new Claim(ClaimConstants.Name, _user.Name));
-        _identity.AddClaim(new Claim("emails", _user.Email));
-        _identity.AddClaim(new Claim(ClaimConstants.ObjectId, _user.Id));
+        _identity = new(_user.Name, "");
+        _identity.AddClaim(new(ClaimConstants.Name, _user.Name));
+        _identity.AddClaim(new("emails", _user.Email));
+        _identity.AddClaim(new(ClaimConstants.ObjectId, _user.Id));
 
 
-        var principal = new GenericPrincipal(_identity, roles: new string[] { });
+        var principal = new GenericPrincipal(_identity, new string[] { });
         var loggedInUser = new ClaimsPrincipal(principal);
 
 
-        _controller = new UserController(_repository.Object, _env.Object)
+        _controller = new(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = loggedInUser } }
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = loggedInUser}}
         };
     }
+
     [Fact]
     public async void GetUser_returns_no_token_found()
     {
@@ -57,9 +55,9 @@ public class UserControllerTest
         // There is no token
 
 
-        _controller = new UserController(_repository.Object, _env.Object)
+        _controller = new(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User =  new ClaimsPrincipal() } }
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
 
         // act
@@ -67,7 +65,6 @@ public class UserControllerTest
 
         // assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
-
     }
 
     [Fact]
@@ -82,9 +79,8 @@ public class UserControllerTest
 
         // assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
-
     }
-    
+
     [Fact]
     public async void GetUser_returns_logged_in_user()
     {
@@ -102,8 +98,10 @@ public class UserControllerTest
     public async void getProjectsByUser_returns_found_projects()
     {
         // Arrange
-        var projects = new List<ProjectDetailsDTO>();
-        projects.Add(new(1, "Project Name", "Project Description", _user, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>()));
+        var projects = new List<ProjectDetailsDTO>
+        {
+            new(1, "Project Name", "Project Description", _user, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>())
+        };
         _repository.Setup(m => m.ReadAllByUser(_user.Id)).ReturnsAsync(projects);
 
         // Act
@@ -119,9 +117,9 @@ public class UserControllerTest
         // Arrange
 
 
-        _controller = new UserController(_repository.Object, _env.Object)
+        _controller = new(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() } }
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
 
         // Act
@@ -134,9 +132,9 @@ public class UserControllerTest
     public async void SignupUser_returns_unauthorized_given_no_token()
     {
         // Arrange
-        _controller = new UserController(_repository.Object, _env.Object)
+        _controller = new(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() } }
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
 
         // act
@@ -144,7 +142,6 @@ public class UserControllerTest
 
         // assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
-
     }
 
     [Fact]
@@ -163,7 +160,6 @@ public class UserControllerTest
         Assert.NotNull(okObjectResult);
         var actual = okObjectResult.Value as UserDetailsDTO;
         Assert.Equal(_user, actual);
-
     }
 
     [Fact]
@@ -176,13 +172,11 @@ public class UserControllerTest
         var response = await _controller.SignupUser();
 
         // assert
-        
+
         var okObjectResult = response.Result as OkObjectResult;
         Assert.NotNull(okObjectResult);
         var actual = okObjectResult.Value as UserDetailsDTO;
         Assert.Equal(_user, actual);
-
-
     }
 
     [Fact]
@@ -191,9 +185,9 @@ public class UserControllerTest
         // Arrange
 
 
-        _controller = new UserController(_repository.Object, _env.Object)
+        _controller = new(_repository.Object, _env.Object)
         {
-            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() } }
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
         var updateBody = new UpdateUserBody();
 
@@ -210,9 +204,9 @@ public class UserControllerTest
     {
         // Arrange
         // Uesr is logged in
-        var updateFile = new UploadedFile() {FileContent = new byte[200], FileName = "image.pdf"};
-        var updateBody = new UpdateUserBody() {file = updateFile};
-        
+        var updateFile = new UploadedFile {FileContent = new byte[200], FileName = "image.pdf"};
+        var updateBody = new UpdateUserBody {file = updateFile};
+
         // act
         var actual = await _controller.UpdateUser(updateBody);
 
@@ -225,27 +219,28 @@ public class UserControllerTest
     {
         // Arrange
         // Uesr is logged in
-        var updateFile = new UploadedFile() {FileContent = new byte[200], FileName = "image.jpg"};
-        var updateBody = new UpdateUserBody() {file = updateFile};
-        
+        var updateFile = new UploadedFile {FileContent = new byte[200], FileName = "image.jpg"};
+        var updateBody = new UpdateUserBody {file = updateFile};
+
         // act
         var actual = await _controller.UpdateUser(updateBody);
 
         // assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
     }
+
     [Fact]
     public async void UpdateUser_returns_ok_given_profile_is_updated()
     {
         // Arrange
         // User is logged in here...
         var updatedUser = new UserUpdateDTO("Jens", "jens@itu.dk");
-        var updateFile = new UploadedFile() {FileContent = new byte[200], FileName = "image.jpg"};
-        var updateBody = new UpdateUserBody() {file = updateFile, updatedUser = updatedUser};
+        var updateFile = new UploadedFile {FileContent = new byte[200], FileName = "image.jpg"};
+        var updateBody = new UpdateUserBody {file = updateFile, updatedUser = updatedUser};
         var userImagePath = $"/userimages/{_user.Id}_{Guid.NewGuid()}.jpg";
         _repository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
         _fileWriter.Setup(m => m.Create(userImagePath)).Returns(() => new FileStream("", FileMode.Create));
-        _file.Setup(m => m.Write(updateFile.FileContent,  0, updateFile.FileContent.Length)).Verifiable();
+        _file.Setup(m => m.Write(updateFile.FileContent, 0, updateFile.FileContent.Length)).Verifiable();
         _repository.Setup(m => m.Update(_user.Id, updatedUser)).ReturnsAsync(Status.Updated);
 
         // act
@@ -261,8 +256,8 @@ public class UserControllerTest
         // Arrange
         // User is logged in here...
         var updatedUser = new UserUpdateDTO("Jens", "jens@itu.dk");
-        var updateFile = new UploadedFile() {FileContent = new byte[200], FileName = "image.jpg"};
-        var updateBody = new UpdateUserBody() {file = updateFile, updatedUser = updatedUser};
+        var updateFile = new UploadedFile {FileContent = new byte[200], FileName = "image.jpg"};
+        var updateBody = new UpdateUserBody {file = updateFile, updatedUser = updatedUser};
         _repository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
         _repository.Setup(m => m.Update(_user.Id, updatedUser)).ReturnsAsync(Status.BadRequest);
 

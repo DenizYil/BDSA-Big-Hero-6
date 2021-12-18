@@ -1,12 +1,11 @@
 using CoProject.Infrastructure.Entities;
-using CoProject.Infrastructure.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoProject.Infrastructure.Repositories;
 
 public class ProjectRepository : IProjectRepository
 {
-    private ICoProjectContext _context;
+    private readonly ICoProjectContext _context;
 
     public ProjectRepository(ICoProjectContext context)
     {
@@ -33,11 +32,11 @@ public class ProjectRepository : IProjectRepository
 
         var supervisor = await _context.Users.FirstAsync(user => user.Id == create.SupervisorId);
 
-        return new ProjectDetailsDTO(
+        return new(
             project.Id,
             project.Name,
             project.Description,
-            new UserDetailsDTO(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor, supervisor.Image),
+            new(supervisor.Id, supervisor.Name, supervisor.Email, supervisor.Supervisor, supervisor.Image),
             project.State,
             project.Created,
             project.Tags.Select(tag => tag.Name).ToList(),
@@ -134,18 +133,18 @@ public class ProjectRepository : IProjectRepository
         {
             project.State = update.State.Value;
         }
-        
+
         if (update.Tags != null)
         {
             foreach (var tag in project.Tags)
             {
                 tag.Projects.Remove(project);
             }
-            
+
             await _context.SaveChangesAsync();
 
             var tags = await GetTagsFromNames(update.Tags);
-            
+
             project.Tags = tags;
         }
 
@@ -155,7 +154,7 @@ public class ProjectRepository : IProjectRepository
             {
                 user.Projects.Remove(project);
             }
-            
+
             await _context.SaveChangesAsync();
 
             project.Users = await _context.Users
@@ -196,7 +195,7 @@ public class ProjectRepository : IProjectRepository
 
             if (tag == null)
             {
-                tag = new Tag {Name = tagName};
+                tag = new() {Name = tagName};
                 await _context.Tags.AddAsync(tag);
                 await _context.SaveChangesAsync();
             }

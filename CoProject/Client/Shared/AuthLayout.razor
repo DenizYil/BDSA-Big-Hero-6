@@ -1,10 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using CoProject.Shared
+@using Microsoft.AspNetCore.Authorization
+@using System.Web
+@inherits LayoutComponentBase
 @inject NavigationManager _navManager
 @inject HttpClient _client
 @inject AuthenticationStateProvider _authenticationStateProvider
-@using Microsoft.AspNetCore.Authorization
-@using System.Web
-@using CoProject.Shared
 @attribute [Authorize]
 
 
@@ -123,10 +123,10 @@
 
         newQueryString.Remove(key);
 
-        string pagePathWithoutQueryString = uri.GetLeftPart(UriPartial.Path);
+        var pagePathWithoutQueryString = uri.GetLeftPart(UriPartial.Path);
 
         return newQueryString.Count > 0
-            ? String.Format("{0}?{1}", pagePathWithoutQueryString, newQueryString)
+            ? string.Format("{0}?{1}", pagePathWithoutQueryString, newQueryString)
             : pagePathWithoutQueryString;
     }
 }

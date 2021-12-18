@@ -10,8 +10,8 @@ namespace CoProject.Server.Controllers;
 [Route("api/user")]
 public class UserController : ControllerBase
 {
-    private readonly IUserRepository _userRepository;
     private readonly IWebHostEnvironment _env;
+    private readonly IUserRepository _userRepository;
 
     public UserController(IUserRepository userRepository, IWebHostEnvironment env)
     {
@@ -76,7 +76,7 @@ public class UserController : ControllerBase
 
         if (user == null)
         {
-            user = await _userRepository.Create(new UserCreateDTO(userId, name, email, false));
+            user = await _userRepository.Create(new(userId, name, email, false));
         }
 
         return Ok(user);
@@ -94,17 +94,16 @@ public class UserController : ControllerBase
             return Unauthorized("You are not logged in");
         }
 
-        if(body.file != null)
+        if (body.file != null)
         {
-
-            if(!body.file.FileName.EndsWith(".jpg") && !body.file.FileName.EndsWith(".png"))
+            if (!body.file.FileName.EndsWith(".jpg") && !body.file.FileName.EndsWith(".png"))
             {
                 return BadRequest("You must only upload .jpg or .png images");
             }
 
             var currentUser = await _userRepository.Read(idFind.Value);
 
-            if(currentUser == null)
+            if (currentUser == null)
             {
                 return Unauthorized("You are not logged in");
             }
@@ -126,7 +125,6 @@ public class UserController : ControllerBase
             body.updatedUser.Image = userImagePath;
         }
 
-        
 
         var status = await _userRepository.Update(idFind.Value, body.updatedUser);
 

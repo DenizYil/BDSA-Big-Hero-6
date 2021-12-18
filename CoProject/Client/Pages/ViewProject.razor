@@ -1,9 +1,9 @@
 @page "/project/{Id}"
+@using CoProject.Shared
 @inject NavigationManager _navManager
 @layout AuthLayout
 @inject HttpClient _client
 @inject IJSRuntime _jsRuntime
-@using CoProject.Shared;
 @inject AuthenticationStateProvider _authenticationStateProvider
 
 
@@ -78,7 +78,7 @@ else
         {
             <div class="oneStudent">
                 <div class="studentLeft">
-                    <img class="studentImg" src="@u.Image" alt="Image Of Student" />
+                    <img class="studentImg" src="@u.Image" alt="Image Of Student"/>
                 </div>
                 <div class="studentRight">
                     <p class="student">@u.Name</p>

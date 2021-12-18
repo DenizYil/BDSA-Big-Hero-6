@@ -6,7 +6,7 @@ public class ProjectRepositoryTests : DefaultTests
 
     public ProjectRepositoryTests()
     {
-        _repo = new ProjectRepository(_context);
+        _repo = new(_context);
     }
 
     [Fact]
@@ -23,10 +23,10 @@ public class ProjectRepositoryTests : DefaultTests
         //Act
         var actual = await _repo.Create(createProject);
 
-        var expected = new ProjectDetailsDTO(2, "CoolProject", "Description for the Coolest Project", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Hidden, actual.Created, new List<string>(), new List<UserDetailsDTO>())
+        var expected = new ProjectDetailsDTO(2, "CoolProject", "Description for the Coolest Project", new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Hidden, actual.Created, new List<string>(), new List<UserDetailsDTO>())
         {
             Min = 1,
-            Max = 4,
+            Max = 4
         };
 
         //Assert
@@ -77,7 +77,7 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Read_Given_Existing_Project_Returns_Project()
     {
         //Arrange
-        var expected = new ProjectDetailsDTO(1, "Karl", "yep hehe smiley", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(), new List<UserDetailsDTO>());
+        var expected = new ProjectDetailsDTO(1, "Karl", "yep hehe smiley", new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(), new List<UserDetailsDTO>());
 
         // Act
         var actual = await _repo.Read(1);
@@ -91,11 +91,11 @@ public class ProjectRepositoryTests : DefaultTests
     {
         var expected = new List<ProjectDetailsDTO>
         {
-            new(1, "Karl", "yep hehe smiley", new UserDetailsDTO("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(), new List<UserDetailsDTO>()),
-            new(2, "Phillip", "This is another cool description", new UserDetailsDTO("2", "Yourself", "you@you.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(),
+            new(1, "Karl", "yep hehe smiley", new("1", "Myself", "me@me.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(), new List<UserDetailsDTO>()),
+            new(2, "Phillip", "This is another cool description", new("2", "Yourself", "you@you.dk", true, "/images/noimage.jpeg"), State.Open, now, new List<string>(),
                 new List<UserDetailsDTO>())
         };
-        
+
         var newUser = user;
         newUser.Id = "2";
         newUser.Email = "you@you.dk";
@@ -124,7 +124,7 @@ public class ProjectRepositoryTests : DefaultTests
     public async void Update_returns_StatusNotFound_for_non_existing_ID()
     {
         var expected = Status.NotFound;
-        var actual = await _repo.Update(2, new ProjectUpdateDTO());
+        var actual = await _repo.Update(2, new());
 
         Assert.Equal(expected, actual);
     }
@@ -134,7 +134,7 @@ public class ProjectRepositoryTests : DefaultTests
     {
         // Arrange
         var expected = Status.Updated;
-        var actual = await _repo.Update(1, new ProjectUpdateDTO());
+        var actual = await _repo.Update(1, new());
 
         Assert.Equal(expected, actual);
     }
@@ -144,10 +144,10 @@ public class ProjectRepositoryTests : DefaultTests
     {
         var otherUser = user;
         otherUser.Id = "3";
-        
+
         await _context.Users.AddAsync(otherUser);
         await _context.SaveChangesAsync();
-        
+
         var projectWithTags = project;
         projectWithTags.Id = 2;
         projectWithTags.Tags = new List<Tag>
@@ -206,22 +206,22 @@ public class ProjectRepositoryTests : DefaultTests
         var users = await _context.Users.Select(u => u.Id).ToListAsync();
         users.Add("2");
 
-        await _repo.Update(1, new ProjectUpdateDTO {Users = users});
+        await _repo.Update(1, new() {Users = users});
 
         var expected = new List<string> {"1", "2"};
         var actual = (await _context.Projects.FirstAsync(p => p.Id == 1)).Users.Select(u => u.Id);
-        
+
         Assert.Equal(expected, actual);
     }
 
     [Fact]
     public async void Update_removes_user_from_project()
     {
-        await _repo.Update(1, new ProjectUpdateDTO {Users = new List<string>()});
+        await _repo.Update(1, new() {Users = new List<string>()});
 
         var expected = new List<string>();
         var actual = (await _context.Projects.FirstAsync()).Users.Select(u => u.Id);
-        
+
         Assert.Equal(expected, actual);
     }
 

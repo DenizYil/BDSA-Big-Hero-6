@@ -5,8 +5,8 @@ public class DefaultTests
     protected readonly ICoProjectContext _context;
 
     protected readonly DateTime now;
-    protected readonly User user;
     protected readonly Project project;
+    protected readonly User user;
 
     protected DefaultTests()
     {
@@ -24,7 +24,7 @@ public class DefaultTests
         now = DateTime.Now;
 
         _context = context;
-        user = new User
+        user = new()
         {
             Id = "1",
             Email = "me@me.dk",
@@ -35,7 +35,7 @@ public class DefaultTests
         _context.Users.Add(user);
         _context.SaveChanges();
 
-        project = new Project
+        project = new()
         {
             Id = 1,
             Name = "Karl",

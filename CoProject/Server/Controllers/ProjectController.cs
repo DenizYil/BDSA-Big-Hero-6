@@ -157,7 +157,7 @@ public class ProjectController : ControllerBase
 
         users.Add(id.Value);
 
-        var updatedStatus = await _projectRepository.Update(projectId, new ProjectUpdateDTO {Users = users});
+        var updatedStatus = await _projectRepository.Update(projectId, new() {Users = users});
 
         if (updatedStatus == Status.Updated)
         {
@@ -196,7 +196,7 @@ public class ProjectController : ControllerBase
             return Conflict("You are not apart of the project");
         }
 
-        var updatedStatus = await _projectRepository.Update(projectId, new ProjectUpdateDTO {Users = users});
+        var updatedStatus = await _projectRepository.Update(projectId, new() {Users = users});
 
         if (updatedStatus == Status.Updated)
         {

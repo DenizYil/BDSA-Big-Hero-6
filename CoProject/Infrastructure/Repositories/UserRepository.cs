@@ -5,7 +5,7 @@ namespace CoProject.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private ICoProjectContext _context;
+    private readonly ICoProjectContext _context;
 
     public UserRepository(ICoProjectContext context)
     {
@@ -46,7 +46,7 @@ public class UserRepository : IUserRepository
                     project.Id,
                     project.Name,
                     project.Description,
-                    new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor, user.Image),
+                    new(user.Id, user.Name, user.Email, user.Supervisor, user.Image),
                     project.State,
                     project.Created,
                     project.Tags.Select(tag => tag.Name).ToList(),
@@ -57,7 +57,7 @@ public class UserRepository : IUserRepository
                     Max = project.Max
                 });
         }
-        
+
         return user.Projects
             .Select(project =>
                 new ProjectDetailsDTO(
@@ -94,7 +94,7 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor, user.Image);
+        return new(user.Id, user.Name, user.Email, user.Supervisor, user.Image);
     }
 
     public async Task<Status> Update(string id, UserUpdateDTO update)

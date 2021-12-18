@@ -10,12 +10,12 @@ public class ProjectForm
     [StringLength(100, ErrorMessage = "Name is too long")]
     public string Name { get; set; }
 
-    [Required] 
+    [Required]
     public string Description { get; set; }
 
     [CustomValidation(typeof(ProjectValidation), nameof(ProjectValidation.ValidateMinMax))]
     public int? Min { get; set; }
-    
+
     [CustomValidation(typeof(ProjectValidation), nameof(ProjectValidation.ValidateMinMax))]
     public int? Max { get; set; }
 

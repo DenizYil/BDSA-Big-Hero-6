@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CoProject.Shared;
+﻿namespace CoProject.Shared;
 
 public class UploadedFile
 {

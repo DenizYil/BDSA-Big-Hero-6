@@ -2,7 +2,6 @@
 @inject NavigationManager _navManager
 @inject AuthenticationStateProvider _authenticationStateProvider
 @inject HttpClient _client
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 <RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded="@OnLogoutSuccess" OnLogInSucceeded="@OnLoginSuccess"/>
 
 @code{
@@ -22,7 +21,7 @@
         var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        if(user != null)
+        if (user != null)
         {
             var response = await _client.PostAsJsonAsync("/api/user", "");
 
@@ -34,7 +33,8 @@
             {
                 _navManager.NavigateTo("/?error=" + response.Content);
             }
-        }else
+        }
+        else
         {
             _navManager.NavigateTo("/?error=Not Logged In!");
         }

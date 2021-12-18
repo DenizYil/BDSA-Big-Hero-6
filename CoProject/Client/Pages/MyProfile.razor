@@ -1,9 +1,8 @@
 ﻿@page "/profile"
-@layout AuthLayout
-@using CoProject.Client.Forms
-@using Microsoft.AspNetCore.Components
-@using CoProject.Shared
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using CoProject.Client.Forms
+@using CoProject.Shared
+@layout AuthLayout
 @inject HttpClient _client
 @inject NavigationManager _navManager
 @inject SignOutSessionStateManager _signOutManager
@@ -103,7 +102,7 @@
 
             <label for="email" class="form-header">Your email <span class="required">*</span></label>
             <InputText type="text" id="email" placeholder="Enter your new e-mail address here" @bind-Value="_form.Email"/>
-            
+
             <label for="email" class="form-header">Type<span class="required">*</span></label>
             <button class="form-btn @(_form.Supervisor ? "supervisor" : "student")" @onclick="() => _form.Supervisor = !_form.Supervisor" type="button">@(_form.Supervisor ? "Supervisor" : "Student")</button>
 
@@ -114,7 +113,7 @@
 </div>
 
 @code {
-    private ProfileForm _form = new();
+    private readonly ProfileForm _form = new();
     private UserDetailsDTO? _user;
     private IBrowserFile? _selectedFile;
     private string _profileImage = "/images/noimage.jpeg";
@@ -137,7 +136,7 @@
             _navManager.NavigateTo("/projects?error=Your profile could not be loaded, please try again later");
             return;
         }
-        
+
         var user = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
 
         if (user != null)
@@ -174,7 +173,7 @@
                     FileName = _selectedFile.Name,
                     FileContent = ms.ToArray()
                 };
-                
+
                 updateBody.file = fileUploaded;
                 ms.Close();
             }
@@ -185,7 +184,7 @@
             }
         }
 
-        updateBody.updatedUser = new UserUpdateDTO(_form.Name, _form.Email)
+        updateBody.updatedUser = new(_form.Name, _form.Email)
         {
             Supervisor = _form.Supervisor
         };
@@ -199,7 +198,7 @@
         }
 
         var user = UsedLayout!.loggedInUser;
-        UsedLayout.loggedInUser = new UserDetailsDTO(user.Id, user.Name, user.Email, updateBody.updatedUser.Supervisor.Value, user.Image);
+        UsedLayout.loggedInUser = new(user.Id, user.Name, user.Email, updateBody.updatedUser.Supervisor.Value, user.Image);
 
         if (_selectedFile != null)
         {
@@ -207,7 +206,8 @@
             await _selectedFile.OpenReadStream(2048000).ReadAsync(bytes);
             _profileImage = $"data:{_selectedFile.ContentType};base64,{Convert.ToBase64String(bytes)}";
         }
-        
+
         _navManager.NavigateTo($"/profile?success={await response.Content.ReadAsStringAsync()}");
     }
+
 }

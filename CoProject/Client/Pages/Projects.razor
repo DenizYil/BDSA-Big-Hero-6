@@ -1,6 +1,6 @@
 ﻿@page "/projects"
-@layout AuthLayout
 @using CoProject.Shared
+@layout AuthLayout
 
 @inject HttpClient _client
 
@@ -12,7 +12,7 @@
 <h2>Below you can see a list of available projects.</h2>
 
 <div class="search">
-    <input @oninput="@((i) => _search = i.Value.ToString().ToLower().Trim())" id="search-bar" placeholder="Search for project name or project tag" name="searchinput">
+    <input @oninput="@(i => _search = i.Value.ToString().ToLower().Trim())" id="search-bar" placeholder="Search for project name or project tag" name="searchinput">
     <img class="searchIcon" src="/images/searchicon.svg" alt="Search icon">
 </div>
 
@@ -65,7 +65,7 @@ else
         return _projects!.Where(p =>
             p.Name.ToLower().Trim().Contains(_search) ||
             p.Tags.Any(t => t.ToLower().Trim().Contains(_search))
-        );
+            );
     }
 
 }

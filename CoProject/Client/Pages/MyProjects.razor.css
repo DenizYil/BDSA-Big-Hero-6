@@ -1,72 +1,72 @@
 h1 {
-  font-size: xx-large;
-  color: #0b4f6c;
-  text-align: center;
+    font-size: xx-large;
+    color: #0b4f6c;
+    text-align: center;
 }
 
 h2 {
-  font-size: large;
-  color: #0b4f6c;
-  text-align: center;
-  margin-top: 15px;
+    font-size: large;
+    color: #0b4f6c;
+    text-align: center;
+    margin-top: 15px;
 }
 
 .search {
-  width: 100%;
-  margin-top: 15px;
-  position: relative;
-  margin-bottom: 20px;
+    width: 100%;
+    margin-top: 15px;
+    position: relative;
+    margin-bottom: 20px;
 }
 
 .search .searchIcon {
-  position: absolute;
-  right: 10px;
-  top: 10px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
 }
 
 #search-bar {
-  width: 100%;
-  padding: 12px;
-  box-sizing: border-box;
-  border-radius: 10px;
-  border: 1px solid #707070;
+    width: 100%;
+    padding: 12px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    border: 1px solid #707070;
 }
 
 .projects {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
-  flex-direction: column;
-  padding-bottom: 55px;
-  align-content: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+    padding-bottom: 55px;
+    align-content: stretch;
 }
 
 .createProject {
-  position: fixed;
-  bottom: 10px;
-  right: 0;
-  z-index: 100;
-  width: 100%;
+    position: fixed;
+    bottom: 10px;
+    right: 0;
+    z-index: 100;
+    width: 100%;
 }
 
 .createProject a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 .createProject button {
-  background-color: #0b4f6c;
-  color: white;
-  width: 95%;
-  box-sizing: border-box;
-  border-radius: 10px;
-  border: 1px solid #707070;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 10px;
-  font-size: 20px;
-  display: block;
-  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.8);
+    background-color: #0b4f6c;
+    color: white;
+    width: 95%;
+    box-sizing: border-box;
+    border-radius: 10px;
+    border: 1px solid #707070;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    font-size: 20px;
+    display: block;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.8);
 }
 
 

@@ -8,13 +8,13 @@ namespace CoProject.Infrastructure;
 
 public class CoProjectContext : DbContext, ICoProjectContext
 {
-    public DbSet<Project> Projects { get; set; }
-    public DbSet<Tag> Tags { get; set; }
-    public DbSet<User> Users { get; set; }
-
     public CoProjectContext(DbContextOptions options) : base(options)
     {
     }
+
+    public DbSet<Project> Projects { get; set; }
+    public DbSet<Tag> Tags { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

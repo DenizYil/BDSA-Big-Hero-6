@@ -17,7 +17,7 @@ public class Project
     {
         var tags = string.Join(", ", Tags.Select(tag => tag.Name).ToList());
         var users = string.Join(", ", Users.Select(user => user.Email).ToList());
-        
+
         return $"Id={Id} \n" +
                $"Name={Name} \n" +
                $"Description={Description} \n" +
