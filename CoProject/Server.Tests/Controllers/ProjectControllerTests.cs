@@ -268,7 +268,7 @@ public class ProjectControllerTests : DefaultTests
     public async void AddUserToProject_given_non_existing_id_returns_not_found()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(1)).Returns(Task.FromResult<ProjectDetailsDTO>(null));
+        _projectRepository.Setup(m => m.Read(1)).ReturnsAsync(default(ProjectDetailsDTO));
         _projectRepository.Setup(m => m.Update(1, new())).ReturnsAsync(Status.NotFound);
 
         // Act
@@ -373,7 +373,7 @@ public class ProjectControllerTests : DefaultTests
     public async void RemoveUserFromProject_given_non_existing_id_returns_not_found()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(1)).Returns(Task.FromResult<ProjectDetailsDTO>(null));
+        _projectRepository.Setup(m => m.Read(1)).ReturnsAsync(default(ProjectDetailsDTO));
         _projectRepository.Setup(m => m.Update(1, new())).ReturnsAsync(Status.NotFound);
 
         // Act

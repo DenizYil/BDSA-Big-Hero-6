@@ -131,7 +131,7 @@ public class UserControllerTest : DefaultTests
         // assert
         var okObjectResult = response.Result as OkObjectResult;
         Assert.NotNull(okObjectResult);
-        var actual = okObjectResult.Value as UserDetailsDTO;
+        var actual = okObjectResult!.Value as UserDetailsDTO;
         Assert.Equal(User, actual);
     }
 
@@ -148,7 +148,7 @@ public class UserControllerTest : DefaultTests
 
         var okObjectResult = response.Result as OkObjectResult;
         Assert.NotNull(okObjectResult);
-        var actual = okObjectResult.Value as UserDetailsDTO;
+        var actual = okObjectResult!.Value as UserDetailsDTO;
         Assert.Equal(User, actual);
     }
 
