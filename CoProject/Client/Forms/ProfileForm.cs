@@ -13,4 +13,7 @@ public class ProfileForm
     [EmailAddress]
     [StringLength(100, ErrorMessage = "Email is too long")]
     public string Email { get; set; }
+    
+    [Required]
+    public bool Supervisor { get; set; }
 }

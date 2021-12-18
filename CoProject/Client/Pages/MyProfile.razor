@@ -20,22 +20,7 @@
         border-radius: 10px;
         border: 1px solid gray;
     }
-
-    button[type='submit'] {
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: 20px;
-        margin-bottom: 30px;
-        display: block;
-        background-color: #0b4f6c;
-        color: white;
-        font-size: 20px;
-        border: #707070;
-        border-radius: 10px;
-        height: 50px;
-        width: 90%;
-    }
-
+    
     input[type="file"] {
         text-align: center;
         border: 1px solid grey;
@@ -46,6 +31,48 @@
         margin-top: 10px;
         display: block;
     }
+    
+    button {
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 20px;
+        margin-bottom: 30px;
+        display: block;
+        background-color: #0b4f6c;
+        color: white;
+        font-size: 20px;
+        border: #707070;
+        border-radius: 10px;
+    }
+
+    button[type='submit'] {
+        height: 50px;
+        width: 90%;
+    }
+    
+    .form-btn {
+        display: inline;
+        margin-bottom: 0;
+        margin-top: 5px;
+        font-size: 15px;
+        
+        height: 30px;
+        width: 20%;
+    }
+
+    .logout-btn {
+        padding: 10px;
+        width: 20%;
+    }
+    
+    .student {
+        background-color: darkgreen;
+    }
+    
+    .supervisor {
+        background-color: darkred;
+    }
+    
 </style>
 
 
@@ -65,8 +92,8 @@
         <EditForm Model="@_form" OnValidSubmit="@OnSubmit">
             <div class="profileImageContainer">
                 <div class="innerProfileImage">
-                    <img alt="profile image of user" src="@profileImage" />
-                    <InputFile OnChange="OnInputFileChange" />
+                    <img alt="profile image of user" src="@_profileImage"/>
+                    <InputFile OnChange="OnInputFileChange"/>
                 </div>
             </div>
 
@@ -76,9 +103,12 @@
 
             <label for="email" class="form-header">Your email <span class="required">*</span></label>
             <InputText type="text" id="email" placeholder="Enter your new e-mail address here" @bind-Value="_form.Email"/>
+            
+            <label for="email" class="form-header">Type<span class="required">*</span></label>
+            <button class="form-btn @(_form.Supervisor ? "supervisor" : "student")" @onclick="() => _form.Supervisor = !_form.Supervisor" type="button">@(_form.Supervisor ? "Supervisor" : "Student")</button>
 
             <button type="submit">Update profile</button>
-            <button class="logoutbutton" type="button" @onclick="BeginLogout">Log out</button>
+            <button class="logout-btn" type="button" @onclick="BeginLogout">Log out</button>
         </EditForm>
     }
 </div>
@@ -86,11 +116,11 @@
 @code {
     private ProfileForm _form = new();
     private UserDetailsDTO? _user;
-    private IBrowserFile? selectedFile;
-    private string profileImage = "/images/noimage.jpeg";
+    private IBrowserFile? _selectedFile;
+    private string _profileImage = "/images/noimage.jpeg";
 
     [CascadingParameter]
-    public AuthLayout? usedLayout { get; set; }
+    public AuthLayout? UsedLayout { get; set; }
 
     private async Task BeginLogout(MouseEventArgs args)
     {
@@ -100,77 +130,84 @@
 
     protected override async Task OnInitializedAsync()
     {
-
         var response = await _client.GetAsync("/api/user");
-        if (response.IsSuccessStatusCode)
-        {
-            var userFind = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
 
-            if (userFind != null)
-            {
-                _user = userFind;
-                profileImage = _user.Image;
-                _form.Name = _user.Name;
-                _form.Email = _user.Email;
-            }
+        if (!response.IsSuccessStatusCode)
+        {
+            _navManager.NavigateTo("/projects?error=Your profile could not be loaded, please try again later");
+            return;
+        }
+        
+        var user = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
+
+        if (user != null)
+        {
+            _user = user;
+            _profileImage = _user.Image;
+            _form.Name = _user.Name;
+            _form.Email = _user.Email;
+            _form.Supervisor = _user.Supervisor;
         }
     }
 
-    private void OnInputFileChange (InputFileChangeEventArgs e)
+    private void OnInputFileChange(InputFileChangeEventArgs e)
     {
-        selectedFile = e.GetMultipleFiles()[0];
-        this.StateHasChanged();
+        _selectedFile = e.GetMultipleFiles()[0];
+        StateHasChanged();
     }
 
     private async void OnSubmit()
     {
         var updateBody = new UpdateUserBody();
-        if (selectedFile != null)
+
+        if (_selectedFile != null)
         {
             try
             {
-
-                var maxFileSize = 2048000;
-                Stream stream = selectedFile.OpenReadStream(maxFileSize);
-                MemoryStream ms = new MemoryStream();
+                var stream = _selectedFile.OpenReadStream(2048000);
+                var ms = new MemoryStream();
                 await stream.CopyToAsync(ms);
                 stream.Close();
 
-                UploadedFile fileUploaded = new UploadedFile();
-                fileUploaded.FileName = selectedFile.Name;
-                fileUploaded.FileContent = ms.ToArray();
-
-
+                var fileUploaded = new UploadedFile
+                {
+                    FileName = _selectedFile.Name,
+                    FileContent = ms.ToArray()
+                };
+                
                 updateBody.file = fileUploaded;
-
                 ms.Close();
             }
-            catch(Exception e)
+            catch (Exception)
             {
-                _navManager.NavigateTo($"/profile?error=You can max upload 2MB images.");
+                _navManager.NavigateTo("/profile?error=You can max upload 2MB images.");
                 return;
             }
-
         }
 
-        updateBody.updatedUser = new UserUpdateDTO(_form.Name, _form.Email);
+        updateBody.updatedUser = new UserUpdateDTO(_form.Name, _form.Email)
+        {
+            Supervisor = _form.Supervisor
+        };
 
         var response = await _client.PutAsJsonAsync("api/user", updateBody);
 
-        Console.WriteLine("STATUS CODE: " + response.StatusCode);
         if (!response.IsSuccessStatusCode)
         {
             _navManager.NavigateTo($"/profile?error={await response.Content.ReadAsStringAsync()}");
             return;
         }
 
-        if(selectedFile != null)
+        var user = UsedLayout!.loggedInUser;
+        UsedLayout.loggedInUser = new UserDetailsDTO(user.Id, user.Name, user.Email, updateBody.updatedUser.Supervisor.Value, user.Image);
+
+        if (_selectedFile != null)
         {
-            var bytes = new byte[selectedFile.Size];
-            await selectedFile.OpenReadStream(2048000).ReadAsync(bytes);
-            profileImage = $"data:{selectedFile.ContentType};base64,{Convert.ToBase64String(bytes)}";
+            var bytes = new byte[_selectedFile.Size];
+            await _selectedFile.OpenReadStream(2048000).ReadAsync(bytes);
+            _profileImage = $"data:{_selectedFile.ContentType};base64,{Convert.ToBase64String(bytes)}";
         }
+        
         _navManager.NavigateTo($"/profile?success={await response.Content.ReadAsStringAsync()}");
     }
-
 }
