@@ -30,10 +30,11 @@
         @if (loggedInUser != null)
         {
             @Body
-        } else
-                {
-                <LoadingComponent></LoadingComponent>
-                }
+        }
+        else
+        {
+            <LoadingComponent></LoadingComponent>
+        }
     </div>
 </CascadingValue>
 
@@ -41,7 +42,7 @@
 @code
 {
 
-    public UserDetailsDTO? loggedInUser = null;
+    public UserDetailsDTO? loggedInUser;
 
     public string? SuccessMessage = "";
     public string? ErrorMessage = "";
@@ -55,7 +56,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-
         try
         {
             var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
