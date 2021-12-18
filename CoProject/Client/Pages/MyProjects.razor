@@ -1,6 +1,5 @@
 ﻿@page "/myprojects"
 @layout AuthLayout
-@using CoProject.Client.Shared;
 @using CoProject.Shared;
 
 @inject HttpClient _client
@@ -8,11 +7,11 @@
 
 <PageTitle>Projects - CoProject</PageTitle>
 <h1>My Projects</h1>
-<hr />
+<hr/>
 <h2>Below you can see a list of available projects.</h2>
 
 <div class="search">
-    <input @oninput="@((i) => search = i.Value.ToString().ToLower().Trim())" id="search-bar" placeholder="Search..." name="searchinput">
+    <input @oninput="@((i) => _search = i.Value.ToString().ToLower().Trim())" id="search-bar" placeholder="Search for project name or project tag" name="searchinput">
     <img class="searchIcon" src="/images/searchicon.svg" alt="Search icon">
 </div>
 
@@ -30,16 +29,15 @@ else
     {
         <div class="projects">
 
-            @foreach (var project in (search.Length > 0 && search != null ? _projects.Where(p => p.Name.ToLower().Trim().Contains(search.ToLower().Trim()) || p.Tags.Select(t => t.ToLower().Trim()).Contains(search.ToLower().Trim())) : _projects))
+            @foreach (var project in _search.Any() ? GetProjects() : _projects)
             {
-                <ProjectCard Project="@project" />
+                <ProjectCard Project="@project"/>
             }
         </div>
     }
 }
 
-@if (usedLayout != null && usedLayout.loggedInUser != null && usedLayout.loggedInUser.Supervisor == true)
-
+@if (UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor)
 {
     <div class="createProject">
         <a href="/createproject">
@@ -52,14 +50,22 @@ else
 @code {
     private IEnumerable<ProjectDetailsDTO>? _projects;
 
-    private string search = "";
+    private string _search = "";
 
     [CascadingParameter]
-    public AuthLayout? usedLayout { get; set; }
+    public AuthLayout UsedLayout { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
         _projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/user/projects");
+    }
+
+    private IEnumerable<ProjectDetailsDTO> GetProjects()
+    {
+        return _projects!.Where(p =>
+            p.Name.ToLower().Trim().Contains(_search) ||
+            p.Tags.Any(t => t.ToLower().Trim().Contains(_search))
+        );
     }
 
 }
