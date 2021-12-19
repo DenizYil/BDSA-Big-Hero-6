@@ -14,7 +14,7 @@ public class ProjectControllerTests : DefaultTests
         _userRepository = new();
         _supervisor = new("123", "Test User", "user@outlook.com", true, "/images/noimage.jpeg");
         _project = new(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
-        
+
         _controller = new(_projectRepository.Object, _userRepository.Object)
         {
             ControllerContext = ControllerContext
@@ -26,7 +26,9 @@ public class ProjectControllerTests : DefaultTests
     {
         // Arrange
         var expected = Array.Empty<ProjectDetailsDTO>();
-        _projectRepository.Setup(m => m.ReadAll()).ReturnsAsync(expected);
+        _projectRepository
+            .Setup(m => m.ReadAll())
+            .ReturnsAsync(expected);
 
         // Act
         var actual = await _controller.GetProjects();
@@ -39,7 +41,9 @@ public class ProjectControllerTests : DefaultTests
     public async Task GetProject_returns_project_given_id()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
 
         // Act
         var actual = await _controller.GetProject(_project.Id);
@@ -53,7 +57,9 @@ public class ProjectControllerTests : DefaultTests
     public async Task GetProject_returns_NotFoundObject_given_nonexistent_id()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(100)).ReturnsAsync(default(ProjectDetailsDTO));
+        _projectRepository
+            .Setup(m => m.Read(100))
+            .ReturnsAsync(default(ProjectDetailsDTO));
 
         // Act
         var response = await _controller.GetProject(100);
@@ -67,9 +73,15 @@ public class ProjectControllerTests : DefaultTests
     public async Task UpdateProject_given_existing_id_updates_project_and_returns_Ok()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _userRepository.Setup(m => m.Read(_supervisor.Id)).ReturnsAsync(_supervisor);
+        _projectRepository
+            .Setup(m => m.Update(_project.Id, new()))
+            .ReturnsAsync(Status.Updated);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+        _userRepository
+            .Setup(m => m.Read(_supervisor.Id))
+            .ReturnsAsync(_supervisor);
 
         // Act
         var response = await _controller.UpdateProject(_project.Id, new());
@@ -103,7 +115,9 @@ public class ProjectControllerTests : DefaultTests
         {
             ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
-        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
+        _projectRepository
+            .Setup(m => m.Update(_project.Id, new()))
+            .ReturnsAsync(Status.Updated);
 
         // Act
         var result = await _controller.UpdateProject(_project.Id, new());
@@ -116,9 +130,15 @@ public class ProjectControllerTests : DefaultTests
     public async void UpdateProject_returns_NotFound_if_project_is_null()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(default(ProjectDetailsDTO));
-        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
+        _projectRepository
+            .Setup(m => m.Update(_project.Id, new()))
+            .ReturnsAsync(Status.Updated);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(default(ProjectDetailsDTO));
+        _userRepository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(User);
 
         // Act
         var result = await _controller.UpdateProject(_project.Id, new());
@@ -131,9 +151,15 @@ public class ProjectControllerTests : DefaultTests
     public async void UpdateProject_returns_Forbid_if_user_is_not_supervisor()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
+        _projectRepository
+            .Setup(m => m.Update(_project.Id, new()))
+            .ReturnsAsync(Status.Updated);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+        _userRepository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(User);
 
         // Act
         var result = await _controller.UpdateProject(_project.Id, new());
@@ -146,9 +172,15 @@ public class ProjectControllerTests : DefaultTests
     public async void UpdateProject_returns_BadRequest_if_project_is_not_updated_properly()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.BadRequest);
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _userRepository.Setup(m => m.Read(_supervisor.Id)).ReturnsAsync(_supervisor);
+        _projectRepository
+            .Setup(m => m.Update(_project.Id, new()))
+            .ReturnsAsync(Status.BadRequest);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+        _userRepository
+            .Setup(m => m.Read(_supervisor.Id))
+            .ReturnsAsync(_supervisor);
 
         // Act
         var result = await _controller.UpdateProject(_project.Id, new());
@@ -162,8 +194,12 @@ public class ProjectControllerTests : DefaultTests
     {
         // Arrange
         var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
-        _projectRepository.Setup(m => m.Create(toCreate)).ReturnsAsync(_project);
-        _userRepository.Setup(m => m.Read(_supervisor.Id)).ReturnsAsync(_supervisor);
+        _projectRepository
+            .Setup(m => m.Create(toCreate))
+            .ReturnsAsync(_project);
+        _userRepository
+            .Setup(m => m.Read(_supervisor.Id))
+            .ReturnsAsync(_supervisor);
 
         // Act
         var result = await _controller.CreateProject(toCreate);
@@ -181,6 +217,7 @@ public class ProjectControllerTests : DefaultTests
         {
             ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
+
         var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
 
         // Act
@@ -195,7 +232,9 @@ public class ProjectControllerTests : DefaultTests
     {
         // Arrange
         var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
-        _userRepository.Setup(m => m.Read(_supervisor.Id)).ReturnsAsync(default(UserDetailsDTO));
+        _userRepository
+            .Setup(m => m.Read(_supervisor.Id))
+            .ReturnsAsync(default(UserDetailsDTO));
 
         // Act
         var result = await _controller.CreateProject(toCreate);
@@ -210,7 +249,9 @@ public class ProjectControllerTests : DefaultTests
         // Arrange
         var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
 
-        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
+        _userRepository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(User);
 
         // Act
         var result = await _controller.CreateProject(toCreate);
@@ -225,7 +266,9 @@ public class ProjectControllerTests : DefaultTests
     public async void DeleteProject_deletes_a_projects_given_id_and_returns_NoContent()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Delete(_project.Id)).ReturnsAsync(Status.Deleted);
+        _projectRepository
+            .Setup(m => m.Delete(_project.Id))
+            .ReturnsAsync(Status.Deleted);
 
         // Act
         var response = await _controller.DeleteProject(_project.Id);
@@ -239,7 +282,9 @@ public class ProjectControllerTests : DefaultTests
     public async void DeleteProject_returns_NotFound_given_nonexistent_id()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Delete(10)).ReturnsAsync(Status.NotFound);
+        _projectRepository
+            .Setup(m => m.Delete(10))
+            .ReturnsAsync(Status.NotFound);
 
         // Act
         var response = await _controller.DeleteProject(10);
@@ -257,7 +302,7 @@ public class ProjectControllerTests : DefaultTests
             .ReturnsAsync(_project);
 
         _projectRepository
-            .Setup(m => m.Update(_project.Id, new ProjectUpdateDTO()))
+            .Setup(m => m.Update(_project.Id, new()))
             .ReturnsAsync(Status.Updated);
 
         // Act
@@ -271,8 +316,12 @@ public class ProjectControllerTests : DefaultTests
     public async void AddUserToProject_given_non_existing_id_returns_NotFound()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(1)).ReturnsAsync(default(ProjectDetailsDTO));
-        _projectRepository.Setup(m => m.Update(1, new())).ReturnsAsync(Status.NotFound);
+        _projectRepository
+            .Setup(m => m.Read(1))
+            .ReturnsAsync(default(ProjectDetailsDTO));
+        _projectRepository
+            .Setup(m => m.Update(1, new()))
+            .ReturnsAsync(Status.NotFound);
 
         // Act
         var response = await _controller.AddUserToProject(_project.Id);
@@ -300,7 +349,7 @@ public class ProjectControllerTests : DefaultTests
     [Fact]
     public async void AddUserToProject_returns_Forbid_if_user_count_is_bigger_than_max()
     {
-        var project = new ProjectDetailsDTO(_project.Id, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>() {_user, _supervisor})
+        var project = new ProjectDetailsDTO(_project.Id, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO> {User, _supervisor})
         {
             Max = 1
         };
@@ -339,8 +388,8 @@ public class ProjectControllerTests : DefaultTests
     public async void AddUserToProject_returns_Conflict_if_User_is_already_registered()
     {
         // Arrange
-        var project = new ProjectDetailsDTO(_project.Id, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>() {_user});
-        
+        var project = new ProjectDetailsDTO(_project.Id, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO> {User});
+
         _projectRepository
             .Setup(m => m.Read(_project.Id))
             .ReturnsAsync(project);
@@ -362,7 +411,7 @@ public class ProjectControllerTests : DefaultTests
             .ReturnsAsync(_project);
 
         _projectRepository
-            .Setup(m => m.Update(_project.Id, new ProjectUpdateDTO()))
+            .Setup(m => m.Update(_project.Id, new()))
             .ReturnsAsync(Status.Updated);
 
         // Act
@@ -377,7 +426,7 @@ public class ProjectControllerTests : DefaultTests
     {
         // Arrange
         _projectRepository
-            .Setup(m => m.Update(_project.Id, new ProjectUpdateDTO()))
+            .Setup(m => m.Update(_project.Id, new()))
             .ReturnsAsync(Status.BadRequest);
 
         _projectRepository
@@ -434,6 +483,11 @@ public class ProjectControllerTests : DefaultTests
     public async void RemoveUserFromProject_given_non_existing_UserID_returns_Unauthorized()
     {
         //Arrange
+        _controller = new(_projectRepository.Object, _userRepository.Object)
+        {
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
+        };
+
         _projectRepository
             .Setup(m => m.Read(_project.Id))
             .ReturnsAsync(_project);
@@ -450,12 +504,12 @@ public class ProjectControllerTests : DefaultTests
     {
         // Arrange
         _projectRepository
-            .Setup(m => m.Update(_project.Id, new ProjectUpdateDTO()))
+            .Setup(m => m.Update(_project.Id, new()))
             .ReturnsAsync(Status.BadRequest);
 
         _projectRepository
             .Setup(m => m.Read(_project.Id))
-            .ReturnsAsync(_projectWithUser);
+            .ReturnsAsync(new ProjectDetailsDTO(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO> {User}));
 
         // Act
         var result = await _controller.RemoveUserFromProject(_project.Id);
@@ -468,6 +522,11 @@ public class ProjectControllerTests : DefaultTests
     public async void DeleteProject_returns_Unauthorized_if_User_is_not_logged_in()
     {
         // Arrange
+        _controller = new(_projectRepository.Object, _userRepository.Object)
+        {
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
+        };
+
         _projectRepository
             .Setup(m => m.Read(_project.Id))
             .ReturnsAsync(_project);
@@ -483,8 +542,12 @@ public class ProjectControllerTests : DefaultTests
     public async void DeleteProject_returns_Forbid_if_user_is_not_supervisor()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+        _userRepository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(User);
 
         // Act
         var response = await _controller.DeleteProject(_project.Id);
@@ -497,8 +560,12 @@ public class ProjectControllerTests : DefaultTests
     public async void DeleteProject_returns_NotFound_if_Project_is_null()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(default(ProjectDetailsDTO));
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_supervisor);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(default(ProjectDetailsDTO));
+        _userRepository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(_supervisor);
 
         // Act
         var response = await _controller.DeleteProject(_project.Id);
@@ -511,8 +578,12 @@ public class ProjectControllerTests : DefaultTests
     public async void DeleteProject_returns_Forbid_if_user_is_not_supervisor_of_this_project()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_supervisorWithID2);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+        _userRepository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(new UserDetailsDTO("9999", "Test User", "user@outlook.com", true, "/images/noimage.jpeg"));
 
         // Act
         var response = await _controller.DeleteProject(_project.Id);
@@ -525,9 +596,15 @@ public class ProjectControllerTests : DefaultTests
     public async void DeleteProject_returns_Ok_if_Project_is_Deleted_successfully()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _projectRepository.Setup(m => m.Delete(_project.Id)).ReturnsAsync(Status.Deleted);
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_supervisor);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+        _projectRepository
+            .Setup(m => m.Delete(_project.Id))
+            .ReturnsAsync(Status.Deleted);
+        _userRepository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(_supervisor);
 
         // Act
         var response = await _controller.DeleteProject(_project.Id);
@@ -540,9 +617,15 @@ public class ProjectControllerTests : DefaultTests
     public async void DeleteProject_returns_BadRequest_if_Project_is_not_Deleted_successfully()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _projectRepository.Setup(m => m.Delete(_project.Id)).ReturnsAsync(Status.NotFound);
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_supervisor);
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+        _projectRepository
+            .Setup(m => m.Delete(_project.Id))
+            .ReturnsAsync(Status.NotFound);
+        _userRepository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(_supervisor);
 
         // Act
         var response = await _controller.DeleteProject(_project.Id);
