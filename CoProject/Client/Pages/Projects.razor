@@ -65,7 +65,7 @@ else
         return _projects!.Where(p =>
             p.Name.ToLower().Trim().Contains(_search) ||
             p.Tags.Any(t => t.ToLower().Trim().Contains(_search))
-            );
+        );
     }
 
 }

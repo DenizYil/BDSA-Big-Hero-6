@@ -31,6 +31,7 @@ public class UserRepository : IUserRepository
     {
         var user = await _context.Users
             .Include(user => user.Projects)
+            .ThenInclude(project => project.Tags)
             .FirstOrDefaultAsync(user => user.Id == id);
 
         if (user == null)
