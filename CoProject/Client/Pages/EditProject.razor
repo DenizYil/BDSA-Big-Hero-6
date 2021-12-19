@@ -115,10 +115,10 @@
     public string? Id { get; set; }
 
     [CascadingParameter]
-    public AuthLayout? usedLayout { get; set; }
+    public AuthLayout UsedLayout { get; set; } = null!;
 
     private readonly ProjectForm _form = new();
-    private ProjectDetailsDTO _project;
+    private ProjectDetailsDTO? _project;
 
     protected override async Task OnInitializedAsync()
     {
@@ -138,18 +138,13 @@
             return;
         }
 
-        if (usedLayout.loggedInUser.Id != _project.Supervisor.Id)
+        if (UsedLayout.LoggedInUser?.Id != _project.Supervisor.Id)
         {
             _navManager.NavigateTo($"/projects?error={await response.Content.ReadAsStringAsync()}");
             return;
         }
 
-        var tags = "";
-
-        foreach (var tag in _project!.Tags)
-        {
-            tags += tag + ", ";
-        }
+        var tags = _project!.Tags.Aggregate("", (current, tag) => current + tag + ", ");
 
         tags = tags.TrimEnd(',', ' ');
 
@@ -174,9 +169,9 @@
             Description = _form.Description,
             Max = _form.Max,
             Min = _form.Min,
-            Tags = _form.Tags.Split(","),
+            Tags = _form.Tags!.Split(","),
             State = _form.State,
-            Users = _project.Users.Select(e => e.Id).ToList()
+            Users = _project!.Users.Select(e => e.Id).ToList()
         };
         var response = await _client.PutAsJsonAsync($"api/projects/{Id}", updateProject);
 

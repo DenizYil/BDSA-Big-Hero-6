@@ -12,7 +12,7 @@
 <h2>Below you can see a list of available projects.</h2>
 
 <div class="search">
-    <input @oninput="@(i => _search = i.Value.ToString().ToLower().Trim())" id="search-bar" placeholder="Search for project name or project tag" name="searchinput">
+    <input @oninput="@(i => _search = i.Value!.ToString()!.ToLower().Trim())" id="search-bar" placeholder="Search for project name or project tag" name="searchinput">
     <img class="searchIcon" src="/images/searchicon.svg" alt="Search icon">
 </div>
 
@@ -37,7 +37,7 @@ else
     }
 }
 
-@if (UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor)
+@if (UsedLayout.LoggedInUser != null && UsedLayout.LoggedInUser.Supervisor)
 {
     <div class="createProject">
         <a href="/createproject">

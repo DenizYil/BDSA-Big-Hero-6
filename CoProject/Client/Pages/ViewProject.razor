@@ -37,7 +37,7 @@ else
         }
     </div>
 
-    @if (UsedLayout != null && UsedLayout.loggedInUser != null && !UsedLayout.loggedInUser.Supervisor)
+    @if (UsedLayout != null && UsedLayout.LoggedInUser != null && !UsedLayout.LoggedInUser.Supervisor)
     {
         <button id="joinProject">
 
@@ -53,7 +53,7 @@ else
         </button>
     }
 
-    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor && UsedLayout.loggedInUser.Id == _project.Supervisor.Id)
+    @if (UsedLayout != null && UsedLayout.LoggedInUser != null && UsedLayout.LoggedInUser.Supervisor && UsedLayout.LoggedInUser.Id == _project.Supervisor.Id)
     {
         <div class="supervisorbuttons">
             <div class="supervisorsinglebutton">
@@ -82,7 +82,7 @@ else
                 </div>
                 <div class="studentRight">
                     <p class="student">@u.Name</p>
-                    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor)
+                    @if (UsedLayout != null && UsedLayout.LoggedInUser != null && UsedLayout.LoggedInUser.Supervisor)
                     {
                         <p class="email" @onclick="() => CopyToClickBoard(u.Email)">
                             @u.Email
@@ -121,9 +121,9 @@ else
 
             if (_project != null)
             {
-                if (UsedLayout != null && UsedLayout.loggedInUser != null)
+                if (UsedLayout != null && UsedLayout.LoggedInUser != null)
                 {
-                    if (_project.Users.FirstOrDefault(u => u.Id == UsedLayout.loggedInUser.Id) != null)
+                    if (_project.Users.FirstOrDefault(u => u.Id == UsedLayout.LoggedInUser.Id) != null)
                     {
                         _userJoined = true;
                     }

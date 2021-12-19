@@ -24,7 +24,7 @@
             <strong>Success!</strong> @SuccessMessage
         </div>
 
-        @if (loggedInUser != null)
+        @if (LoggedInUser != null)
         {
             @Body
         }
@@ -39,7 +39,7 @@
 @code
 {
 
-    public UserDetailsDTO? loggedInUser;
+    public UserDetailsDTO? LoggedInUser;
 
     public string? SuccessMessage = "";
     public string? ErrorMessage = "";
@@ -56,36 +56,30 @@
         try
         {
             var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            
             var user = authState.User;
+            var userid = user.FindFirst("oid");
 
-            if (user != null)
+            if (userid != null)
             {
-                var userid = user.FindFirst("oid");
-
-                if (userid != null)
+                var response = await _client.GetAsync("/api/user");
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await _client.GetAsync("/api/user");
-                    if (response.IsSuccessStatusCode)
+                    var userFind = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
+
+                    if (userFind != null)
                     {
-                        var userFind = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
-
-                        if (userFind != null)
-                        {
-                            loggedInUser = userFind;
-                        }
+                        LoggedInUser = userFind;
                     }
-                }
-                else
-                {
-                    _navManager.NavigateTo("/");
                 }
             }
             else
             {
                 _navManager.NavigateTo("/");
             }
+        
         }
-        catch (Exception e)
+        catch (Exception)
         {
             _navManager.NavigateTo("/");
         }
@@ -125,8 +119,6 @@
 
         var pagePathWithoutQueryString = uri.GetLeftPart(UriPartial.Path);
 
-        return newQueryString.Count > 0
-            ? string.Format("{0}?{1}", pagePathWithoutQueryString, newQueryString)
-            : pagePathWithoutQueryString;
+        return newQueryString.Count > 0 ? $"{pagePathWithoutQueryString}?{newQueryString}" : pagePathWithoutQueryString;
     }
 }
