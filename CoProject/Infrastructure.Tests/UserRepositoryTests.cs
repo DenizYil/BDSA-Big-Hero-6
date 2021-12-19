@@ -115,16 +115,17 @@ public class UserRepositoryTests : DefaultTests
 
         await Context.Users.AddAsync(user);
         await Context.SaveChangesAsync();
-
-        Project.Tags = new List<Tag>
-        {
-            new()
-            {
-                Id = 1,
-                Name = "C#"
-            }
-        };
         
+        var tag = new Tag()
+        {
+            Id = 5,
+            Name = "C#"
+        };
+
+        await Context.Tags.AddAsync(tag);
+        await Context.SaveChangesAsync();
+
+        Project.Tags.Add(tag);
         Project.Users = new List<User> {user};
         await Context.SaveChangesAsync();
 
