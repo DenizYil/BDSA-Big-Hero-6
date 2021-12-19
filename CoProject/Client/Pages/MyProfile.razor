@@ -157,7 +157,10 @@
 
     private async void OnSubmit()
     {
-        var updateBody = new UpdateUserBody();
+        var update = new UserUpdateDTO(_form.Name, _form.Email)
+        {
+            Supervisor = _form.Supervisor
+        };
 
         if (_selectedFile != null)
         {
@@ -168,13 +171,7 @@
                 await stream.CopyToAsync(ms);
                 stream.Close();
 
-                var fileUploaded = new UploadedFile
-                {
-                    FileName = _selectedFile.Name,
-                    FileContent = ms.ToArray()
-                };
-
-                updateBody.file = fileUploaded;
+                update.Image = new (_selectedFile.Name, ms.ToArray());
                 ms.Close();
             }
             catch (Exception)
@@ -184,12 +181,7 @@
             }
         }
 
-        updateBody.updatedUser = new(_form.Name, _form.Email)
-        {
-            Supervisor = _form.Supervisor
-        };
-
-        var response = await _client.PutAsJsonAsync("api/user", updateBody);
+        var response = await _client.PutAsJsonAsync("api/user", update);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -198,7 +190,7 @@
         }
 
         var user = UsedLayout.LoggedInUser;
-        UsedLayout.LoggedInUser = new(user!.Id, user.Name, user.Email, updateBody.updatedUser.Supervisor.Value, user.Image);
+        UsedLayout.LoggedInUser = new(user!.Id, user.Name, user.Email, update.Supervisor.Value, user.Image);
 
         if (_selectedFile != null)
         {

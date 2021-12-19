@@ -33,10 +33,10 @@ public class UserControllerTest : DefaultTests
             ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
 
-        // act
+        // Act
         var actual = await _controller.GetUser();
 
-        // assert
+        // Assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
     }
 
@@ -45,12 +45,14 @@ public class UserControllerTest : DefaultTests
     {
         // Arrange
         // User is logged in but not found in database
-        _repository.Setup(m => m.Read(User.Id)).ReturnsAsync(default(UserDetailsDTO));
+        _repository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(default(UserDetailsDTO));
 
-        // act
+        // Act
         var actual = await _controller.GetUser();
 
-        // assert
+        // Assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
     }
 
@@ -58,12 +60,14 @@ public class UserControllerTest : DefaultTests
     public async void GetUser_returns_logged_in_user()
     {
         // Arrange
-        _repository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
+        _repository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(User);
 
-        // act
+        // Act
         var actual = await _controller.GetUser();
 
-        // assert
+        // Assert
         Assert.Equal(User, actual.Value);
     }
 
@@ -75,12 +79,14 @@ public class UserControllerTest : DefaultTests
         {
             new(1, "Project Name", "Project Description", User, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>())
         };
-        _repository.Setup(m => m.ReadAllByUser(User.Id)).ReturnsAsync(projects);
+        _repository
+            .Setup(m => m.ReadAllByUser(User.Id))
+            .ReturnsAsync(projects);
 
         // Act
         var actual = await _controller.GetProjectsByUser();
 
-        // assert
+        // Assert
         Assert.Equal(projects, actual);
     }
 
@@ -88,8 +94,6 @@ public class UserControllerTest : DefaultTests
     public async void getProjectsByUser_returns_empty()
     {
         // Arrange
-
-
         _controller = new(_repository.Object, _env.Object)
         {
             ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
@@ -110,25 +114,31 @@ public class UserControllerTest : DefaultTests
             ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
 
-        // act
+        // Act
         var actual = await _controller.SignupUser();
 
-        // assert
+        // Assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
     }
 
     [Fact]
     public async void SignupUser_returns_created_user_given_not_found_in_db()
     {
-        // arrange
-        _repository.Setup(m => m.Read(User.Id)).ReturnsAsync(default(UserDetailsDTO));
+        // Arrange
         var userCreate = new UserCreateDTO(User.Id, User.Name, User.Email, User.Supervisor);
-        _repository.Setup(m => m.Create(userCreate)).ReturnsAsync(User);
+        
+        _repository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(default(UserDetailsDTO));
+       
+        _repository
+            .Setup(m => m.Create(userCreate))
+            .ReturnsAsync(User);
 
-        // act
+        // Act
         var response = await _controller.SignupUser();
 
-        // assert
+        // Assert
         var okObjectResult = response.Result as OkObjectResult;
         Assert.NotNull(okObjectResult);
         var actual = okObjectResult!.Value as UserDetailsDTO;
@@ -138,14 +148,15 @@ public class UserControllerTest : DefaultTests
     [Fact]
     public async void SignupUser_returns_already_found_user()
     {
-        // arrange
-        _repository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
+        // Arrange
+        _repository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(User);
 
-        // act
+        // Act
         var response = await _controller.SignupUser();
 
-        // assert
-
+        // Assert
         var okObjectResult = response.Result as OkObjectResult;
         Assert.NotNull(okObjectResult);
         var actual = okObjectResult!.Value as UserDetailsDTO;
@@ -156,19 +167,15 @@ public class UserControllerTest : DefaultTests
     public async void UpdateUser_returns_unauthorized_given_no_token()
     {
         // Arrange
-
-
         _controller = new(_repository.Object, _env.Object)
         {
             ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
-        var updateBody = new UpdateUserBody();
+        
+        // Act
+        var actual = await _controller.UpdateUser(new(User.Name, User.Email));
 
-
-        // act
-        var actual = await _controller.UpdateUser(updateBody);
-
-        // assert
+        // Assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
     }
 
@@ -176,14 +183,15 @@ public class UserControllerTest : DefaultTests
     public async void UpdateUser_returns_badrequest_given_no_jpg_or_png()
     {
         // Arrange
-        // Uesr is logged in
-        var updateFile = new UploadedFile {FileContent = new byte[200], FileName = "image.pdf"};
-        var updateBody = new UpdateUserBody {file = updateFile};
+        var update = new UserUpdateDTO(User.Name, User.Email)
+        {
+            Image = new("image.pdf", new byte[200])
+        };
+        
+        // Act
+        var actual = await _controller.UpdateUser(update);
 
-        // act
-        var actual = await _controller.UpdateUser(updateBody);
-
-        // assert
+        // Assert
         Assert.IsType<BadRequestObjectResult>(actual.Result);
     }
 
@@ -191,14 +199,15 @@ public class UserControllerTest : DefaultTests
     public async void UpdateUser_returns_unauthorized_given_user_not_found_in_db()
     {
         // Arrange
-        // Uesr is logged in
-        var updateFile = new UploadedFile {FileContent = new byte[200], FileName = "image.jpg"};
-        var updateBody = new UpdateUserBody {file = updateFile};
-
-        // act
-        var actual = await _controller.UpdateUser(updateBody);
-
-        // assert
+        var update = new UserUpdateDTO(User.Name, User.Email)
+        {
+            Image = new("image.jpg", new byte[200])
+        };
+        
+        // Act
+        var actual = await _controller.UpdateUser(update);
+        
+        // Assert
         Assert.IsType<UnauthorizedObjectResult>(actual.Result);
     }
 
@@ -206,20 +215,32 @@ public class UserControllerTest : DefaultTests
     public async void UpdateUser_returns_ok_given_profile_is_updated()
     {
         // Arrange
+        var update = new UserUpdateDTO(User.Name, User.Email)
+        {
+            Image = new("image.jpg", new byte[200])
+        };
+        
         // User is logged in here...
-        var updatedUser = new UserUpdateDTO("Jens", "jens@itu.dk");
-        var updateFile = new UploadedFile {FileContent = new byte[200], FileName = "image.jpg"};
-        var updateBody = new UpdateUserBody {file = updateFile, updatedUser = updatedUser};
-        var userImagePath = $"/userimages/{User.Id}_{Guid.NewGuid()}.jpg";
-        _repository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
-        _fileWriter.Setup(m => m.Create(userImagePath)).Returns(() => new FileStream("", FileMode.Create));
-        _file.Setup(m => m.Write(updateFile.FileContent, 0, updateFile.FileContent.Length)).Verifiable();
-        _repository.Setup(m => m.Update(User.Id, updatedUser)).ReturnsAsync(Status.Updated);
+        _repository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(User);
+        
+        _fileWriter
+            .Setup(m => m.Create($"/userimages/{User.Id}_{Guid.NewGuid()}.jpg"))
+            .Returns(() => new FileStream("", FileMode.Create));
+        
+        _file
+            .Setup(m => m.Write(update.Image.Content, 0, update.Image.Content.Length))
+            .Verifiable();
+        
+        _repository
+            .Setup(m => m.Update(User.Id, update))
+            .ReturnsAsync(Status.Updated);
 
-        // act
-        var actual = await _controller.UpdateUser(updateBody);
-
-        // assert
+        // Act
+        var actual = await _controller.UpdateUser(update);
+        
+        // Assert
         Assert.IsType<OkObjectResult>(actual.Result);
     }
 
@@ -228,16 +249,23 @@ public class UserControllerTest : DefaultTests
     {
         // Arrange
         // User is logged in here...
-        var updatedUser = new UserUpdateDTO("Jens", "jens@itu.dk");
-        var updateFile = new UploadedFile {FileContent = new byte[200], FileName = "image.jpg"};
-        var updateBody = new UpdateUserBody {file = updateFile, updatedUser = updatedUser};
-        _repository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
-        _repository.Setup(m => m.Update(User.Id, updatedUser)).ReturnsAsync(Status.BadRequest);
+        var update = new UserUpdateDTO("Jens", "jens@itu.dk")
+        {
+            Image = new("image.jpg", new byte[200])
+        };
 
-        // act
-        var actual = await _controller.UpdateUser(updateBody);
+        _repository
+            .Setup(m => m.Read(User.Id))
+            .ReturnsAsync(User);
+        
+        _repository
+            .Setup(m => m.Update(User.Id, update))
+            .ReturnsAsync(Status.BadRequest);
 
-        // assert
+        // Act
+        var actual = await _controller.UpdateUser(update);
+
+        // Assert
         Assert.IsType<BadRequestObjectResult>(actual.Result);
     }
 }

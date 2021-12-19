@@ -96,11 +96,11 @@ public class ProjectControllerTests : DefaultTests
     {
         // Arrange
         _projectRepository
-            .Setup(m => m.Update(_project.Id, new ProjectUpdateDTO()))
+            .Setup(m => m.Update(_project.Id, new()))
             .ReturnsAsync(Status.NotFound);
 
         // Act
-        var response = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+        var response = await _controller.UpdateProject(_project.Id, new());
 
         // Assert
         Assert.IsType<UnauthorizedObjectResult>(response);
@@ -449,7 +449,7 @@ public class ProjectControllerTests : DefaultTests
             .ReturnsAsync(_project);
 
         _projectRepository
-            .Setup(m => m.Update(_project.Id, new ProjectUpdateDTO()))
+            .Setup(m => m.Update(_project.Id, new()))
             .ReturnsAsync(Status.Updated);
 
 
