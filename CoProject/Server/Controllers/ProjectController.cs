@@ -212,7 +212,7 @@ public class ProjectController : ControllerBase
     [ProducesResponseType(401)]
     [ProducesResponseType(403)]
     [ProducesResponseType(404)]
-    public async Task<IActionResult> DeleteProject(int id)
+    public async Task<IActionResult> DeleteProject(int projectId)
     {
         var userId = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
@@ -221,7 +221,7 @@ public class ProjectController : ControllerBase
             return Unauthorized("You are not logged in");
         }
 
-        var project = await _projectRepository.Read(id);
+        var project = await _projectRepository.Read(projectId);
         var user = await _userRepository.Read(userId.Value);
 
         if (user == null)
@@ -244,7 +244,7 @@ public class ProjectController : ControllerBase
             return Forbid("You are not this project's supervisor");
         }
 
-        var response = await _projectRepository.Delete(id);
+        var response = await _projectRepository.Delete(projectId);
 
         if (response == Status.Deleted)
         {
