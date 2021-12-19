@@ -1,51 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Principal;
-using CoProject.Shared;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Identity.Client;
-using Microsoft.Identity.Web;
+﻿namespace CoProject.Server.Tests.Controllers;
 
-namespace CoProject.Server.Tests.Controllers;
-
-public class ProjectControllerTests
+public class ProjectControllerTests : DefaultTests
 {
+    private readonly ProjectDetailsDTO _project;
     private readonly Mock<IProjectRepository> _projectRepository;
+    private readonly UserDetailsDTO _supervisor;
     private readonly Mock<IUserRepository> _userRepository;
     private ProjectController _controller;
-    private readonly ProjectDetailsDTO _project;
-    private readonly ProjectDetailsDTO _projectWithUser;
-    private readonly UserDetailsDTO _user;
-    private readonly UserDetailsDTO _supervisor;
-    private readonly UserDetailsDTO _supervisorWithID2;
-    private readonly GenericIdentity _identity;
-
 
     public ProjectControllerTests()
     {
         _projectRepository = new();
         _userRepository = new();
-        _supervisor = new UserDetailsDTO("123", "Test User", "user@outlook.com", true, "/images/noimage.jpeg");
-        _supervisorWithID2 = new UserDetailsDTO("9999", "Test User", "user@outlook.com", true, "/images/noimage.jpeg");
+        _supervisor = new("123", "Test User", "user@outlook.com", true, "/images/noimage.jpeg");
         _project = new(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>());
-        _user = new("123", "Test User", "user@outlook.com", false, "/images/noimage.jpeg");
-        _projectWithUser = new(1, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>() {_user});
-
-
-        _identity = new GenericIdentity(_user.Name, "");
-        _identity.AddClaim(new Claim(ClaimConstants.Name, _user.Name));
-        _identity.AddClaim(new Claim("emails", _user.Email));
-        _identity.AddClaim(new Claim(ClaimConstants.ObjectId, _user.Id));
-
-        var principal = new GenericPrincipal(_identity, roles: new string[] { });
-        var loggedInUser = new ClaimsPrincipal(principal);
-
-        _controller = new ProjectController(_projectRepository.Object, _userRepository.Object)
+        
+        _controller = new(_projectRepository.Object, _userRepository.Object)
         {
-            ControllerContext = new ControllerContext {HttpContext = new DefaultHttpContext {User = loggedInUser}}
+            ControllerContext = ControllerContext
         };
     }
 
@@ -95,12 +67,12 @@ public class ProjectControllerTests
     public async Task UpdateProject_given_existing_id_updates_project_and_returns_Ok()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
         _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
         _userRepository.Setup(m => m.Read(_supervisor.Id)).ReturnsAsync(_supervisor);
 
         // Act
-        var response = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+        var response = await _controller.UpdateProject(_project.Id, new());
 
         // Assert
         Assert.IsType<OkObjectResult>(response);
@@ -129,12 +101,12 @@ public class ProjectControllerTests
         // Arrange
         _controller = new(_projectRepository.Object, _userRepository.Object)
         {
-            ControllerContext = new ControllerContext {HttpContext = new DefaultHttpContext {User = new ClaimsPrincipal()}}
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
-        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
 
         // Act
-        var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+        var result = await _controller.UpdateProject(_project.Id, new());
 
         // Assert
         Assert.IsType<UnauthorizedObjectResult>(result);
@@ -144,12 +116,12 @@ public class ProjectControllerTests
     public async void UpdateProject_returns_NotFound_if_project_is_null()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
         _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(default(ProjectDetailsDTO));
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
 
         // Act
-        var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+        var result = await _controller.UpdateProject(_project.Id, new());
 
         // Assert
         Assert.IsType<NotFoundObjectResult>(result);
@@ -159,12 +131,12 @@ public class ProjectControllerTests
     public async void UpdateProject_returns_Forbid_if_user_is_not_supervisor()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.Updated);
+        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.Updated);
         _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
 
         // Act
-        var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+        var result = await _controller.UpdateProject(_project.Id, new());
 
         // Assert
         Assert.IsType<ForbidResult>(result);
@@ -174,12 +146,12 @@ public class ProjectControllerTests
     public async void UpdateProject_returns_BadRequest_if_project_is_not_updated_properly()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.BadRequest);
+        _projectRepository.Setup(m => m.Update(_project.Id, new())).ReturnsAsync(Status.BadRequest);
         _projectRepository.Setup(m => m.Read(_project.Id)).ReturnsAsync(_project);
         _userRepository.Setup(m => m.Read(_supervisor.Id)).ReturnsAsync(_supervisor);
 
         // Act
-        var result = await _controller.UpdateProject(_project.Id, new ProjectUpdateDTO());
+        var result = await _controller.UpdateProject(_project.Id, new());
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result);
@@ -207,7 +179,7 @@ public class ProjectControllerTests
         // Arrange
         _controller = new(_projectRepository.Object, _userRepository.Object)
         {
-            ControllerContext = new ControllerContext {HttpContext = new DefaultHttpContext {User = new ClaimsPrincipal()}}
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
         var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
 
@@ -237,7 +209,8 @@ public class ProjectControllerTests
     {
         // Arrange
         var toCreate = new ProjectCreateDTO("Project Name", "Project Description", State.Open, new List<string>());
-        _userRepository.Setup(m => m.Read(_user.Id)).ReturnsAsync(_user);
+
+        _userRepository.Setup(m => m.Read(User.Id)).ReturnsAsync(User);
 
         // Act
         var result = await _controller.CreateProject(toCreate);
@@ -298,8 +271,8 @@ public class ProjectControllerTests
     public async void AddUserToProject_given_non_existing_id_returns_NotFound()
     {
         // Arrange
-        _projectRepository.Setup(m => m.Read(_project.Id)).Returns(Task.FromResult<ProjectDetailsDTO>(null));
-        _projectRepository.Setup(m => m.Update(_project.Id, new ProjectUpdateDTO())).ReturnsAsync(Status.NotFound);
+        _projectRepository.Setup(m => m.Read(1)).ReturnsAsync(default(ProjectDetailsDTO));
+        _projectRepository.Setup(m => m.Update(1, new())).ReturnsAsync(Status.NotFound);
 
         // Act
         var response = await _controller.AddUserToProject(_project.Id);
@@ -327,7 +300,6 @@ public class ProjectControllerTests
     [Fact]
     public async void AddUserToProject_returns_Forbid_if_user_count_is_bigger_than_max()
     {
-        // Arrange
         var project = new ProjectDetailsDTO(_project.Id, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>() {_user, _supervisor})
         {
             Max = 1
@@ -350,7 +322,7 @@ public class ProjectControllerTests
         // Arrange
         _controller = new(_projectRepository.Object, _userRepository.Object)
         {
-            ControllerContext = new ControllerContext {HttpContext = new DefaultHttpContext {User = new ClaimsPrincipal()}}
+            ControllerContext = new() {HttpContext = new DefaultHttpContext {User = new()}}
         };
         _projectRepository
             .Setup(m => m.Read(_project.Id))
@@ -368,6 +340,7 @@ public class ProjectControllerTests
     {
         // Arrange
         var project = new ProjectDetailsDTO(_project.Id, "Project Name", "Project Description", _supervisor, State.Open, DateTime.Now, new List<string>(), new List<UserDetailsDTO>() {_user});
+        
         _projectRepository
             .Setup(m => m.Read(_project.Id))
             .ReturnsAsync(project);
@@ -448,6 +421,7 @@ public class ProjectControllerTests
         _projectRepository
             .Setup(m => m.Update(_project.Id, new()))
             .ReturnsAsync(Status.NotFound);
+
 
         // Act
         var response = await _controller.RemoveUserFromProject(_project.Id);

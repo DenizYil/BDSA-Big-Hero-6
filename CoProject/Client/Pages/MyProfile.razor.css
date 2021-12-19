@@ -1,34 +1,34 @@
 .required {
-  color: red;
+    color: red;
 }
 
 .blue {
-  color: #1861ac;
+    color: #1861ac;
 }
 
 hr {
-  color: #0b4f6c;
+    color: #0b4f6c;
 }
 
 h1 {
-  font-size: xx-large;
-  color: #0b4f6c;
-  text-align: center;
+    font-size: xx-large;
+    color: #0b4f6c;
+    text-align: center;
 }
 
 h2 {
-  font-size: large;
-  color: #0b4f6c;
-  text-align: center;
-  margin-top: 15px;
+    font-size: large;
+    color: #0b4f6c;
+    text-align: center;
+    margin-top: 15px;
 }
 
 .center {
-  text-align: center;
+    text-align: center;
 }
 
 .profileImageContainer {
-    display:block;
+    display: block;
     width: 100%;
     margin-top: 15px;
 }
@@ -44,32 +44,30 @@ h2 {
     align-items: center;
 }
 
-    .innerProfileImage img {
-        border-style: none;
-        width: 125px;
-        height: 100%;
-        border-radius: 100%;
-        display: block;
-    }
+.innerProfileImage img {
+    border-style: none;
+    width: 125px;
+    height: 100%;
+    border-radius: 100%;
+    display: block;
+}
 
 .container {
-  width: 95%;
-  margin-left: auto;
-  margin-right: auto;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 form {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 .form-header {
-  font-size: 20px;
-  color: #0b4f6c;
-  margin-top: 10px;
-  display: block;
+    font-size: 20px;
+    color: #0b4f6c;
+    margin-top: 10px;
+    display: block;
 }
-
-
 
 @media only screen and (min-width: 1024px) {
 

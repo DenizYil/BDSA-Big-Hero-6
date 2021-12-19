@@ -11,7 +11,7 @@ public class ProjectValidation
 
         if (project.Min > project.Max)
         {
-            return new ValidationResult("Min cannot be greater than Max.", new[] {nameof(project.Min), nameof(project.Max)});
+            return new("Min cannot be greater than Max.", new[] {nameof(project.Min), nameof(project.Max)});
         }
 
         return ValidationResult.Success;

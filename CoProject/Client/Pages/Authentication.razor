@@ -1,10 +1,44 @@
 ﻿@page "/authentication/{action}"
+@inject NavigationManager _navManager
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject HttpClient _client
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-<RemoteAuthenticatorView Action="@Action"/>
+<RemoteAuthenticatorView Action="@Action" OnLogOutSucceeded="@OnLogoutSuccess" OnLogInSucceeded="@OnLoginSuccess"/>
 
 @code{
 
     [Parameter]
     public string? Action { get; set; }
+
+    private void OnLogoutSuccess()
+    {
+        Console.WriteLine("LOGGED OUT!!");
+        _navManager.NavigateTo("/");
+    }
+
+    private async void OnLoginSuccess()
+    {
+        Console.WriteLine("LOGGED IN SUCCESSFULLY!");
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user != null)
+        {
+            var response = await _client.PostAsJsonAsync("/api/user", "");
+
+            if (response.IsSuccessStatusCode)
+            {
+                _navManager.NavigateTo("/projects");
+            }
+            else
+            {
+                _navManager.NavigateTo("/?error=" + response.Content);
+            }
+        }
+        else
+        {
+            _navManager.NavigateTo("/?error=Not Logged In!");
+        }
+    }
 
 }

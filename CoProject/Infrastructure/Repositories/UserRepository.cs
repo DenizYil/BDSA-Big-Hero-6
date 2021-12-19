@@ -5,7 +5,7 @@ namespace CoProject.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private ICoProjectContext _context;
+    private readonly ICoProjectContext _context;
 
     public UserRepository(ICoProjectContext context)
     {
@@ -31,6 +31,7 @@ public class UserRepository : IUserRepository
     {
         var user = await _context.Users
             .Include(user => user.Projects)
+            .ThenInclude(project => project.Tags)
             .FirstOrDefaultAsync(user => user.Id == id);
 
         if (user == null)
@@ -46,18 +47,22 @@ public class UserRepository : IUserRepository
                     project.Id,
                     project.Name,
                     project.Description,
-                    new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor, user.Image),
+                    new(user.Id, user.Name, user.Email, user.Supervisor, user.Image),
                     project.State,
                     project.Created,
-                    project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image)).ToList()
+                    project.Tags
+                        .Select(tag => tag.Name)
+                        .ToList(),
+                    project.Users
+                        .Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image))
+                        .ToList()
                 )
                 {
                     Min = project.Min,
                     Max = project.Max
                 });
         }
-        
+
         return user.Projects
             .Select(project =>
                 new ProjectDetailsDTO(
@@ -70,8 +75,12 @@ public class UserRepository : IUserRepository
                         .First(),
                     project.State,
                     project.Created,
-                    project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image)).ToList()
+                    project.Tags
+                        .Select(tag => tag.Name)
+                        .ToList(),
+                    project.Users
+                        .Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image))
+                        .ToList()
                 )
                 {
                     Min = project.Min,
@@ -94,7 +103,7 @@ public class UserRepository : IUserRepository
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
 
-        return new UserDetailsDTO(user.Id, user.Name, user.Email, user.Supervisor, user.Image);
+        return new(user.Id, user.Name, user.Email, user.Supervisor, user.Image);
     }
 
     public async Task<Status> Update(string id, UserUpdateDTO update)
@@ -116,9 +125,14 @@ public class UserRepository : IUserRepository
             user.Email = update.Email;
         }
 
-        if(update.Image != null)
+        if (update.Image != null)
         {
             user.Image = update.Image;
+        }
+
+        if (update.Supervisor != null)
+        {
+            user.Supervisor = update.Supervisor.Value;
         }
 
         await _context.SaveChangesAsync();

@@ -19,6 +19,6 @@ public class CoProjectContextFactory : IDesignTimeDbContextFactory<CoProjectCont
         var optionsBuilder = new DbContextOptionsBuilder<CoProjectContext>()
             .UseSqlServer(connectionString);
 
-        return new CoProjectContext(optionsBuilder.Options);
+        return new(optionsBuilder.Options);
     }
 }

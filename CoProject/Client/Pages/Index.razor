@@ -1,7 +1,6 @@
 ﻿@page "/"
 @layout EmptyLayout
-@inject NavigationManager Navigation
-@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager _navManager
 
 <PageTitle>Login - CoProject</PageTitle>
 
@@ -9,7 +8,7 @@
     <Authorized>
         @if (true)
         {
-            Navigation.NavigateTo("/userlogin");
+            _navManager.NavigateTo("/projects");
         }
     </Authorized>
     <NotAuthorized>

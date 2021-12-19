@@ -15,6 +15,9 @@ public class Project
 
     public override string ToString()
     {
+        var tags = string.Join(", ", Tags.Select(tag => tag.Name).ToList());
+        var users = string.Join(", ", Users.Select(user => user.Email).ToList());
+
         return $"Id={Id} \n" +
                $"Name={Name} \n" +
                $"Description={Description} \n" +
@@ -22,8 +25,8 @@ public class Project
                $"SupervisorId={SupervisorId} \n" +
                $"Min={Min} \n" +
                $"Max={Max} \n" +
-               $"Tags={string.Join(", ", Tags.Select(tag => tag.Name).ToList())} \n" +
-               $"Users={string.Join(", ", Users.Select(user => user.Email).ToList())} \n" +
+               $"Tags={tags} \n" +
+               $"Users={users} \n" +
                $"State={State} \n";
     }
 }

@@ -1,13 +1,10 @@
-﻿@inherits LayoutComponentBase
-@inject NavigationManager Navigation
-@inject HttpClient _client
-@inject AuthenticationStateProvider AuthenticationStateProvider
+﻿@using CoProject.Shared
 @using Microsoft.AspNetCore.Authorization
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Components.Authorization
-@using System.Text.RegularExpressions
 @using System.Web
-@using CoProject.Shared
+@inherits LayoutComponentBase
+@inject NavigationManager _navManager
+@inject HttpClient _client
+@inject AuthenticationStateProvider _authenticationStateProvider
 @attribute [Authorize]
 
 
@@ -27,13 +24,14 @@
             <strong>Success!</strong> @SuccessMessage
         </div>
 
-        @if (loggedInUser != null)
+        @if (LoggedInUser != null)
         {
             @Body
-        } else
-                {
-                <LoadingComponent></LoadingComponent>
-                }
+        }
+        else
+        {
+            <LoadingComponent></LoadingComponent>
+        }
     </div>
 </CascadingValue>
 
@@ -41,80 +39,73 @@
 @code
 {
 
-    public UserDetailsDTO? loggedInUser = null;
+    public UserDetailsDTO? LoggedInUser;
 
     public string? SuccessMessage = "";
     public string? ErrorMessage = "";
 
     protected override Task OnParametersSetAsync()
     {
-        SuccessMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["success"];
-        ErrorMessage = HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)["error"];
+        SuccessMessage = HttpUtility.ParseQueryString(new Uri(_navManager.Uri).Query)["success"];
+        ErrorMessage = HttpUtility.ParseQueryString(new Uri(_navManager.Uri).Query)["error"];
         return base.OnParametersSetAsync();
     }
 
     protected override async Task OnInitializedAsync()
     {
-
         try
         {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            
             var user = authState.User;
+            var userid = user.FindFirst("oid");
 
-            if (user != null)
+            if (userid != null)
             {
-                var userid = user.FindFirst("oid");
-
-                if (userid != null)
+                var response = await _client.GetAsync("/api/user");
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await _client.GetAsync("/api/user");
-                    if (response.IsSuccessStatusCode)
+                    var userFind = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
+
+                    if (userFind != null)
                     {
-                        var userFind = await response.Content.ReadFromJsonAsync<UserDetailsDTO>();
-
-                        if (userFind != null)
-                        {
-                            loggedInUser = userFind;
-                        }
+                        LoggedInUser = userFind;
                     }
-                }
-                else
-                {
-                    Navigation.NavigateTo("/");
                 }
             }
             else
             {
-                Navigation.NavigateTo("/");
+                _navManager.NavigateTo("/");
             }
+        
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            Navigation.NavigateTo("/");
+            _navManager.NavigateTo("/");
         }
     }
 
 
     private bool ErrorBox()
     {
-        return Navigation.Uri.Contains("error=");
+        return _navManager.Uri.Contains("error=");
     }
 
     private bool SuccessBox()
     {
-        return Navigation.Uri.Contains("success=");
+        return _navManager.Uri.Contains("success=");
     }
 
     private void RemoveError()
     {
-        var uri = RemoveQueryStringByKey(Navigation.Uri, "error");
-        Navigation.NavigateTo(uri);
+        var uri = RemoveQueryStringByKey(_navManager.Uri, "error");
+        _navManager.NavigateTo(uri);
     }
 
     private void RemoveSuccess()
     {
-        var uri = RemoveQueryStringByKey(Navigation.Uri, "success");
-        Navigation.NavigateTo(uri);
+        var uri = RemoveQueryStringByKey(_navManager.Uri, "success");
+        _navManager.NavigateTo(uri);
     }
 
     private static string RemoveQueryStringByKey(string url, string key)
@@ -126,10 +117,8 @@
 
         newQueryString.Remove(key);
 
-        string pagePathWithoutQueryString = uri.GetLeftPart(UriPartial.Path);
- 
-        return newQueryString.Count > 0
-            ? String.Format("{0}?{1}", pagePathWithoutQueryString, newQueryString)
-            : pagePathWithoutQueryString;
+        var pagePathWithoutQueryString = uri.GetLeftPart(UriPartial.Path);
+
+        return newQueryString.Count > 0 ? $"{pagePathWithoutQueryString}?{newQueryString}" : pagePathWithoutQueryString;
     }
 }

@@ -1,10 +1,10 @@
 @page "/project/{Id}"
+@using CoProject.Shared
 @inject NavigationManager _navManager
 @layout AuthLayout
 @inject HttpClient _client
-@inject IJSRuntime JSRuntime
-@using CoProject.Shared;
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IJSRuntime _jsRuntime
+@inject AuthenticationStateProvider _authenticationStateProvider
 
 
 <PageTitle>View Project - CoProject</PageTitle>
@@ -37,7 +37,7 @@ else
         }
     </div>
 
-    @if (UsedLayout != null && UsedLayout.loggedInUser != null && !UsedLayout.loggedInUser.Supervisor)
+    @if (UsedLayout != null && UsedLayout.LoggedInUser != null && !UsedLayout.LoggedInUser.Supervisor)
     {
         <button id="joinProject">
 
@@ -53,7 +53,7 @@ else
         </button>
     }
 
-    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor && UsedLayout.loggedInUser.Id == _project.Supervisor.Id)
+    @if (UsedLayout != null && UsedLayout.LoggedInUser != null && UsedLayout.LoggedInUser.Supervisor && UsedLayout.LoggedInUser.Id == _project.Supervisor.Id)
     {
         <div class="supervisorbuttons">
             <div class="supervisorsinglebutton">
@@ -78,11 +78,11 @@ else
         {
             <div class="oneStudent">
                 <div class="studentLeft">
-                    <img class="studentImg" src="@u.Image" alt="Image Of Student" />
+                    <img class="studentImg" src="@u.Image" alt="Image Of Student"/>
                 </div>
                 <div class="studentRight">
                     <p class="student">@u.Name</p>
-                    @if (UsedLayout != null && UsedLayout.loggedInUser != null && UsedLayout.loggedInUser.Supervisor)
+                    @if (UsedLayout != null && UsedLayout.LoggedInUser != null && UsedLayout.LoggedInUser.Supervisor)
                     {
                         <p class="email" @onclick="() => CopyToClickBoard(u.Email)">
                             @u.Email
@@ -107,8 +107,8 @@ else
 
     private async Task CopyToClickBoard(string text)
     {
-        await JSRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
-        await JSRuntime.InvokeVoidAsync("alert", $"Copied {text} to the clipboard");
+        await _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        await _jsRuntime.InvokeVoidAsync("alert", $"Copied {text} to the clipboard");
     }
 
     protected override async Task OnInitializedAsync()
@@ -121,9 +121,9 @@ else
 
             if (_project != null)
             {
-                if (UsedLayout != null && UsedLayout.loggedInUser != null)
+                if (UsedLayout != null && UsedLayout.LoggedInUser != null)
                 {
-                    if (_project.Users.FirstOrDefault(u => u.Id == UsedLayout.loggedInUser.Id) != null)
+                    if (_project.Users.FirstOrDefault(u => u.Id == UsedLayout.LoggedInUser.Id) != null)
                     {
                         _userJoined = true;
                     }

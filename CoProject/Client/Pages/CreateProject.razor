@@ -1,9 +1,8 @@
 ﻿@page "/createproject"
-@layout AuthLayout
-@using CoProject.Shared
-@using Client.Forms
+@using CoProject.Client.Forms
 @using CoProject.Infrastructure.Entities
-@using Microsoft.AspNetCore.Components
+@using CoProject.Shared
+@layout AuthLayout
 @inject NavigationManager _navManager
 @inject HttpClient _client
 
@@ -97,7 +96,7 @@
 
 
 @code {
-    private ProjectForm _form = new() {State = State.Open};
+    private readonly ProjectForm _form = new() {State = State.Open};
 
     private async void OnSubmit()
     {
@@ -112,10 +111,10 @@
         if (response.IsSuccessStatusCode)
         {
             var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
-            _navManager.NavigateTo($"/project/{created.Id}?success=You have successfully created the project");
+            _navManager.NavigateTo($"/project/{created!.Id}?success=You have successfully created the project");
             return;
         }
-        Console.WriteLine(response.StatusCode);
+
         _navManager.NavigateTo($"/projects?error={response.StatusCode}");
     }
 

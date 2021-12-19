@@ -2,7 +2,14 @@
 global using System;
 global using Moq;
 global using System.Threading.Tasks;
+global using CoProject.Shared;
 global using CoProject.Server.Controllers;
 global using CoProject.Infrastructure;
 global using CoProject.Infrastructure.Repositories;
 global using CoProject.Infrastructure.Entities;
+global using System.Collections.Generic;
+global using System.IO;
+global using System.IO.Abstractions;
+global using Microsoft.AspNetCore.Hosting;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.AspNetCore.Mvc;
