@@ -50,8 +50,12 @@ public class UserRepository : IUserRepository
                     new(user.Id, user.Name, user.Email, user.Supervisor, user.Image),
                     project.State,
                     project.Created,
-                    project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image)).ToList()
+                    project.Tags
+                        .Select(tag => tag.Name)
+                        .ToList(),
+                    project.Users
+                        .Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image))
+                        .ToList()
                 )
                 {
                     Min = project.Min,
@@ -71,8 +75,12 @@ public class UserRepository : IUserRepository
                         .First(),
                     project.State,
                     project.Created,
-                    project.Tags.Select(tag => tag.Name).ToList(),
-                    project.Users.Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image)).ToList()
+                    project.Tags
+                        .Select(tag => tag.Name)
+                        .ToList(),
+                    project.Users
+                        .Select(u => new UserDetailsDTO(u.Id, u.Name, u.Email, u.Supervisor, u.Image))
+                        .ToList()
                 )
                 {
                     Min = project.Min,
