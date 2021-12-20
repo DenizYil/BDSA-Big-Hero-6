@@ -35,11 +35,13 @@ You need to have ``.NET Core 6.0.0`` runtime and ``.NET 6.0.100`` SDK (or later 
    docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=$password" -p 1433:1433 -d --name "CoProjectMSSQL" mcr.microsoft.com/mssql/server:2019-latest
    ```
    
-   Make sure you update the variable ``$password`` with your own password for user ``sa``.
+   Make sure you update the variable ``$password`` with your own password for database user ``sa``.
 3. Set the connection string to your user secrets for project ``CoProject/Server``. Example command below:
    
    ```cmd
    dotnet user-secrets set "ConnectionStrings:CoProject" "Server=127.0.0.1;Database=CoProject;User Id=sa;Password=$passwordForSA" --project CoProject/Server
    ```
+   
+   Make sure you update the variable ``$passwordForSA`` with the set password for database user ``sa``.
 4. Build and model your running ``MSSQL`` database using the command ``dotnet ef database update --project CoProject/Infrastructure`` for the project ``CoProject/Infrastructure``.
 5. Start the application by running ``dotnet run --project CoProject/Server`` for the project ``CoProject/Server``.
