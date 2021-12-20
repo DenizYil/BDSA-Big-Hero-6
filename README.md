@@ -7,45 +7,50 @@
 
 A simple webservice that provides a platform for students and supervisors to find, join and create projects.
 
-## Resources
-### Overleaf: 
-https://www.overleaf.com/project/617ba189bf8b0297698f95b4
+# How to run
+Run the start up powershell script by doing
+```powershell
+.\Setup.ps1
+```
 
-### Gantt diagram: 
-https://docs.google.com/spreadsheets/d/1-6Lcv0StDnItwxd7fRDeHYpPXvEjfBGgA-thl6jbonU/edit#gid=0
+If you wish to do it manually, please continue reading:
 
-## How to run
-
-### Requirements
-#### Docker
+## Requirements
+### Docker
 You need to have Docker installed with a ``MSSQL Database``-image.
 
 The system is tested with image ``mcr.microsoft.com/azure-sql-edge:latest`` and ``mcr.microsoft.com/mssql/server:2019-latest``.
 
-#### .NET 6
+### .NET 6
 You need to have ``.NET Core 6.0.0`` runtime, ``.NET 6.0.100`` SDK and ``ASP Net Core 6.0.0`` (or later versions) installed.
 
-#### 
+#  
 
-### Getting started
-1. Install ``.NET Entity Framework Core tools`` using the command ```dotnet tool install --global dotnet-ef```.
-2. Run your docker ``MSSQL``-image. The command is dependent on what image you use. Example command:
-   
-   ```cmd
-   docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=$password" -p 1433:1433 -d --name "CoProjectMSSQL" mcr.microsoft.com/mssql/server:2019-latest
+## Getting started
+1. Install `.NET Entity Framework Core tools`: 
+   ```powershell
+   dotnet tool install --global dotnet-ef
    ```
-   
-   Make sure you update the variable ``$password`` with your own password for database user ``sa``.
-3. Set the connection string to your user secrets for project ``CoProject/Server``. Example command below:
-   
-   ```cmd
-   dotnet user-secrets set "ConnectionStrings:CoProject" "Server=127.0.0.1;Database=CoProject;User Id=sa;Password=$passwordForSA" --project CoProject/Server
+2. Set your variables that you'll need:
+   ```powershell
+   $password = New-Guid
+   $database = "CoProject"
+   $connectionString = "Server=localhost;Database=$database;User Id=sa;Password=$password;Trusted_Connection=False;Encrypt=False"
    ```
-   
-   Make sure you update the variable ``$passwordForSA`` with the set password for database user ``sa``.
-4. Build and model your running ``MSSQL`` database for the project ``CoProject/Infrastructure``. Example command below.
-   
-   ```cmd
+3. Run your docker ``MSSQL``-image. The command is dependent on what image you use:
+   ```powershell
+   docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=$password" -p 1433:1433 --name "CoProject-Group4" -d mcr.microsoft.com/mssql/server:2019-latest
+   ```
+4. Set your connection string secret:
+   ```powershell
+   dotnet user-secrets set $connectionString --project CoProject/Server
+   dotnet user-secrets set $connectionString --project CoProject/Infrastructure
+   ```
+5. Build and model your running ``MSSQL`` database for the project ``CoProject/Infrastructure``:
+   ```powershell
    dotnet ef database update --project CoProject/Infrastructure
    ```
-7. Start the application by running ``dotnet run --project CoProject/Server`` for the project ``CoProject/Server``.
+6. Start the application:
+   ```powershell
+   dotnet run --project CoProject/Server
+   ```
