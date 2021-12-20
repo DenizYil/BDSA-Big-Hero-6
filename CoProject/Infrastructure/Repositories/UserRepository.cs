@@ -125,9 +125,9 @@ public class UserRepository : IUserRepository
             user.Email = update.Email;
         }
 
-        if (update.Image != null)
+        if (update.Image != null && update.Image.Path != null)
         {
-            user.Image = update.Image;
+            user.Image = update.Image.Path;
         }
 
         if (update.Supervisor != null)

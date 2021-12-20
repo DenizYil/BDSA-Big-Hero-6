@@ -115,8 +115,8 @@ public class UserRepositoryTests : DefaultTests
 
         await Context.Users.AddAsync(user);
         await Context.SaveChangesAsync();
-        
-        var tag = new Tag()
+
+        var tag = new Tag
         {
             Id = 5,
             Name = "C#"
@@ -157,7 +157,7 @@ public class UserRepositoryTests : DefaultTests
         var expected = Status.NotFound;
         var actual = await _repo.Update("2", new("Yourself", "you@you.dk")
         {
-            Image = "images/newimage.jpg"
+            Image = new ("newimage.jpg", new byte[200])
         });
 
         Assert.Equal(expected, actual);
@@ -169,7 +169,7 @@ public class UserRepositoryTests : DefaultTests
         var expected = Status.Updated;
         var actual = await _repo.Update("1", new("Yourself", "you@you.dk")
         {
-            Image = "images/newimage.jpg"
+            Image = new ("newimage.jpg", new byte[200])
         });
 
         Assert.Equal(expected, actual);
@@ -181,7 +181,10 @@ public class UserRepositoryTests : DefaultTests
         await _repo.Update("1", new("Yourself", "you@you.dk")
         {
             Supervisor = false,
-            Image = "images/newimage.jpg"
+            Image = new ("newimage.jpg", new byte[200])
+            {
+                Path = "images/newimage.jpg"
+            }
         });
 
         var expected = new User
@@ -192,7 +195,7 @@ public class UserRepositoryTests : DefaultTests
             Image = "images/newimage.jpg",
             Supervisor = false
         };
-        
+
         var actual = await Context.Users.FirstOrDefaultAsync(u => u.Id == "1");
 
         expected.Should().BeEquivalentTo(actual);

@@ -82,7 +82,7 @@ public class UserController : ControllerBase
     [HttpPut]
     [ProducesResponseType(404)]
     [ProducesResponseType(204)]
-    public async Task<ActionResult<Status>> UpdateUser([FromBody] UpdateUserBody body)
+    public async Task<ActionResult<Status>> UpdateUser([FromBody] UserUpdateDTO update)
     {
         var idFind = User.FindFirst(e => e.Type == ClaimConstants.ObjectId);
 
@@ -91,9 +91,9 @@ public class UserController : ControllerBase
             return Unauthorized("You are not logged in");
         }
 
-        if (body.file != null)
+        if (update.Image != null)
         {
-            if (!body.file.FileName.EndsWith(".jpg") && !body.file.FileName.EndsWith(".png"))
+            if (!update.Image.Name.EndsWith(".jpg") && !update.Image.Name.EndsWith(".png"))
             {
                 return BadRequest("You must only upload .jpg or .png images");
             }
@@ -115,14 +115,13 @@ public class UserController : ControllerBase
             var userImagePath = $"/userimages/{idFind.Value}_{Guid.NewGuid()}.jpg";
             var path = $"{_env.WebRootPath}{userImagePath}";
             var fs = file.Create(path);
-            fs.Write(body.file.FileContent, 0, body.file.FileContent.Length);
+            fs.Write(update.Image.Content, 0, update.Image.Content.Length);
             fs.Close();
 
-            Console.WriteLine("PATH PATH: " + path);
-            body.updatedUser.Image = userImagePath;
+            update.Image.Path = userImagePath;
         }
 
-        var status = await _userRepository.Update(idFind.Value, body.updatedUser);
+        var status = await _userRepository.Update(idFind.Value, update);
 
         if (status == Status.Updated)
         {

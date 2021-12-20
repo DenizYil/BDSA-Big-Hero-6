@@ -1,6 +1,6 @@
 ﻿namespace CoProject.Infrastructure.Repositories;
 
-public interface IProjectRepository : IRepository
+public interface IProjectRepository
 {
     Task<ProjectDetailsDTO?> Read(int id);
     Task<IEnumerable<ProjectDetailsDTO>> ReadAll();
