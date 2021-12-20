@@ -23,7 +23,7 @@ You need to have Docker installed with a ``MSSQL Database``-image.
 The system is tested with image ``mcr.microsoft.com/azure-sql-edge:latest`` and ``mcr.microsoft.com/mssql/server:2019-latest``.
 
 #### .NET 6
-You need to have ``.NET Core 6.0.0`` runtime and ``.NET 6.0.100`` SDK (or later versions) installed.
+You need to have ``.NET Core 6.0.0`` runtime, ``.NET 6.0.100`` SDK and ``ASP Net Core 6.0.0`` (or later versions) installed.
 
 #### 
 
