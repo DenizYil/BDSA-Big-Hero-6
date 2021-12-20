@@ -1,8 +1,4 @@
-﻿using CoProject.Infrastructure.Entities;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-
-namespace CoProject.Infrastructure;
+﻿namespace CoProject.Infrastructure;
 
 public interface ICoProjectContext : IDisposable
 {

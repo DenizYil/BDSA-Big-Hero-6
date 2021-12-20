@@ -1,6 +1,3 @@
-using CoProject.Infrastructure.Entities;
-using Microsoft.EntityFrameworkCore;
-
 namespace CoProject.Infrastructure.Repositories;
 
 public class ProjectRepository : IProjectRepository

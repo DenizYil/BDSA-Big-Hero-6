@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
+﻿using Microsoft.EntityFrameworkCore.Design;
 
 namespace CoProject.Infrastructure;
 

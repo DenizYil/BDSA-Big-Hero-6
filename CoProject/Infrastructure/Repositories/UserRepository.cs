@@ -1,7 +1,4 @@
-﻿using CoProject.Infrastructure.Entities;
-using Microsoft.EntityFrameworkCore;
-
-namespace CoProject.Infrastructure.Repositories;
+﻿namespace CoProject.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
