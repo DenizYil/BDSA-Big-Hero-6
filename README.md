@@ -43,5 +43,9 @@ You need to have ``.NET Core 6.0.0`` runtime and ``.NET 6.0.100`` SDK (or later 
    ```
    
    Make sure you update the variable ``$passwordForSA`` with the set password for database user ``sa``.
-4. Build and model your running ``MSSQL`` database using the command ``dotnet ef database update --project CoProject/Infrastructure`` for the project ``CoProject/Infrastructure``.
-5. Start the application by running ``dotnet run --project CoProject/Server`` for the project ``CoProject/Server``.
+4. Build and model your running ``MSSQL`` database for the project ``CoProject/Infrastructure``. Example command below.
+   
+   ```cmd
+   dotnet ef database update --project CoProject/Infrastructure
+   ```
+7. Start the application by running ``dotnet run --project CoProject/Server`` for the project ``CoProject/Server``.
