@@ -14,11 +14,6 @@ dotnet user-secrets init --project "CoProject/Server"
 dotnet user-secrets set "ConnectionStrings:CoProject" "$connectionString" --project "CoProject/Server"
 dotnet user-secrets set "ConnectionStrings:CoProject" "$connectionString" --project "CoProject/Infrastructure"
 
-Write-Host "Waiting 10 seconds for SQL server to start..."
-Start-Sleep 10
-
-Write-Host "Updating database"
-dotnet ef database update --project "CoProject/Infrastructure"
-
 Write-Host "Starting program... Enjoy!"
+Start-Sleep 2
 dotnet run --project "CoProject/Server"
