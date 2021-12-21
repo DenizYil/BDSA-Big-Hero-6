@@ -9,3 +9,4 @@ ignore:
   - "CoProject/Client" # for now
   - "CoProject/Infrastructure.Tests"
   - "CoProject/Server.Tests"
+  - "CoProject/Server.Integration.Tests"

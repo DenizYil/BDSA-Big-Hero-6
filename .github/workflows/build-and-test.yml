@@ -28,6 +28,9 @@ jobs:
       - name: Test Infrastructure
         working-directory: ./CoProject/Infrastructure.Tests
         run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='./result.xml' --no-restore --verbosity normal
+      - name: Test Integrations
+        working-directory: ./CoProject/Server.Integration.Tests
+        run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput='./result.xml' --no-restore --verbosity normal
       - name: Upload coverage to Codecov  
         uses: codecov/codecov-action@v1
         with:
@@ -38,5 +41,11 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           file: ./CoProject/Infrastructure.Tests/result.xml
+          flags: unittests
+          fail_ci_if_error: true
+      - name: Upload coverage to Codecov  
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./CoProject/Server.Integration.Tests/result.xml
           flags: unittests
           fail_ci_if_error: true
