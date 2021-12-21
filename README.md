@@ -11,7 +11,7 @@ A simple webservice that provides a platform for students and supervisors to fin
 
 ## Windows
 
-Run the start up powershell script by doing
+Run the set up Powershell script by doing
 ```powershell
 .\Setup.ps1
 ```
