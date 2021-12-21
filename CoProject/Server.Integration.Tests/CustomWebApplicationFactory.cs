@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Server.Integration.Tests;
 
-public class CustomWebApplicationFactory : WebApplicationFactory<ProgramServer>
+public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
     protected override IHost CreateHost(IHostBuilder builder)
     {

@@ -76,4 +76,4 @@ if (!app.Environment.IsEnvironment("Integration"))
 app.Run();
 
 [ExcludeFromCodeCoverage]
-public partial class ProgramServer { }
+public partial class Program { }
