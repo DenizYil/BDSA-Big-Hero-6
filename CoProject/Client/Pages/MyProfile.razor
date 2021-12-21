@@ -149,10 +149,21 @@
         }
     }
 
-    private void OnInputFileChange(InputFileChangeEventArgs e)
+    private async void OnInputFileChange(InputFileChangeEventArgs e)
     {
         _selectedFile = e.GetMultipleFiles()[0];
+        await SetProfileImage();
         StateHasChanged();
+    }
+
+    private async Task SetProfileImage()
+    {
+        if (_selectedFile != null)
+        {
+            var bytes = new byte[_selectedFile.Size];
+            await _selectedFile.OpenReadStream(2048000).ReadAsync(bytes);
+            _profileImage = $"data:{_selectedFile.ContentType};base64,{Convert.ToBase64String(bytes)}";
+        }
     }
 
     private async void OnSubmit()
@@ -192,12 +203,7 @@
         var user = UsedLayout.LoggedInUser;
         UsedLayout.LoggedInUser = new(user!.Id, user.Name, user.Email, update.Supervisor.Value, user.Image);
 
-        if (_selectedFile != null)
-        {
-            var bytes = new byte[_selectedFile.Size];
-            await _selectedFile.OpenReadStream(2048000).ReadAsync(bytes);
-            _profileImage = $"data:{_selectedFile.ContentType};base64,{Convert.ToBase64String(bytes)}";
-        }
+        await SetProfileImage();
 
         _navManager.NavigateTo($"/profile?success={await response.Content.ReadAsStringAsync()}");
     }

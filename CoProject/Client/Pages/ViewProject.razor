@@ -115,7 +115,7 @@ else
     {
         var projectResponse = await _client.GetAsync($"api/projects/{Id}");
 
-        if (projectResponse.IsSuccessStatusCode && projectResponse.Content != null)
+        if (projectResponse.IsSuccessStatusCode)
         {
             _project = await projectResponse.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
 

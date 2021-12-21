@@ -1,4 +1,6 @@
-﻿namespace CoProject.Server.Tests.Controllers;
+﻿using System.Linq;
+
+namespace CoProject.Server.Tests.Controllers;
 
 public class ProjectControllerTests : DefaultTests
 {
@@ -259,40 +261,7 @@ public class ProjectControllerTests : DefaultTests
         // Assert
         Assert.IsType<ForbidResult>(result);
     }
-
-
-    //TODO: Fix 
-    //[Fact]
-    public async void DeleteProject_deletes_a_projects_given_id_and_returns_NoContent()
-    {
-        // Arrange
-        _projectRepository
-            .Setup(m => m.Delete(_project.Id))
-            .ReturnsAsync(Status.Deleted);
-
-        // Act
-        var response = await _controller.DeleteProject(_project.Id);
-
-        // Assert
-        Assert.IsType<UnauthorizedObjectResult>(response);
-    }
-
-    //TODO: Fix
-    //[Fact]
-    public async void DeleteProject_returns_NotFound_given_nonexistent_id()
-    {
-        // Arrange
-        _projectRepository
-            .Setup(m => m.Delete(10))
-            .ReturnsAsync(Status.NotFound);
-
-        // Act
-        var response = await _controller.DeleteProject(10);
-
-        // Assert
-        Assert.IsType<UnauthorizedObjectResult>(response);
-    }
-
+    
     [Fact]
     public async void AddUserToProject_given_existing_id_adds_user_to_project_and_returns_NoContent()
     {
@@ -401,8 +370,7 @@ public class ProjectControllerTests : DefaultTests
         Assert.IsType<ConflictObjectResult>(response);
     }
 
-    //TODO: FIX
-    //[Fact]
+    [Fact]
     public async void AddUserToProject_returns_Ok_if_User_added_correctly()
     {
         // Arrange
@@ -411,7 +379,7 @@ public class ProjectControllerTests : DefaultTests
             .ReturnsAsync(_project);
 
         _projectRepository
-            .Setup(m => m.Update(_project.Id, new()))
+            .Setup(m => m.Update(_project.Id, It.IsAny<ProjectUpdateDTO>()))
             .ReturnsAsync(Status.Updated);
 
         // Act
@@ -497,6 +465,25 @@ public class ProjectControllerTests : DefaultTests
 
         // Assert
         Assert.IsType<UnauthorizedObjectResult>(response);
+    }
+    
+    [Fact]
+    public async void RemoveUserFromProject_returns_Ok_if_User_removed_correctly()
+    {
+        // Arrange
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+
+        _projectRepository
+            .Setup(m => m.Update(_project.Id, It.IsAny<ProjectUpdateDTO>()))
+            .ReturnsAsync(Status.Updated);
+
+        // Act
+        var response = await _controller.AddUserToProject(_project.Id);
+
+        // Assert
+        Assert.IsType<OkObjectResult>(response);
     }
 
     [Fact]
@@ -632,5 +619,20 @@ public class ProjectControllerTests : DefaultTests
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(response);
+    }
+    
+    [Fact]
+    public async void DeleteProject_returns_Unauthorized_if_User_is_null()
+    {
+        // Arrange
+        _projectRepository
+            .Setup(m => m.Read(_project.Id))
+            .ReturnsAsync(_project);
+
+        // Act
+        var response = await _controller.DeleteProject(_project.Id);
+
+        // Assert
+        Assert.IsType<UnauthorizedObjectResult>(response);
     }
 }

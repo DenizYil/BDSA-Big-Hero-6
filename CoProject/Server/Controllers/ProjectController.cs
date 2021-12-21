@@ -202,7 +202,7 @@ public class ProjectController : ControllerBase
         return BadRequest("You could not leave the project");
     }
 
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{projectId:int}")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(401)]
@@ -217,7 +217,6 @@ public class ProjectController : ControllerBase
             return Unauthorized("You are not logged in");
         }
 
-        var project = await _projectRepository.Read(projectId);
         var user = await _userRepository.Read(userId.Value);
 
         if (user == null)
@@ -229,6 +228,8 @@ public class ProjectController : ControllerBase
         {
             return Forbid("You are not a supervisor");
         }
+
+        var project = await _projectRepository.Read(projectId);
 
         if (project == null)
         {
