@@ -1,7 +1,5 @@
-using System;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,7 +13,8 @@ internal sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSche
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        ISystemClock clock) : base(options, logger, encoder, clock)
+        ISystemClock clock
+    ) : base(options, logger, encoder, clock)
     {
     }
 

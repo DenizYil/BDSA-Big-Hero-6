@@ -1,26 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-using CoProject.Infrastructure.Entities;
-using CoProject.Shared;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Xunit;
-
-namespace CoProject.Server.Integration.Tests;
+namespace CoProject.Server.Integration.Tests.Tests;
 
 public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly HttpClient _client;
-    private readonly CustomWebApplicationFactory _factory;
 
     public ProjectTests(CustomWebApplicationFactory factory)
     {
-        _factory = factory;
-        _client = factory.CreateClient(new WebApplicationFactoryClientOptions
+        _client = factory.CreateClient(new()
         {
             AllowAutoRedirect = false
         });
@@ -30,7 +16,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     public async Task Get_returns_projects()
     {
         var projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
-        
+
         Assert.NotNull(projects);
         Assert.NotEmpty(projects);
         Assert.Contains(projects, p => p.Name == "Test Project One");
@@ -39,9 +25,9 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task Get_project_by_id_returns_project()
     {
-        var Id = 1;
-        var projectResponse = await _client.GetFromJsonAsync<ProjectDetailsDTO>($"api/projects/{Id}");
-        
+        var id = 1;
+        var projectResponse = await _client.GetFromJsonAsync<ProjectDetailsDTO>($"api/projects/{id}");
+
         Assert.NotNull(projectResponse);
         Assert.Equal("Description for test project one", projectResponse.Description);
         Assert.Equal(1, projectResponse.Id);
@@ -83,12 +69,12 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
             Description = "The project description has been updated",
             Max = 5,
             Min = 2,
-            Tags = new List<string>() {"MYSQL", "Javascript", "SQL"},
+            Tags = new List<string> {"MYSQL", "Javascript", "SQL"},
             State = State.Open,
             Users = new List<string>()
         };
         var response = await _client.PutAsJsonAsync($"api/projects/{Id}", updateProject);
-        
+
         Assert.True(response.IsSuccessStatusCode);
     }
 
@@ -97,17 +83,16 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     {
         var projectId = 2;
         var response = await _client.PutAsJsonAsync($"api/projects/{projectId}/join", "");
-        
+
         Assert.True(response.IsSuccessStatusCode);
     }
-    
+
     [Fact]
     public async Task user_leaves_project_returns_ok()
     {
-        
         var projectId = 1;
         var responseLeave = await _client.DeleteAsync($"api/projects/{projectId}/leave");
-        
+
         Assert.Equal(HttpStatusCode.OK, responseLeave.StatusCode);
     }
 
@@ -116,7 +101,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     {
         var projectId = 3;
         var response = await _client.DeleteAsync($"api/projects/{projectId}");
-        
+
         Assert.True(response.IsSuccessStatusCode);
     }
 }
