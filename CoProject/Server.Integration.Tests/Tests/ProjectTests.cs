@@ -26,17 +26,15 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     public async void Get_project_by_id_returns_project()
     {
         var projectId = 1;
-        var projectResponse = (await _client.GetFromJsonAsync<ProjectDetailsDTO>($"api/projects/{projectId}"))!;
+        var response = (await _client.GetFromJsonAsync<ProjectDetailsDTO>($"api/projects/{projectId}"))!;
 
-        Assert.NotNull(projectResponse);
-        Assert.Equal("Description for test project one", projectResponse.Description);
-        Assert.Equal(1, projectResponse.Id);
-        Assert.Equal(2, projectResponse.Max);
-        Assert.Equal(0, projectResponse.Min);
-        Assert.Equal(State.Open, projectResponse.State);
-        Assert.Equal("1", projectResponse.Supervisor.Id);
-        Assert.Contains(projectResponse.Tags, t => t == "MYSQL");
-        Assert.Equal("Test Project One", projectResponse.Name);
+        Assert.NotNull(response);
+        Assert.Equal("Description for test project one", response.Description);
+        Assert.Equal(1, response.Id);
+        Assert.Equal(State.Open, response.State);
+        Assert.Equal("1", response.Supervisor.Id);
+        Assert.Contains(response.Tags, t => t == "MYSQL");
+        Assert.Equal("Test Project One", response.Name);
     }
 
     [Fact]
@@ -62,7 +60,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async void Update_project_given_existing_id_returns_success_status_code()
     {
-        var Id = 2;
+        var projectId = 2;
         var updateProject = new ProjectUpdateDTO
         {
             Name = "Updated Project Two",
@@ -73,7 +71,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
             State = State.Open,
             Users = new List<string>()
         };
-        var response = await _client.PutAsJsonAsync($"api/projects/{Id}", updateProject);
+        var response = await _client.PutAsJsonAsync($"api/projects/{projectId}", updateProject);
 
         Assert.True(response.IsSuccessStatusCode);
     }
