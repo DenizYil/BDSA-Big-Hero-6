@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using CoProject.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -10,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace CoProject.Server.Integration.Tests;
+namespace Server.Integration.Tests;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<ProgramServer>
 {

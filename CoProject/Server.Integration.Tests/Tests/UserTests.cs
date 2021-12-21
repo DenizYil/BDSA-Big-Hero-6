@@ -1,4 +1,4 @@
-namespace CoProject.Server.Integration.Tests.Tests;
+namespace Server.Integration.Tests.Tests;
 
 public class UserTests : IClassFixture<CustomWebApplicationFactory>
 {
@@ -13,7 +13,7 @@ public class UserTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task get_user_returns_user()
+    public async Task Get_User_returns_the_logged_in_user()
     {
         var response = (await _client.GetFromJsonAsync<UserDetailsDTO>("/api/user"))!;
 
@@ -26,17 +26,17 @@ public class UserTests : IClassFixture<CustomWebApplicationFactory>
 
     // We want this to run last
     [Fact]
-    public async Task z_get_projects_by_user()
+    public async Task Get_projects_by_user_returns_joined_projects()
     {
-        var projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/user/projects");
+        var projects = (await _client.GetFromJsonAsync<ICollection<ProjectDetailsDTO>>("api/user/projects"))!;
 
         Assert.NotEmpty(projects);
-        Assert.Equal(3, projects.Count());
+        Assert.Equal(3, projects.Count);
         Assert.Contains(projects, p => p.Name == "Test Project One");
     }
 
     [Fact]
-    public async Task signup_user_returns_ok()
+    public async Task SignUp_returns_Success_Status_Code()
     {
         var response = await _client.PostAsJsonAsync("/api/user", "");
 
@@ -44,7 +44,7 @@ public class UserTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task update_user_returns_ok()
+    public async Task Update_user_information_returns_success_status_code()
     {
         var update = new UserUpdateDTO("Supervisor One", "test@gmail.com")
         {

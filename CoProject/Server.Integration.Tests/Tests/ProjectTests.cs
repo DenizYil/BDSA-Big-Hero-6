@@ -1,4 +1,4 @@
-namespace CoProject.Server.Integration.Tests.Tests;
+namespace Server.Integration.Tests.Tests;
 
 public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
 {
@@ -13,9 +13,9 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task Get_returns_projects()
+    public async void Get_returns_a_list_of_projects()
     {
-        var projects = await _client.GetFromJsonAsync<IEnumerable<ProjectDetailsDTO>>("api/projects");
+        var projects = await _client.GetFromJsonAsync<ICollection<ProjectDetailsDTO>>("api/projects");
 
         Assert.NotNull(projects);
         Assert.NotEmpty(projects);
@@ -23,10 +23,10 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task Get_project_by_id_returns_project()
+    public async void Get_project_by_id_returns_project()
     {
-        var id = 1;
-        var projectResponse = await _client.GetFromJsonAsync<ProjectDetailsDTO>($"api/projects/{id}");
+        var projectId = 1;
+        var projectResponse = (await _client.GetFromJsonAsync<ProjectDetailsDTO>($"api/projects/{projectId}"))!;
 
         Assert.NotNull(projectResponse);
         Assert.Equal("Description for test project one", projectResponse.Description);
@@ -40,7 +40,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task Post_returns_project_created()
+    public async void Post_returns_project_created()
     {
         var addItem = new ProjectCreateDTO("Project three", "Description of project three", State.Open, new List<string>())
         {
@@ -49,7 +49,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         };
 
         var response = await _client.PostAsJsonAsync("api/projects", addItem);
-        var created = await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>();
+        var created = (await response.Content.ReadFromJsonAsync<ProjectDetailsDTO>())!;
         Assert.NotNull(created);
         Assert.Equal(addItem.Name, created.Name);
         Assert.Equal(addItem.Description, created.Description);
@@ -60,7 +60,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task Update_returns_ok()
+    public async void Update_project_given_existing_id_returns_success_status_code()
     {
         var Id = 2;
         var updateProject = new ProjectUpdateDTO
@@ -79,7 +79,7 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task user_joins_project_returns_ok()
+    public async void User_joins_project_given_existing_project_returns_success_status_code()
     {
         var projectId = 2;
         var response = await _client.PutAsJsonAsync($"api/projects/{projectId}/join", "");
@@ -88,16 +88,16 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
     }
 
     [Fact]
-    public async Task user_leaves_project_returns_ok()
+    public async void User_leaves_project_given_existing_project_and_joined_project_returns_success_status_code()
     {
         var projectId = 1;
-        var responseLeave = await _client.DeleteAsync($"api/projects/{projectId}/leave");
+        var response = await _client.DeleteAsync($"api/projects/{projectId}/leave");
 
-        Assert.Equal(HttpStatusCode.OK, responseLeave.StatusCode);
+        Assert.True(response.IsSuccessStatusCode);
     }
 
     [Fact]
-    public async Task delete_project_returns_ok()
+    public async void Delete_project_given_existing_project_returns_success_status_code()
     {
         var projectId = 3;
         var response = await _client.DeleteAsync($"api/projects/{projectId}");
