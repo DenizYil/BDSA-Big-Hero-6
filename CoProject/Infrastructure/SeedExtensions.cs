@@ -24,16 +24,11 @@ public static class SeedExtensions
         }
 
         // Set up the default database
-        var deniz = new User 
-            {Id = "1", Name = "Deniz", Email = "deyi@itu.dk", Supervisor = true, Image = "/images/noimage.jpeg"};
-        var mikkel = new User 
-            {Id = "2", Name = "Mikkel", Email = "milb@itu.dk", Supervisor = true, Image = "/images/noimage.jpeg"};
-        var danyal = new User 
-            {Id = "3", Name = "Danyal", Email = "dayo@itu.dk", Supervisor = false, Image = "/images/noimage.jpeg"};
-        var jakob = new User 
-            {Id = "4", Name = "Jakob", Email = "jarh@itu.dk", Supervisor = false, Image = "/images/noimage.jpeg"};
-        var lotte = new User 
-            {Id = "5", Name = "Lotte", Email = "loda@itu.dk", Supervisor = false, Image = "/images/noimage.jpeg"};
+        var deniz = new User {Id = "1", Name = "Deniz", Email = "deyi@itu.dk", Supervisor = true, Image = "/images/noimage.jpeg"};
+        var mikkel = new User {Id = "2", Name = "Mikkel", Email = "milb@itu.dk", Supervisor = true, Image = "/images/noimage.jpeg"};
+        var danyal = new User {Id = "3", Name = "Danyal", Email = "dayo@itu.dk", Supervisor = false, Image = "/images/noimage.jpeg"};
+        var jakob = new User {Id = "4", Name = "Jakob", Email = "jarh@itu.dk", Supervisor = false, Image = "/images/noimage.jpeg"};
+        var lotte = new User {Id = "5", Name = "Lotte", Email = "loda@itu.dk", Supervisor = false, Image = "/images/noimage.jpeg"};
 
         await context.Users.AddRangeAsync(deniz, mikkel, danyal, jakob, lotte);
         await context.SaveChangesAsync();
