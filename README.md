@@ -8,25 +8,27 @@
 A simple webservice that provides a platform for students and supervisors to find, join and create projects.
 
 # How to run
+
+## Windows
+
 Run the start up powershell script by doing
 ```powershell
 .\Setup.ps1
 ```
 
-If you wish to do it manually, please continue reading:
+## Other platforms
+Please continue reading for a guide to set it up by yourself. 
 
-## Requirements
-### Docker
+# Requirements
+## Docker
 You need to have Docker installed with a ``MSSQL Database``-image.
 
 The system is tested with image ``mcr.microsoft.com/azure-sql-edge:latest`` and ``mcr.microsoft.com/mssql/server:2019-latest``.
 
-### .NET 6
+## .NET 6
 You need to have ``.NET Core 6.0.0`` runtime, ``.NET 6.0.100`` SDK and ``ASP Net Core 6.0.0`` (or later versions) installed.
 
-#  
-
-## Getting started
+# Getting started
 1. Install `.NET Entity Framework Core tools`: 
    ```powershell
    dotnet tool install --global dotnet-ef
