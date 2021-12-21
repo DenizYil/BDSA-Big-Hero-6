@@ -61,7 +61,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<ProgramServer>
         return base.CreateHost(builder);
     }
 
-    private void Seed(CoProjectContext context)
+    private async void Seed(CoProjectContext context)
     {
         var supervisorOne = new User
         {
@@ -121,7 +121,6 @@ public class CustomWebApplicationFactory : WebApplicationFactory<ProgramServer>
             Users = new List<User>()
         };
 
-
         var projectThree = new Project
         {
             Id = 3,
@@ -136,9 +135,9 @@ public class CustomWebApplicationFactory : WebApplicationFactory<ProgramServer>
             Users = new List<User>()
         };
 
-        context.Projects.AddRange(projectOne, projectTwo, projectThree);
-        context.Users.AddRange(supervisorOne, supervisorTwo);
+        await context.Projects.AddRangeAsync(projectOne, projectTwo, projectThree);
+        await context.Users.AddRangeAsync(supervisorOne, supervisorTwo);
 
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 }
