@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoProject.Infrastructure.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoProject.Server.Tests", "Server.Tests\CoProject.Server.Tests.csproj", "{8AA6B681-49C7-4C88-9E4E-0586B8F3886E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server.Integration.Tests", "Server.Integration.Tests\Server.Integration.Tests.csproj", "{A42DA23D-2DF5-4B38-AD46-9E9C82222D9A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoProject.Server.Integration.Tests", "Server.Integration.Tests\CoProject.Server.Integration.Tests.csproj", "{A42DA23D-2DF5-4B38-AD46-9E9C82222D9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

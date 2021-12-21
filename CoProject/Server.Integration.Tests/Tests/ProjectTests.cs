@@ -1,4 +1,4 @@
-namespace Server.Integration.Tests.Tests;
+namespace CoProject.Server.Integration.Tests.Tests;
 
 public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
 {
@@ -31,6 +31,8 @@ public class ProjectTests : IClassFixture<CustomWebApplicationFactory>
         Assert.NotNull(response);
         Assert.Equal("Description for test project one", response.Description);
         Assert.Equal(1, response.Id);
+        Assert.Equal(2, response.Max);
+        Assert.Equal(0, response.Min);
         Assert.Equal(State.Open, response.State);
         Assert.Equal("1", response.Supervisor.Id);
         Assert.Contains(response.Tags, t => t == "MYSQL");

@@ -1,4 +1,4 @@
-namespace Server.Integration.Tests.Tests;
+namespace CoProject.Server.Integration.Tests.Tests;
 
 public class UserTests : IClassFixture<CustomWebApplicationFactory>
 {
@@ -24,7 +24,6 @@ public class UserTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal("Supervisor One", response.Name);
     }
 
-    // We want this to run last
     [Fact]
     public async void Get_projects_by_user_returns_joined_projects()
     {
@@ -43,8 +42,9 @@ public class UserTests : IClassFixture<CustomWebApplicationFactory>
         Assert.True(response.IsSuccessStatusCode);
     }
 
+    // We want this to run last
     [Fact]
-    public async void Update_user_information_returns_success_status_code()
+    public async void Z_Update_user_information_returns_success_status_code()
     {
         var update = new UserUpdateDTO("Supervisor One", "test@gmail.com")
         {

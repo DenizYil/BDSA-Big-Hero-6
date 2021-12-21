@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Server.Integration.Tests;
+namespace CoProject.Server.Integration.Tests;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
