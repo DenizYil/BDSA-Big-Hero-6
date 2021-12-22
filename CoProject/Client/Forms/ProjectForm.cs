@@ -7,7 +7,7 @@ namespace CoProject.Client.Forms;
 public class ProjectForm
 {
     [Required]
-    [StringLength(100, ErrorMessage = "Name is too long")]
+    [StringLength(50, ErrorMessage = "Name cannot be more than 50 characters")]
     public string Name { get; set; } = string.Empty;
 
     [Required]

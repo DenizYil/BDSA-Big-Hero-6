@@ -99,9 +99,11 @@
             <DataAnnotationsValidator/>
             <label for="name" class="form-header"> Your name <span class="required">*</span></label>
             <InputText type="text" id="name" name="name" placeholder="Enter your new name here" @bind-Value="_form.Name"/>
+            <ValidationMessage For="@(() => _form.Name)"/>
 
             <label for="email" class="form-header">Your email <span class="required">*</span></label>
             <InputText type="text" id="email" placeholder="Enter your new e-mail address here" @bind-Value="_form.Email"/>
+            <ValidationMessage For="@(() => _form.Email)"/>
 
             <label for="email" class="form-header">Type<span class="required">*</span></label>
             <button class="form-btn @(_form.Supervisor ? "supervisor" : "student")" @onclick="() => _form.Supervisor = !_form.Supervisor" type="button">@(_form.Supervisor ? "Supervisor" : "Student")</button>
