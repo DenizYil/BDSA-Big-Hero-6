@@ -38,7 +38,6 @@
         <Content Remove="wwwroot\userimages\" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Model" />
         <Folder Include="wwwroot\" />
         <Folder Include="wwwroot\userimages\" />
     </ItemGroup>
